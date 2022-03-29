@@ -12,7 +12,7 @@ struct Cities: Codable {
   let cities: [City]
 }
 
-struct City: Codable {
+struct City: Codable, Hashable {
   let name: String
   let state: String
   let territory: String

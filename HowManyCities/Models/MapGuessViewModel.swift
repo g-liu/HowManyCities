@@ -15,11 +15,25 @@ protocol MapGuessDelegate: AnyObject {
 final class MapGuessViewModel {
   weak var delegate: MapGuessDelegate?
   
+  var guessedCities: Set<City> = .init()
+  
   func submitGuess(_ guess: String) {
     HMCRequestHandler.submitRequest(string: guess) { [weak self] response in
       if let cities = response?.cities,
          !cities.isEmpty {
-        self?.delegate?.didReceiveCities(cities)
+        var newCities = [City]()
+        cities.forEach { city in
+          let result = self?.guessedCities.insert(city)
+          if result?.inserted ?? false {
+            newCities.append(city)
+          }
+        }
+        
+        if newCities.isEmpty {
+          self?.delegate?.didReceiveError()
+        } else {
+          self?.delegate?.didReceiveCities(newCities)
+        }
       } else {
         self?.delegate?.didReceiveError()
       }
