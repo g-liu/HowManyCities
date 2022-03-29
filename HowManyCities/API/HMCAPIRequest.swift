@@ -11,11 +11,14 @@ import Foundation
 final class HMCAPIRequest {
   static let baseURL = "https://iafisher.com/projects/cities/api/search/v2"
   
-  static func submitRequest(string: String) {
+  static func submitRequest(string: String, cb: @escaping (Cities?) -> Void) {
 //    var semaphore = DispatchSemaphore (value: 0)
     
     let locationFragments = string.split(maxSplits: 3, omittingEmptySubsequences: true) { $0 == "," }
-    guard locationFragments.count >= 1 else { return }
+    guard locationFragments.count >= 1 else {
+      cb(nil)
+      return
+    }
     
     let city, state, country: String
     
@@ -32,13 +35,14 @@ final class HMCAPIRequest {
       state = locationFragments[1].trimmingCharacters(in: .whitespaces)
       country = locationFragments[2].trimmingCharacters(in: .whitespaces)
     } else {
+      cb(nil)
       return // FATAL ERROR
     }
-    
-    
-    
 
-    guard var components = URLComponents(string: baseURL) else { return }
+    guard var components = URLComponents(string: baseURL) else {
+      cb(nil)
+      return
+    }
     
     components.queryItems = .init()
     components.queryItems?.append(.init(name: "city", value: city))
@@ -46,10 +50,10 @@ final class HMCAPIRequest {
     components.queryItems?.append(.init(name: "country", value: country))
     components.queryItems?.append(.init(name: "quiz", value: "world")) // TODO: Different game modes
     
-    guard let url = components.url else { return }
+    guard let url = components.url else { cb(nil); return }
     
     
-    var request = URLRequest(url: url, timeoutInterval: Double.infinity)
+    var request = URLRequest(url: url, timeoutInterval: Double.infinity) // TODO: Revisit timeout val
     request.addValue("application/json", forHTTPHeaderField: "Accept")
     request.addValue("application/json", forHTTPHeaderField: "Content-Type")
 
@@ -57,7 +61,9 @@ final class HMCAPIRequest {
 
     let task = URLSession.shared.dataTask(with: request) { data, response, error in
       guard let data = data else {
+        // TODO: Real error handling
         print(String(describing: error))
+        cb(nil)
 //        semaphore.signal()
         return
       }
@@ -66,7 +72,7 @@ final class HMCAPIRequest {
       let decoder = JSONDecoder()
       
       let result = try? decoder.decode(Cities.self, from: data)
-      print(result)
+      cb(result)
       
 //      semaphore.signal()
     }
