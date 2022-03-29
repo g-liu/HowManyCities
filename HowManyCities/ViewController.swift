@@ -66,12 +66,13 @@ extension ViewController: UITextFieldDelegate {
           !textInput.isEmpty else { return false }
     
     HMCAPIRequest.submitRequest(string: textInput) { [weak self] response in
-      response?.cities.forEach { city in
-        let annotation = MKPointAnnotation()
-        annotation.coordinate = .init(latitude: city.latitude, longitude: city.longitude)
-        self?.mapView.addAnnotation(annotation)
+      DispatchQueue.main.async { [weak self] in
+        response?.cities.forEach { city in
+          let annotation = MKPointAnnotation()
+          annotation.coordinate = .init(latitude: city.latitude, longitude: city.longitude)
+          self?.mapView.addAnnotation(annotation)
+        }
       }
-      mapView.
     }
     textField.text = ""
     
