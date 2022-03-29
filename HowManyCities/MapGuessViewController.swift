@@ -93,35 +93,20 @@ extension MapGuessViewController: UITextFieldDelegate {
     
     submitGuess(textInput)
     
-    textField.text = ""
     mapView.closeAllAnnotations()
     
     return false
   }
 }
 
-// TODO: TEMP PLZ REMOVE
-class CityAnnotation: NSObject, MKAnnotation {
-  var coordinate: CLLocationCoordinate2D
-  
-  var title: String?
-  var subtitle: String?
-  
-  init(city: City) {
-    self.coordinate = city.coordinates
-    self.title = city.fullTitle
-    self.subtitle = "pop: \(city.population.commaSeparated ?? "\(city.population)")" // TODO: Localize
-  }
-}
-
 extension MapGuessViewController: MapGuessDelegate {
   func didReceiveCities(_ cities: [City]) {
     DispatchQueue.main.async { [weak self] in
+      self?.cityInputTextField.text = ""
       cities.forEach { city in
         self?.mapView.addOverlay(city.asCircle)
         
         self?.mapView.addAnnotation(CityAnnotation(city: city))
-//        self?.mapView.addAnnotation(.init())
       }
       
       if let lastCity = cities.last {
@@ -133,8 +118,7 @@ extension MapGuessViewController: MapGuessDelegate {
   func didReceiveError() {
     cityInputTextField.shake()
   }
-  
-  
+
 }
 
 extension MapGuessViewController: MKMapViewDelegate {
