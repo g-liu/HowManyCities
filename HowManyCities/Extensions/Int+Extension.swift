@@ -11,6 +11,7 @@ extension Int {
   var asDouble: Double { .init(self) }
   var asFloat: Float { .init(self) }
   var asCGFloat: CGFloat { .init(self) }
+  var asNSNumber: NSNumber { .init(integerLiteral: self) }
   
   // MARK: - Addition
   
@@ -66,5 +67,11 @@ extension Int {
   
   static func /(left: Int, right: CGFloat) -> CGFloat {
     left.asCGFloat / right
+  }
+  
+  var commaSeparated: String? {
+    let fmt = NumberFormatter()
+    fmt.numberStyle = .decimal
+    return fmt.string(from: asNSNumber)
   }
 }

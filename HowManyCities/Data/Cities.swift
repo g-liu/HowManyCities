@@ -28,6 +28,10 @@ struct City: Codable, Hashable {
   let archived: Bool
   let percentageOfSessions: Double
   
+  var fullTitle: String {
+    [name, state, territory, country].filter { !$0.isEmpty }.joined(separator: ", ")
+  }
+  
   var coordinates: CLLocationCoordinate2D {
     .init(latitude: latitude, longitude: longitude)
   }

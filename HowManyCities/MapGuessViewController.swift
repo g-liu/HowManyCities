@@ -25,6 +25,8 @@ final class MapGuessViewController: UIViewController {
     
     map.delegate = self
     
+    map.register(MKAnnotationView.self, forAnnotationViewWithReuseIdentifier: "MKAnnotationView")
+    
     return map
   }()
   
@@ -92,8 +94,23 @@ extension MapGuessViewController: UITextFieldDelegate {
     submitGuess(textInput)
     
     textField.text = ""
+    mapView.closeAllAnnotations()
     
     return false
+  }
+}
+
+// TODO: TEMP PLZ REMOVE
+class CityAnnotation: NSObject, MKAnnotation {
+  var coordinate: CLLocationCoordinate2D
+  
+  var title: String?
+  var subtitle: String?
+  
+  init(city: City) {
+    self.coordinate = city.coordinates
+    self.title = city.fullTitle
+    self.subtitle = "pop: \(city.population.commaSeparated ?? "\(city.population)")" // TODO: Localize
   }
 }
 
@@ -102,6 +119,9 @@ extension MapGuessViewController: MapGuessDelegate {
     DispatchQueue.main.async { [weak self] in
       cities.forEach { city in
         self?.mapView.addOverlay(city.asCircle)
+        
+        self?.mapView.addAnnotation(CityAnnotation(city: city))
+//        self?.mapView.addAnnotation(.init())
       }
       
       if let lastCity = cities.last {
@@ -128,5 +148,11 @@ extension MapGuessViewController: MKMapViewDelegate {
     }
     
     return MKOverlayRenderer(overlay: overlay)
+  }
+  
+  func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+    let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "MKAnnotationView", for: annotation)
+    annotationView.canShowCallout = true
+    return annotationView
   }
 }
