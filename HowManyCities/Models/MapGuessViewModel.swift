@@ -15,7 +15,18 @@ protocol MapGuessDelegate: AnyObject {
 final class MapGuessViewModel {
   weak var delegate: MapGuessDelegate?
   
-  var guessedCities: Set<City> = .init()
+  private var guessedCities: Set<City> = .init()
+  var gameConfiguration: GameConfiguration?
+  
+  init() {
+    retrieveConfiguration()
+  }
+  
+  private func retrieveConfiguration() {
+    HMCRequestHandler.retrieveConfiguration { [weak self] config in
+      self?.gameConfiguration = config
+    }
+  }
   
   func submitGuess(_ guess: String) {
     HMCRequestHandler.submitRequest(string: guess) { [weak self] response in
