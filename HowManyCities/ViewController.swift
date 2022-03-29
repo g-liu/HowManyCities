@@ -65,9 +65,8 @@ extension ViewController: UITextFieldDelegate {
           let textInput = textField.text,
           !textInput.isEmpty else { return false }
     
+    HMCAPIRequest.submitRequest(string: textInput)
     textField.text = ""
-    
-    // TODO: Submit text as api
     
     return false
   }
