@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreLocation
 
 struct Cities: Codable {
   let cities: [City]
@@ -26,4 +27,8 @@ struct City: Codable {
   let quiz: String
   let archived: Bool
   let percentageOfSessions: Double
+  
+  var coordinates: CLLocationCoordinate2D {
+    .init(latitude: latitude, longitude: longitude)
+  }
 }

@@ -69,8 +69,12 @@ extension ViewController: UITextFieldDelegate {
       DispatchQueue.main.async { [weak self] in
         response?.cities.forEach { city in
           let annotation = MKPointAnnotation()
-          annotation.coordinate = .init(latitude: city.latitude, longitude: city.longitude)
+          annotation.coordinate = city.coordinates
           self?.mapView.addAnnotation(annotation)
+        }
+        
+        if let lastCity = response?.cities.last {
+          self?.mapView.setCenter(lastCity.coordinates, animated: true)
         }
       }
     }
