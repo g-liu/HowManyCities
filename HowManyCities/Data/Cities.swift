@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import CoreLocation
+import MapKit
 
 struct Cities: Codable {
   let cities: [City]
@@ -30,5 +30,28 @@ struct City: Codable {
   
   var coordinates: CLLocationCoordinate2D {
     .init(latitude: latitude, longitude: longitude)
+  }
+  
+  private var circleSize: CLLocationDistance {
+    
+//    if population < 10_000 {
+//      return 4E4
+//    }
+//
+//
+//    if population < 100_000 {
+//      return 7E4
+//    } else if 100_000 <= population && population < 1_000_000 {
+//      return 1E5
+//    } else if 1_000_000 <= population && population < 10_000_000 {
+//      return 3E5
+//    } else {
+//      return 5E5
+//    }
+    200_000 * log10(0.000_019*(population+100_000))+13_000
+  }
+  
+  var asCircle: MKCircle {
+    .init(center: coordinates, radius: circleSize)
   }
 }

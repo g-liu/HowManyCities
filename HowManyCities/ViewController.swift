@@ -19,6 +19,9 @@ final class ViewController: UIViewController {
     map.setCameraZoomRange(.init(minCenterCoordinateDistance: 1000000), animated: true)
     map.removeAnnotations(map.annotations)
     map.pointOfInterestFilter = .excludingAll
+    
+    map.delegate = self
+    
     return map
   }()
   
@@ -30,6 +33,7 @@ final class ViewController: UIViewController {
     textField.font = .systemFont(ofSize: 36)
     textField.textAlignment = .center
     
+    textField.autocapitalizationType = .words
     textField.autocorrectionType = .no
   
     return textField
@@ -68,9 +72,11 @@ extension ViewController: UITextFieldDelegate {
     HMCAPIRequest.submitRequest(string: textInput) { [weak self] response in
       DispatchQueue.main.async { [weak self] in
         response?.cities.forEach { city in
-          let annotation = MKPointAnnotation()
-          annotation.coordinate = city.coordinates
-          self?.mapView.addAnnotation(annotation)
+//          let annotation = MKPointAnnotation()
+//          annotation.coordinate = city.coordinates
+//          self?.mapView.addAnnotation(annotation)
+          
+          self?.mapView.addOverlay(city.asCircle)
         }
         
         if let lastCity = response?.cities.last {
@@ -81,5 +87,19 @@ extension ViewController: UITextFieldDelegate {
     textField.text = ""
     
     return false
+  }
+}
+
+extension ViewController: MKMapViewDelegate {
+  func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+    if let circle = overlay as? MKCircle {
+      let circleRenderer = MKCircleRenderer(circle: circle)
+      circleRenderer.fillColor = .systemRed.withAlphaComponent(0.5)
+      circleRenderer.strokeColor = .systemFill
+      
+      return circleRenderer
+    }
+    
+    return MKOverlayRenderer(overlay: overlay)
   }
 }
