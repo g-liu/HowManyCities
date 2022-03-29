@@ -61,7 +61,13 @@ final class HMCAPIRequest {
 //        semaphore.signal()
         return
       }
-      print(String(data: data, encoding: .utf8)!)
+//      print(String(data: data, encoding: .utf8)!)
+      
+      let decoder = JSONDecoder()
+      
+      let result = try? decoder.decode(Cities.self, from: data)
+      print(result)
+      
 //      semaphore.signal()
     }
 
