@@ -7,6 +7,7 @@
 
 import UIKit
 import MapKit
+import SwifterSwift
 
 final class MapGuessViewController: UIViewController {
   
@@ -81,9 +82,12 @@ final class MapGuessViewController: UIViewController {
 
 extension MapGuessViewController: UITextFieldDelegate {
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-    guard textField == cityInputTextField,
-          let textInput = textField.text,
-          !textInput.isEmpty else { return false }
+    guard textField == cityInputTextField else { return false }
+    guard let textInput = textField.text,
+          !textInput.isEmpty else {
+            didReceiveError()
+            return false
+          }
     
     submitGuess(textInput)
     
@@ -107,7 +111,7 @@ extension MapGuessViewController: MapGuessDelegate {
   }
   
   func didReceiveError() {
-    // TODO: HANDLE THIS
+    cityInputTextField.shake()
   }
   
   
