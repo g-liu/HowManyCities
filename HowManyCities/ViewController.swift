@@ -12,7 +12,7 @@ final class ViewController: UIViewController {
   
   private lazy var mapView: MKMapView = {
     let map = MKMapView().autolayoutEnabled
-    map.mapType = .mutedStandard
+    map.mapType = .satellite
     map.isPitchEnabled = false
     map.isRotateEnabled = false
     map.setRegion(.init(center: .init(latitude: 0, longitude: 0), span: .init(latitudeDelta: 180, longitudeDelta: 360)), animated: true)
@@ -48,10 +48,10 @@ final class ViewController: UIViewController {
     view.addSubview(mapView)
     view.addSubview(cityInputTextField)
     NSLayoutConstraint.activate([
-      mapView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-      mapView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: -64),
-      mapView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-      mapView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+      mapView.topAnchor.constraint(equalTo: view.topAnchor),
+      mapView.bottomAnchor.constraint(equalTo: view.centerYAnchor, constant: -64),
+      mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+      mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
       
       cityInputTextField.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 32),
       cityInputTextField.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -32),
@@ -69,13 +69,9 @@ extension ViewController: UITextFieldDelegate {
           let textInput = textField.text,
           !textInput.isEmpty else { return false }
     
-    HMCAPIRequest.submitRequest(string: textInput) { [weak self] response in
+    HMCRequestHandler.submitRequest(string: textInput) { [weak self] response in
       DispatchQueue.main.async { [weak self] in
         response?.cities.forEach { city in
-//          let annotation = MKPointAnnotation()
-//          annotation.coordinate = city.coordinates
-//          self?.mapView.addAnnotation(annotation)
-          
           self?.mapView.addOverlay(city.asCircle)
         }
         
