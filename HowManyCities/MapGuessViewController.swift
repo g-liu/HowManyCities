@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  MapGuessViewController.swift
 //  HowManyCities
 //
 //  Created by Geoffrey Liu on 3/29/22.
@@ -8,7 +8,9 @@
 import UIKit
 import MapKit
 
-final class ViewController: UIViewController {
+final class MapGuessViewController: UIViewController {
+  
+  private let viewModel: MapGuessViewModel
   
   private lazy var mapView: MKMapView = {
     let map = MKMapView().autolayoutEnabled
@@ -38,7 +40,17 @@ final class ViewController: UIViewController {
   
     return textField
   }()
-
+  
+  override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+    viewModel = .init()
+    super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    viewModel.delegate = self
+  }
+  
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     // Do any additional setup after loading the view.
@@ -60,33 +72,48 @@ final class ViewController: UIViewController {
     
     cityInputTextField.becomeFirstResponder()
   }
-
+  
+  private func submitGuess(_ guess: String) {
+    viewModel.submitGuess(guess)
+    
+  }
 }
 
-extension ViewController: UITextFieldDelegate {
+extension MapGuessViewController: UITextFieldDelegate {
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
     guard textField == cityInputTextField,
           let textInput = textField.text,
           !textInput.isEmpty else { return false }
     
-    HMCRequestHandler.submitRequest(string: textInput) { [weak self] response in
-      DispatchQueue.main.async { [weak self] in
-        response?.cities.forEach { city in
-          self?.mapView.addOverlay(city.asCircle)
-        }
-        
-        if let lastCity = response?.cities.last {
-          self?.mapView.setCenter(lastCity.coordinates, animated: true)
-        }
-      }
-    }
+    submitGuess(textInput)
+    
     textField.text = ""
     
     return false
   }
 }
 
-extension ViewController: MKMapViewDelegate {
+extension MapGuessViewController: MapGuessDelegate {
+  func didReceiveCities(_ cities: [City]) {
+    DispatchQueue.main.async { [weak self] in
+      cities.forEach { city in
+        self?.mapView.addOverlay(city.asCircle)
+      }
+      
+      if let lastCity = cities.last {
+        self?.mapView.setCenter(lastCity.coordinates, animated: true)
+      }
+    }
+  }
+  
+  func didReceiveError() {
+    // TODO: HANDLE THIS
+  }
+  
+  
+}
+
+extension MapGuessViewController: MKMapViewDelegate {
   func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
     if let circle = overlay as? MKCircle {
       let circleRenderer = MKCircleRenderer(circle: circle)
