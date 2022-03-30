@@ -26,6 +26,7 @@
 		6CAD802D27F3CC810057A41E /* CityAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAD802C27F3CC810057A41E /* CityAnnotation.swift */; };
 		6CAD802F27F3D2C20057A41E /* MapGuessStatsBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAD802E27F3D2C20057A41E /* MapGuessStatsBar.swift */; };
 		6CAD803127F3D6790057A41E /* Double+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAD803027F3D6790057A41E /* Double+Extension.swift */; };
+		6CAD803327F41C1A0057A41E /* GameFinish.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAD803227F41C1A0057A41E /* GameFinish.swift */; };
 		8E5048FD5BFFEF60F3FC0004 /* Pods_HowManyCitiesTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 498133EDACA682E2064FDA55 /* Pods_HowManyCitiesTests.framework */; };
 		C7081157CDEE90E6052DF168 /* Pods_HowManyCities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E08EA20EB451FE21A3BAC71 /* Pods_HowManyCities.framework */; };
 		FA4853E8206F5914F93CFE0F /* Pods_HowManyCities_HowManyCitiesUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 51E341790A486DEC11C8DED5 /* Pods_HowManyCities_HowManyCitiesUITests.framework */; };
@@ -76,6 +77,7 @@
 		6CAD802C27F3CC810057A41E /* CityAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityAnnotation.swift; sourceTree = "<group>"; };
 		6CAD802E27F3D2C20057A41E /* MapGuessStatsBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapGuessStatsBar.swift; sourceTree = "<group>"; };
 		6CAD803027F3D6790057A41E /* Double+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+Extension.swift"; sourceTree = "<group>"; };
+		6CAD803227F41C1A0057A41E /* GameFinish.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameFinish.swift; sourceTree = "<group>"; };
 		7B7517C4983F430E253E1CA8 /* Pods-HowManyCities-HowManyCitiesUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowManyCities-HowManyCitiesUITests.debug.xcconfig"; path = "Target Support Files/Pods-HowManyCities-HowManyCitiesUITests/Pods-HowManyCities-HowManyCitiesUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		7F9DB55CBC0E1E2098CF3C1A /* Pods-HowManyCitiesTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowManyCitiesTests.debug.xcconfig"; path = "Target Support Files/Pods-HowManyCitiesTests/Pods-HowManyCitiesTests.debug.xcconfig"; sourceTree = "<group>"; };
 		7FE5EEEBB9C9DEA700E7805D /* Pods-HowManyCities.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowManyCities.release.xcconfig"; path = "Target Support Files/Pods-HowManyCities/Pods-HowManyCities.release.xcconfig"; sourceTree = "<group>"; };
@@ -202,6 +204,7 @@
 			children = (
 				6CAD801E27F38DA70057A41E /* Cities.swift */,
 				6CAD802527F3B7D90057A41E /* GameConfiguration.swift */,
+				6CAD803227F41C1A0057A41E /* GameFinish.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -475,6 +478,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6CAD803327F41C1A0057A41E /* GameFinish.swift in Sources */,
 				6CAD802F27F3D2C20057A41E /* MapGuessStatsBar.swift in Sources */,
 				6CAD801F27F38DA70057A41E /* Cities.swift in Sources */,
 				6CAD803127F3D6790057A41E /* Double+Extension.swift in Sources */,

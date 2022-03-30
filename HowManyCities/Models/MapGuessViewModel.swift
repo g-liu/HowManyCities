@@ -38,7 +38,7 @@ final class MapGuessViewModel {
   }
   
   func submitGuess(_ guess: String) {
-    HMCRequestHandler.submitRequest(string: guess) { [weak self] response in
+    HMCRequestHandler.submitGuess(guess) { [weak self] response in
       if let cities = response?.cities,
          !cities.isEmpty {
         var newCities = [City]()

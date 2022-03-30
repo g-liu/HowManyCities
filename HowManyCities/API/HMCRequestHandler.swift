@@ -10,10 +10,11 @@ import Foundation
 // TODO: Protocolize this for testing
 final class HMCRequestHandler {
   static let baseURL = "https://iafisher.com/projects/cities/api/search/v2"
-  static let configURL = "https://iafisher.com/projects/cities/api/config/world"
+  static let configWorldURL = "https://iafisher.com/projects/cities/api/config/world"
+  static let finishGameURL = "https://iafisher.com/projects/cities/api/finish"
   
   static func retrieveConfiguration(cb: @escaping (GameConfiguration?) -> Void) {
-    guard let url = URL(string: configURL) else { cb(nil); return }
+    guard let url = URL(string: configWorldURL) else { cb(nil); return }
     
     var request = URLRequest(url: url, timeoutInterval: Double.infinity)
     request.addValue("application/json", forHTTPHeaderField: "Accept")
@@ -35,8 +36,8 @@ final class HMCRequestHandler {
     task.resume()
   }
   
-  static func submitRequest(string: String, cb: @escaping (Cities?) -> Void) {
-    let locationFragments = string.split(maxSplits: 3, omittingEmptySubsequences: true) { $0 == "," }
+  static func submitGuess(_ guess: String, cb: @escaping (Cities?) -> Void) {
+    let locationFragments = guess.split(maxSplits: 3, omittingEmptySubsequences: true) { $0 == "," }
     guard locationFragments.count >= 1 else { cb(nil); return }
     
     let city, state, country: String
@@ -82,6 +83,35 @@ final class HMCRequestHandler {
       let decoder = JSONDecoder()
       
       let result = try? decoder.decode(Cities.self, from: data)
+      cb(result)
+    }
+
+    task.resume()
+  }
+  
+  static func finishGame(cities: [City], configuration: GameConfiguration, cb: @escaping (GameFinish?) -> Void) {
+    // request body:
+    // { cities [ { pk: Int, name: String } ], quiz: String, startTime: Int, usedMultiCityInput: Bool }
+    // TODO: Implement this
+    
+    guard let url = URL(string: finishGameURL) else { return }
+    
+    var request = URLRequest(url: url, timeoutInterval: Double.infinity)
+    request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.addValue("application/json", forHTTPHeaderField: "Accept")
+
+    request.httpMethod = "POST"
+
+    let task = URLSession.shared.dataTask(with: request) { data, response, error in
+      guard let data = data else {
+        print(String(describing: error))
+        return
+      }
+      
+      // response: { pk: Int }
+      print(String(data: data, encoding: .utf8)!)
+      let decoder = JSONDecoder()
+      let result = try? decoder.decode(GameFinish.self, from: data)
       cb(result)
     }
 
