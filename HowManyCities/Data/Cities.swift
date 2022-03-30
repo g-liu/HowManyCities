@@ -37,7 +37,13 @@ struct City: Codable, Hashable {
   }
   
   private var circleSize: CLLocationDistance {
-    200_000 * log10(0.000_019*(population+100_000))+13_000
+    // The circle size is proportional to the city's population, on a logarithmic scale
+    let absoluteSize = 200_000 * log10(0.000_019*(population+100_000))+13_000
+    // We must account for the distortion caused by the Mercator projection, otherwise
+    // cities closer to the poles will appear to have larger circles
+    // See https://en.wikipedia.org/wiki/Mercator_projection#Scale_factor for details.
+    let relativeSize = absoluteSize * __cospi(latitude/180.0)
+    return relativeSize
   }
   
   var asCircle: MKCircle {
