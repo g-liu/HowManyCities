@@ -71,11 +71,18 @@ final class MapGuessViewModel {
         self?.delegate?.didReceiveError()
       }
     }
-    
+  }
+  
+  func resetState() {
+    model.resetState()
   }
 }
 
 struct MapGuessModel: Codable {
   var guessedCities: Set<City> = .init()
   var gameConfiguration: GameConfiguration?
+  
+  mutating func resetState() {
+    guessedCities = .init()
+  }
 }

@@ -29,6 +29,18 @@ final class MapGuessViewController: UIViewController {
     return map
   }()
   
+  private lazy var resetButton: UIButton = {
+    let button = UIButton().autolayoutEnabled
+    button.backgroundColor = .systemFill.withAlphaComponent(1.0)
+    button.titleLabel?.textColor = .systemBackground
+    button.setTitle("Reset", for: .normal)
+    button.titleLabel?.textAlignment = .right
+//    button.font = .systemFont(ofSize: UIFont.buttonFontSize)
+    button.addTarget(self, action: #selector(didTapReset), for: .touchUpInside)
+    
+    return button
+  }()
+  
   private lazy var cityInputTextField: UITextField = {
     let textField = UITextField().autolayoutEnabled
     textField.delegate = self
@@ -76,6 +88,7 @@ final class MapGuessViewController: UIViewController {
     view.backgroundColor = .systemBackground
     
     view.addSubview(mapView)
+    view.addSubview(resetButton)
     view.addSubview(guessStats)
     view.addSubview(cityInputTextField)
     NSLayoutConstraint.activate([
@@ -83,6 +96,9 @@ final class MapGuessViewController: UIViewController {
       mapView.bottomAnchor.constraint(equalTo: view.centerYAnchor, constant: -64),
       mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
       mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+      
+      resetButton.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -16),
+      resetButton.trailingAnchor.constraint(equalTo: mapView.trailingAnchor, constant: -16),
       
       cityInputTextField.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 32),
       cityInputTextField.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -32),
@@ -102,6 +118,11 @@ final class MapGuessViewController: UIViewController {
     viewModel.submitGuess(guess)
   }
   
+  private func resetMap() {
+    mapView.removeOverlays(mapView.overlays)
+    mapView.removeAnnotations(mapView.annotations)
+  }
+  
   private func updateMap(_ cities: Set<City>) {
     cities.forEach { city in
       mapView.addOverlay(city.asCircle)
@@ -112,6 +133,13 @@ final class MapGuessViewController: UIViewController {
     guessStats.updatePopulationGuessed(viewModel.populationGuessed)
     guessStats.updateNumCitiesGuessed(viewModel.numCitiesGuessed)
     guessStats.updatePercentageTotalPopulation(viewModel.percentageTotalPopulationGuessed)
+  }
+  
+  @objc private func didTapReset() {
+    viewModel.resetState()
+    resetMap()
+    updateMap(viewModel.model.guessedCities)
+    viewModel.saveGameState()
   }
 }
 
