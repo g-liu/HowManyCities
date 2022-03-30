@@ -46,7 +46,39 @@ struct City: Codable, Hashable {
     return relativeSize
   }
   
-  var asCircle: MKCircle {
+  var asShape: MKOverlay {
+    if stateCapital || nationalCapital {
+      return asStar
+    } else {
+      return asCircle
+    }
+  }
+  
+  private var asCircle: MKCircle {
+    // TODO: This will depend on the gamemode!
     .init(center: coordinates, radius: circleSize)
+  }
+  
+  var asStar: MKPolygon {
+    let corners = 5
+    let smoothness = 0.5
+    let angleAdjustment = .pi * 2 / CGFloat(corners * 2)
+    let center = MKMapPoint(coordinates)
+    
+    // ???
+    let scaleFactor = (200_000 * log10(0.000_019*(population+100_000))+13_000) * 8
+    
+    let coordinates = (0..<10).map { i -> MKMapPoint in
+      let scaleFactor = (i.isOdd ? smoothness : 1) * scaleFactor
+      let xCoordinate = scaleFactor * cos(.pi/2.0 - i*angleAdjustment) + center.x
+      let yCoordinate = scaleFactor * sin(.pi/2.0 - i*angleAdjustment) + center.y
+      
+//      return .init(latitude: xCoordinate, longitude: yCoordinate)
+      return .init(x: xCoordinate, y: yCoordinate)
+    }
+    
+    
+    return .init(points: coordinates, count: coordinates.count)
+//    return .init(coordinates: coordinates, count: coordinates.count)
   }
 }

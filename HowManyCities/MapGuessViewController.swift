@@ -125,7 +125,7 @@ final class MapGuessViewController: UIViewController {
   
   private func updateMap(_ cities: Set<City>) {
     cities.forEach { city in
-      mapView.addOverlay(city.asCircle)
+      mapView.addOverlay(city.asShape)
       
       mapView.addAnnotation(CityAnnotation(city: city))
     }
@@ -188,6 +188,12 @@ extension MapGuessViewController: MKMapViewDelegate {
       circleRenderer.strokeColor = .systemFill
       
       return circleRenderer
+    } else if let polygon = overlay as? MKPolygon {
+      let polygonRenderer = MKPolygonRenderer(polygon: polygon)
+      polygonRenderer.fillColor = .systemYellow.withAlphaComponent(0.7)
+      polygonRenderer.strokeColor = .systemFill
+      
+      return polygonRenderer
     }
     
     return MKOverlayRenderer(overlay: overlay)
