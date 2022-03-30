@@ -12,20 +12,26 @@ final class MapGuessStatsBar: UIView {
   private lazy var numCitiesGuessedLabel: CounterLabel = {
     let label = CounterLabel(title: "#cities", count: 0, formatOption: .integer).autolayoutEnabled
     label.numberOfLines = 1
+    label.setContentHuggingPriority(.required, for: .horizontal)
+    label.textAlignment = .left
     
     return label
   }()
   
   private lazy var populationGuessedLabel: CounterLabel = {
-    let label = CounterLabel(title: "pop.", count: 0, formatOption: .abbreviatedInteger).autolayoutEnabled
+    let label = CounterLabel(title: "pop", count: 0, formatOption: .abbreviatedInteger).autolayoutEnabled
     label.numberOfLines = 1
+    label.setContentHuggingPriority(.defaultLow, for: .horizontal)
+    label.textAlignment = .center
     
     return label
   }()
   
   private lazy var percentageTotalPopulationLabel: CounterLabel = {
-    let label = CounterLabel(title: "% total pop.", count: 0, formatOption: .percent).autolayoutEnabled
+    let label = CounterLabel(title: "% total", count: 0, formatOption: .percent).autolayoutEnabled
     label.numberOfLines = 1
+    label.setContentHuggingPriority(.required, for: .horizontal)
+    label.textAlignment = .right
     
     return label
   }()
