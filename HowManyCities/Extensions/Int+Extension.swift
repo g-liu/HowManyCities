@@ -74,4 +74,37 @@ extension Int {
     fmt.numberStyle = .decimal
     return fmt.string(from: asNSNumber)
   }
+  
+  var abbreviated: String {
+    let absValue = Swift.abs(self)
+    let sign = self >= 0 ? "" : "-"
+    
+    if abs < 1000 { return "\(self)" }
+    
+    let numberFormatter = NumberFormatter()
+    numberFormatter.numberStyle = .decimal
+    let numberValue: Double
+    let qualifier: String
+    
+    numberFormatter.maximumFractionDigits = (2-(digitsCount-1)%3)
+    
+    if 1_000 <= absValue && absValue < 1_000_000 {
+      numberValue = absValue / 1_000.0
+      qualifier = "K"
+    } else if 1_000_000 <= absValue && absValue < 1_000_000_000 {
+      numberValue = absValue / 1_000_000.0
+      qualifier = "M"
+    } else if 1_000_000_000 <= absValue && absValue < 1_000_000_000_000 {
+      numberValue = absValue / 1_000_000_000.0
+      qualifier = "B"
+    } else {
+      numberValue = absValue / 1_000_000_000_000.0
+      qualifier = "T"
+    }
+    
+    guard let numberString = numberFormatter.string(from: numberValue.asNSNumber) else {
+      return "\(self)"
+    }
+    return "\(sign)\(numberString)\(qualifier)"
+  }
 }

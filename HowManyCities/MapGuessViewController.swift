@@ -44,6 +44,10 @@ final class MapGuessViewController: UIViewController {
     return textField
   }()
   
+  private lazy var guessStats: MapGuessStatsBar = {
+    .init().autolayoutEnabled
+  }()
+  
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
     viewModel = .init()
     super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -61,6 +65,7 @@ final class MapGuessViewController: UIViewController {
     view.backgroundColor = .systemBackground
     
     view.addSubview(mapView)
+    view.addSubview(guessStats)
     view.addSubview(cityInputTextField)
     NSLayoutConstraint.activate([
       mapView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -71,6 +76,10 @@ final class MapGuessViewController: UIViewController {
       cityInputTextField.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 32),
       cityInputTextField.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -32),
       cityInputTextField.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+      
+      guessStats.topAnchor.constraint(equalTo: mapView.bottomAnchor),
+      guessStats.widthAnchor.constraint(equalTo: view.widthAnchor),
+      guessStats.centerXAnchor.constraint(equalTo: view.centerXAnchor),
     ])
     
     cityInputTextField.becomeFirstResponder()
@@ -102,16 +111,22 @@ extension MapGuessViewController: UITextFieldDelegate {
 extension MapGuessViewController: MapGuessDelegate {
   func didReceiveCities(_ cities: [City]) {
     DispatchQueue.main.async { [weak self] in
-      self?.cityInputTextField.text = ""
+      guard let self = self else { return }
+      
+      self.cityInputTextField.text = ""
       cities.forEach { city in
-        self?.mapView.addOverlay(city.asCircle)
+        self.mapView.addOverlay(city.asCircle)
         
-        self?.mapView.addAnnotation(CityAnnotation(city: city))
+        self.mapView.addAnnotation(CityAnnotation(city: city))
       }
       
       if let lastCity = cities.last {
-        self?.mapView.setCenter(lastCity.coordinates, animated: true)
+        self.mapView.setCenter(lastCity.coordinates, animated: true)
       }
+      
+      self.guessStats.updatePopulationGuessed(self.viewModel.populationGuessed)
+      self.guessStats.updateNumCitiesGuessed(self.viewModel.numCitiesGuessed)
+      self.guessStats.updatePercentageTotalPopulation(self.viewModel.percentageTotalPopulationGuessed)
     }
   }
   

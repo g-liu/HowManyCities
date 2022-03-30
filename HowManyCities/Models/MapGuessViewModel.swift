@@ -18,6 +18,15 @@ final class MapGuessViewModel {
   private var guessedCities: Set<City> = .init()
   var gameConfiguration: GameConfiguration?
   
+  var numCitiesGuessed: Int { guessedCities.count }
+  var populationGuessed: Int { guessedCities.reduce(0) { $0 + $1.population } }
+  dynamic var percentageTotalPopulationGuessed: Double {
+    guard let config = gameConfiguration else {
+      return 0
+    }
+    return populationGuessed / config.totalPopulation.asDouble
+  }
+  
   init() {
     retrieveConfiguration()
   }
