@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct GameConfiguration: Decodable {
+struct GameConfiguration: Codable {
   // Not all properties included
   let brackets: [Int]
   let hasStates: Bool
@@ -26,7 +26,7 @@ struct GameConfiguration: Decodable {
   let states: [State]
 }
 
-struct State: Decodable {
+struct State: Codable {
   var value: String
   var name: String
   var states: [State]?

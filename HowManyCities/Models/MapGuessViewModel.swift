@@ -13,27 +13,40 @@ protocol MapGuessDelegate: AnyObject {
 }
 
 final class MapGuessViewModel {
-  weak var delegate: MapGuessDelegate?
+  var delegate: MapGuessDelegate?
   
-  private var guessedCities: Set<City> = .init()
-  var gameConfiguration: GameConfiguration?
+  private(set) var model: MapGuessModel = .init()
   
-  var numCitiesGuessed: Int { guessedCities.count }
-  var populationGuessed: Int { guessedCities.reduce(0) { $0 + $1.population } }
-  dynamic var percentageTotalPopulationGuessed: Double {
-    guard let config = gameConfiguration else {
+  var numCitiesGuessed: Int { model.guessedCities.count }
+  var populationGuessed: Int { model.guessedCities.reduce(0) { $0 + $1.population } }
+  var percentageTotalPopulationGuessed: Double {
+    guard let config = model.gameConfiguration else {
       return 0
     }
     return populationGuessed / config.totalPopulation.asDouble
   }
   
   init() {
-    retrieveConfiguration()
+    let decoder = JSONDecoder()
+    if let savedGameState = UserDefaults.standard.object(forKey: "gamestate") as? Data,
+       let decodedModel = try? decoder.decode(MapGuessModel.self, from: savedGameState) {
+      model = decodedModel
+    } else {
+      model = .init()
+      retrieveConfiguration()
+    }
   }
   
   private func retrieveConfiguration() {
     HMCRequestHandler.retrieveConfiguration { [weak self] config in
-      self?.gameConfiguration = config
+      self?.model.gameConfiguration = config
+    }
+  }
+  
+  func saveGameState() {
+    let encoder = JSONEncoder()
+    if let encoded = try? encoder.encode(model) {
+      UserDefaults.standard.set(encoded, forKey: "gamestate")
     }
   }
   
@@ -43,7 +56,7 @@ final class MapGuessViewModel {
          !cities.isEmpty {
         var newCities = [City]()
         cities.forEach { city in
-          let result = self?.guessedCities.insert(city)
+          let result = self?.model.guessedCities.insert(city)
           if result?.inserted ?? false {
             newCities.append(city)
           }
@@ -60,4 +73,9 @@ final class MapGuessViewModel {
     }
     
   }
+}
+
+struct MapGuessModel: Codable {
+  var guessedCities: Set<City> = .init()
+  var gameConfiguration: GameConfiguration?
 }

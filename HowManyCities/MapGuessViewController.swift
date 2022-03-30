@@ -11,7 +11,7 @@ import SwifterSwift
 
 final class MapGuessViewController: UIViewController {
   
-  private let viewModel: MapGuessViewModel
+  private var viewModel: MapGuessViewModel
   
   private lazy var mapView: MKMapView = {
     let map = MKMapView().autolayoutEnabled
@@ -20,7 +20,6 @@ final class MapGuessViewController: UIViewController {
     map.isRotateEnabled = false
     map.setRegion(.init(center: .init(latitude: 0, longitude: 0), span: .init(latitudeDelta: 180, longitudeDelta: 360)), animated: true)
     map.setCameraZoomRange(.init(minCenterCoordinateDistance: 1000000), animated: true)
-    map.removeAnnotations(map.annotations)
     map.pointOfInterestFilter = .excludingAll
     
     map.delegate = self
@@ -58,9 +57,21 @@ final class MapGuessViewController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
   
+  override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
+    saveState()
+  }
+  
+  @objc private func saveState() {
+    print("SAVING STUFF")
+    viewModel.saveGameState()
+  }
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     // Do any additional setup after loading the view.
+    
+    NotificationCenter.default.addObserver(self, selector: #selector(saveState), name: UIApplication.willResignActiveNotification, object: nil)
     
     view.backgroundColor = .systemBackground
     
@@ -83,11 +94,24 @@ final class MapGuessViewController: UIViewController {
     ])
     
     cityInputTextField.becomeFirstResponder()
+    
+    updateMap(viewModel.model.guessedCities)
   }
   
   private func submitGuess(_ guess: String) {
     viewModel.submitGuess(guess)
+  }
+  
+  private func updateMap(_ cities: Set<City>) {
+    cities.forEach { city in
+      mapView.addOverlay(city.asCircle)
+      
+      mapView.addAnnotation(CityAnnotation(city: city))
+    }
     
+    guessStats.updatePopulationGuessed(viewModel.populationGuessed)
+    guessStats.updateNumCitiesGuessed(viewModel.numCitiesGuessed)
+    guessStats.updatePercentageTotalPopulation(viewModel.percentageTotalPopulationGuessed)
   }
 }
 
@@ -114,19 +138,11 @@ extension MapGuessViewController: MapGuessDelegate {
       guard let self = self else { return }
       
       self.cityInputTextField.text = ""
-      cities.forEach { city in
-        self.mapView.addOverlay(city.asCircle)
-        
-        self.mapView.addAnnotation(CityAnnotation(city: city))
-      }
+      self.updateMap(Set<City>(cities))
       
       if let lastCity = cities.last {
         self.mapView.setCenter(lastCity.coordinates, animated: true)
       }
-      
-      self.guessStats.updatePopulationGuessed(self.viewModel.populationGuessed)
-      self.guessStats.updateNumCitiesGuessed(self.viewModel.numCitiesGuessed)
-      self.guessStats.updatePercentageTotalPopulation(self.viewModel.percentageTotalPopulationGuessed)
     }
   }
   
