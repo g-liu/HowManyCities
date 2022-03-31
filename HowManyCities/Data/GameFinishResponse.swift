@@ -1,5 +1,5 @@
 //
-//  GameFinish.swift
+//  GameFinishResponse.swift
 //  HowManyCities
 //
 //  Created by Geoffrey Liu on 3/29/22.
@@ -7,6 +7,6 @@
 
 import Foundation
 
-struct GameFinish: Codable {
+struct GameFinishResponse: Codable {
   let pk: Int
 }

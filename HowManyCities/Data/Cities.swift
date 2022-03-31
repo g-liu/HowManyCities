@@ -80,3 +80,9 @@ struct City: Codable, Hashable {
     return .init(points: coordinates, count: coordinates.count)
   }
 }
+
+extension City {
+  var asShortForm: CityShortForm {
+    .init(pk: pk, name: name)
+  }
+}

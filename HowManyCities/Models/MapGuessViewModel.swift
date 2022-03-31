@@ -84,6 +84,8 @@ final class MapGuessViewModel {
     HMCRequestHandler.submitGuess(guess) { [weak self] response in
       if let cities = response?.cities,
          !cities.isEmpty {
+        self?.model.usedMultiCityInput ||= (cities.count > 1)
+        
         var newCities = [City]()
         cities.forEach { city in
           let result = self?.model.guessedCities.insert(city)
@@ -106,11 +108,20 @@ final class MapGuessViewModel {
   func resetState() {
     model.resetState()
   }
+  
+  func finishGame() {
+    HMCRequestHandler.finishGame(cities: Array(model.guessedCities), startTime: model.startTime, usedMultiCityInput: model.usedMultiCityInput) { res in
+      print("yeah saved")
+      print(res)
+    }
+  }
 }
 
 struct MapGuessModel: Codable {
   var guessedCities: Set<City> = .init()
   var gameConfiguration: GameConfiguration?
+  var startTime: Date = .now
+  var usedMultiCityInput: Bool = false
   
   mutating func resetState() {
     guessedCities = .init()

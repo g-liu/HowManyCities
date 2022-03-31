@@ -93,18 +93,24 @@ final class HMCRequestHandler {
     task.resume()
   }
   
-  static func finishGame(cities: [City], configuration: GameConfiguration, cb: @escaping (GameFinish?) -> Void) {
-    // request body:
-    // { cities [ { pk: Int, name: String } ], quiz: String, startTime: Int, usedMultiCityInput: Bool }
-    // TODO: Implement this
-    
+  // TODO: Not working right now because of CSRF
+  static func finishGame(cities: [City], startTime: Date, usedMultiCityInput: Bool, cb: @escaping (GameFinishResponse?) -> Void) {
     guard let url = URL(string: finishGameURL) else { return }
     
     var request = URLRequest(url: url, timeoutInterval: Double.infinity)
     request.addValue("application/json", forHTTPHeaderField: "Content-Type")
     request.addValue("application/json", forHTTPHeaderField: "Accept")
-
+    request.addValue("fJvXdJL1tU9eC3Ex7BVIZ1hpnV10058EYDz0IEktwpkjkc1aJoijYC4WSmIzmEqg", forHTTPHeaderField: "X-CSRFToken")
+    
     request.httpMethod = "POST"
+    
+    let requestBody = GameFinishRequestBody(cities: cities.map { $0.asShortForm }, quiz: "world", startTime: Int(startTime.timeIntervalSince1970), usedMultiCityInput: usedMultiCityInput)
+    let encoder = JSONEncoder()
+    do {
+      request.httpBody = try encoder.encode(requestBody)
+    } catch {
+      print("can't encode finish request body: \(error)")
+    }
 
     let task = URLSession.shared.dataTask(with: request) { data, response, error in
       guard let data = data else {
@@ -112,10 +118,9 @@ final class HMCRequestHandler {
         return
       }
       
-      // response: { pk: Int }
       print(String(data: data, encoding: .utf8)!)
       let decoder = JSONDecoder()
-      let result = try? decoder.decode(GameFinish.self, from: data)
+      let result = try? decoder.decode(GameFinishResponse.self, from: data)
       cb(result)
     }
 

@@ -34,9 +34,22 @@ final class MapGuessViewController: UIViewController {
     button.backgroundColor = .systemFill.withAlphaComponent(1.0)
     button.titleLabel?.textColor = .systemBackground
     button.setTitle("Reset", for: .normal)
-    button.titleLabel?.textAlignment = .right
 //    button.font = .systemFont(ofSize: UIFont.buttonFontSize)
     button.addTarget(self, action: #selector(didTapReset), for: .touchUpInside)
+    
+    return button
+  }()
+  
+  private lazy var finishButton: UIButton = {
+    let button = UIButton().autolayoutEnabled
+    button.backgroundColor = .systemGreen
+    button.titleLabel?.textColor = .label
+    button.setTitle("Finish", for: .normal)
+    button.addTarget(self, action: #selector(didTapFinish), for: .touchUpInside)
+    
+    // TODO: Make this work (see CSRF) and then re enable the button
+    button.isEnabled = false
+    button.isHidden = true
     
     return button
   }()
@@ -89,6 +102,7 @@ final class MapGuessViewController: UIViewController {
     
     view.addSubview(mapView)
     view.addSubview(resetButton)
+    view.addSubview(finishButton)
     view.addSubview(guessStats)
     view.addSubview(cityInputTextField)
     NSLayoutConstraint.activate([
@@ -98,7 +112,10 @@ final class MapGuessViewController: UIViewController {
       mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
       
       resetButton.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -16),
-      resetButton.trailingAnchor.constraint(equalTo: mapView.trailingAnchor, constant: -16),
+      resetButton.leadingAnchor.constraint(equalTo: mapView.leadingAnchor, constant: 16),
+      
+      finishButton.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -16),
+      finishButton.trailingAnchor.constraint(equalTo: mapView.trailingAnchor, constant: -16),
       
       cityInputTextField.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 32),
       cityInputTextField.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -32),
@@ -168,6 +185,20 @@ final class MapGuessViewController: UIViewController {
     confirmResetController.addAction(.init(title: "Never mind", style: .cancel))
     
     present(confirmResetController, animated: true)
+  }
+  
+  @objc private func didTapFinish() {
+    let confirmFinishController = UIAlertController(title: "Finish and save?", message: "Are you sure you want to finish? You won't be able to add more cities, but your game will be saved permanently and you'll get a link to your results that you can share.", preferredStyle: .alert)
+    
+    confirmFinishController.addAction(.init(title: "Yes", style: .default, handler: { _ in
+      DispatchQueue.main.async { [weak self] in
+        guard let self = self else { return }
+        self.viewModel.finishGame()
+      }
+    }))
+    confirmFinishController.addAction(.init(title: "Never mind", style: .cancel))
+    
+    present(confirmFinishController, animated: true)
   }
 }
 
