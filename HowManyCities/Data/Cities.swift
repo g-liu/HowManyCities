@@ -38,7 +38,7 @@ struct City: Codable, Hashable {
   
   // The circle size is proportional to the city's population, on a logarithmic scale
   private var absoluteSize: CLLocationDistance {
-    200_000 * log10(0.000_019*(population+100_000))+13_000
+    175_000 * log10(0.000_05*(population+25_000))
   }
   
   private var circleSize: CLLocationDistance {
