@@ -15,7 +15,7 @@ final class MapGuessViewController: UIViewController {
   
   private lazy var mapView: MKMapView = {
     let map = MKMapView().autolayoutEnabled
-    map.mapType = .mutedStandard
+    map.mapType = .satellite
     map.isPitchEnabled = false
     map.isRotateEnabled = false
     map.setRegion(.init(center: .init(latitude: 0, longitude: 0), span: .init(latitudeDelta: 180, longitudeDelta: 360)), animated: true)
@@ -61,6 +61,7 @@ final class MapGuessViewController: UIViewController {
     textField.layer.borderColor = UIColor.systemFill.cgColor
     textField.font = .systemFont(ofSize: 36)
     textField.textAlignment = .center
+    textField.clearButtonMode = .whileEditing
     
     textField.autocapitalizationType = .words
     textField.autocorrectionType = .no
@@ -166,8 +167,11 @@ final class MapGuessViewController: UIViewController {
   override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
     super.traitCollectionDidChange(previousTraitCollection)
     if traitCollection.userInterfaceStyle != previousTraitCollection?.userInterfaceStyle {
-      resetMap()
-      updateMap(viewModel.model.guessedCities)
+      DispatchQueue.main.async { [weak self] in
+        guard let self = self else { return }
+        self.resetMap()
+        self.updateMap(self.viewModel.model.guessedCities)
+      }
     }
   }
   
