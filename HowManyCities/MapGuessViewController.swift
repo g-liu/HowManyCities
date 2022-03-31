@@ -155,10 +155,19 @@ final class MapGuessViewController: UIViewController {
   }
   
   @objc private func didTapReset() {
-    viewModel.resetState()
-    resetMap()
-    updateMap(viewModel.model.guessedCities)
-    viewModel.saveGameState()
+    let confirmResetController = UIAlertController(title: "Clear everything?", message: "Are you sure you want to clear your game? Once you do, there's no way to get your cities back.", preferredStyle: .alert)
+    confirmResetController.addAction(.init(title: "Yes", style: .destructive, handler: { _ in
+      DispatchQueue.main.async { [weak self] in
+        guard let self = self else { return }
+        self.viewModel.resetState()
+        self.resetMap()
+        self.updateMap(self.viewModel.model.guessedCities)
+        self.viewModel.saveGameState()
+      }
+    }))
+    confirmResetController.addAction(.init(title: "Never mind", style: .cancel))
+    
+    present(confirmResetController, animated: true)
   }
 }
 
