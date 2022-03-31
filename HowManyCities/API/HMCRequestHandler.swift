@@ -82,8 +82,12 @@ final class HMCRequestHandler {
 
       let decoder = JSONDecoder()
       
-      let result = try? decoder.decode(Cities.self, from: data)
-      cb(result)
+      do {
+        let result = try decoder.decode(Cities.self, from: data)
+        cb(result)
+      } catch {
+        print("error: \(error)")
+      }
     }
 
     task.resume()

@@ -26,7 +26,7 @@ struct City: Codable, Hashable {
 //  let code: AnyObject // I HAVE NO FUCKING CLUE
   let quiz: String
   let archived: Bool
-  let percentageOfSessions: Double
+  let percentageOfSessions: Double?
   
   var fullTitle: String {
     [name, state, territory, country].filter { !$0.isEmpty }.joined(separator: ", ")

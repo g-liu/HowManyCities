@@ -45,7 +45,7 @@ final class MapGuessViewModel {
   
   var rarestGuessed: [City] {
     model.guessedCities.sorted { c1, c2 in
-      c1.percentageOfSessions < c2.percentageOfSessions
+      (c1.percentageOfSessions ?? 0.0) < (c2.percentageOfSessions ?? 0.0)
     }.prefix(10).asArray
   }
   

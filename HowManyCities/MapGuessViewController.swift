@@ -196,7 +196,12 @@ extension MapGuessViewController: MapGuessDelegate {
       self.cityInputTextField.text = ""
       self.updateMap(.init(cities))
       
-      if let lastCity = cities.last {
+      /*if cities.count > 1 {
+        let center = cities.reduce(.init(latitude: 0, longitude: 0)) { acc, curr -> CLLocationCoordinate2D in
+          return acc + curr.coordinates
+        } / cities.count
+        self.mapView.setCenter(center, animated: true)
+      } else */if let lastCity = cities.last {
         self.mapView.setCenter(lastCity.coordinates, animated: true)
       }
     }
