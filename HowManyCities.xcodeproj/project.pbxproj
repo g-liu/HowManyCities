@@ -12,6 +12,8 @@
 		6C82DBD927F53A310084159F /* Bool+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C82DBD827F53A310084159F /* Bool+Extension.swift */; };
 		6C82DBDB27F53B140084159F /* GameFinishRequestBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C82DBDA27F53B140084159F /* GameFinishRequestBody.swift */; };
 		6C82DBDD27F548DD0084159F /* TileTestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C82DBDC27F548DD0084159F /* TileTestViewController.swift */; };
+		6C82DBDF27F569800084159F /* MKCoordinateSpan+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C82DBDE27F569800084159F /* MKCoordinateSpan+Extension.swift */; };
+		6C82DBE127F569F80084159F /* MKCoordinateRegion+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C82DBE027F569F80084159F /* MKCoordinateRegion+Extension.swift */; };
 		6CAD7FE827F381DF0057A41E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAD7FE727F381DF0057A41E /* AppDelegate.swift */; };
 		6CAD7FEA27F381DF0057A41E /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAD7FE927F381DF0057A41E /* SceneDelegate.swift */; };
 		6CAD7FEC27F381DF0057A41E /* MapGuessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAD7FEB27F381DF0057A41E /* MapGuessViewController.swift */; };
@@ -64,6 +66,8 @@
 		6C82DBD827F53A310084159F /* Bool+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bool+Extension.swift"; sourceTree = "<group>"; };
 		6C82DBDA27F53B140084159F /* GameFinishRequestBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameFinishRequestBody.swift; sourceTree = "<group>"; };
 		6C82DBDC27F548DD0084159F /* TileTestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TileTestViewController.swift; sourceTree = "<group>"; };
+		6C82DBDE27F569800084159F /* MKCoordinateSpan+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MKCoordinateSpan+Extension.swift"; sourceTree = "<group>"; };
+		6C82DBE027F569F80084159F /* MKCoordinateRegion+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MKCoordinateRegion+Extension.swift"; sourceTree = "<group>"; };
 		6CAD7FE427F381DF0057A41E /* HowManyCities.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HowManyCities.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6CAD7FE727F381DF0057A41E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6CAD7FE927F381DF0057A41E /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -199,6 +203,8 @@
 				6CAD802027F3A1CE0057A41E /* Int+Extension.swift */,
 				6CAD803027F3D6790057A41E /* Double+Extension.swift */,
 				6C82DBD627F5380D0084159F /* CLLocationCoordinate2D+Extension.swift */,
+				6C82DBDE27F569800084159F /* MKCoordinateSpan+Extension.swift */,
+				6C82DBE027F569F80084159F /* MKCoordinateRegion+Extension.swift */,
 				6CAD802A27F3CA930057A41E /* MKMapView+Extension.swift */,
 				6C82DBD827F53A310084159F /* Bool+Extension.swift */,
 			);
@@ -498,6 +504,7 @@
 				6CAD802F27F3D2C20057A41E /* MapGuessStatsBar.swift in Sources */,
 				6CAD801F27F38DA70057A41E /* Cities.swift in Sources */,
 				6CAD803127F3D6790057A41E /* Double+Extension.swift in Sources */,
+				6C82DBDF27F569800084159F /* MKCoordinateSpan+Extension.swift in Sources */,
 				6CAD802627F3B7D90057A41E /* GameConfiguration.swift in Sources */,
 				6CAD801C27F38A660057A41E /* HMCRequestHandler.swift in Sources */,
 				6CAD7FEC27F381DF0057A41E /* MapGuessViewController.swift in Sources */,
@@ -507,6 +514,7 @@
 				6CAD802127F3A1CE0057A41E /* Int+Extension.swift in Sources */,
 				6CAD802927F3C1140057A41E /* CityAnnotationView.swift in Sources */,
 				6CAD7FE827F381DF0057A41E /* AppDelegate.swift in Sources */,
+				6C82DBE127F569F80084159F /* MKCoordinateRegion+Extension.swift in Sources */,
 				6C82DBDD27F548DD0084159F /* TileTestViewController.swift in Sources */,
 				6CAD802B27F3CA930057A41E /* MKMapView+Extension.swift in Sources */,
 				6C82DBD527F533D80084159F /* ArraySlice+Extension.swift in Sources */,

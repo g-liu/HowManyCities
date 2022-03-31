@@ -19,7 +19,8 @@ final class MapGuessViewController: UIViewController {
     map.mapType = .satellite
     map.isPitchEnabled = false
     map.isRotateEnabled = false
-    map.setRegion(.init(center: .init(latitude: 0, longitude: 0), span: .init(latitudeDelta: 180, longitudeDelta: 360)), animated: true)
+//    map.setRegion(.init(center: .init(latitude: 0, longitude: 0), span: .init(latitudeDelta: 180, longitudeDelta: 360)), animated: true)
+    map.setRegion(viewModel.lastRegion, animated: true)
     map.setCameraZoomRange(.init(minCenterCoordinateDistance: 1000000), animated: true)
     map.pointOfInterestFilter = .excludingAll
     
@@ -131,7 +132,7 @@ final class MapGuessViewController: UIViewController {
     cityInputTextField.becomeFirstResponder()
     
     addCustomTileOverlay()
-    updateMap(viewModel.model.guessedCities)
+    updateMap(viewModel.guessedCities)
   }
   
   private func submitGuess(_ guess: String) {
@@ -184,7 +185,7 @@ final class MapGuessViewController: UIViewController {
       DispatchQueue.main.async { [weak self] in
         guard let self = self else { return }
         self.resetMap()
-        self.updateMap(self.viewModel.model.guessedCities)
+        self.updateMap(self.viewModel.guessedCities)
       }
     }
   }
@@ -196,7 +197,7 @@ final class MapGuessViewController: UIViewController {
         guard let self = self else { return }
         self.viewModel.resetState()
         self.resetMap()
-        self.updateMap(self.viewModel.model.guessedCities)
+        self.updateMap(self.viewModel.guessedCities)
         self.viewModel.saveGameState()
       }
     }))
@@ -263,6 +264,10 @@ extension MapGuessViewController: MapGuessDelegate {
 }
 
 extension MapGuessViewController: MKMapViewDelegate {
+  func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+    viewModel.lastRegion = mapView.region
+  }
+  
   func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
     if let circle = overlay as? MKCircle {
       let circleRenderer = MKCircleRenderer(circle: circle)

@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import CoreLocation
+import MapKit
 
 protocol MapGuessDelegate: AnyObject {
   func didReceiveCities(_ cities: [City])
@@ -15,8 +17,15 @@ protocol MapGuessDelegate: AnyObject {
 final class MapGuessViewModel {
   var delegate: MapGuessDelegate?
   
-  private(set) var model: MapGuessModel = .init()
+  private var model: MapGuessModel = .init()
   
+  var lastRegion: MKCoordinateRegion {
+    get {
+      model.lastRegion
+    } set {
+      model.lastRegion = newValue
+    }
+  }
   
   // MARK: statistics
   
@@ -105,6 +114,10 @@ final class MapGuessViewModel {
     }
   }
   
+  var guessedCities: Set<City> {
+    model.guessedCities
+  }
+  
   func resetState() {
     model.resetState()
   }
@@ -122,6 +135,7 @@ struct MapGuessModel: Codable {
   var gameConfiguration: GameConfiguration?
   var startTime: Date = .now
   var usedMultiCityInput: Bool = false
+  var lastRegion: MKCoordinateRegion = .init(center: .zero, span: .full)
   
   mutating func resetState() {
     guessedCities = .init()
