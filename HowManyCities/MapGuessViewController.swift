@@ -8,6 +8,7 @@
 import UIKit
 import MapKit
 import SwifterSwift
+import MapCache
 
 final class MapGuessViewController: UIViewController {
   
@@ -138,9 +139,11 @@ final class MapGuessViewController: UIViewController {
   }
   
   private func resetMap() {
-    mapView.removeOverlays(mapView.overlays)
+    mapView.removeOverlays(mapView.overlays.filter {
+      type(of: $0) != MKTileOverlay.self && type(of: $0) != CachedTileOverlay.self
+    })
     mapView.removeAnnotations(mapView.annotations)
-    addCustomTileOverlay()
+//    addCustomTileOverlay()
   }
   
   private func updateMap(_ cities: Set<City>) {
@@ -156,12 +159,23 @@ final class MapGuessViewController: UIViewController {
   }
   
   private func addCustomTileOverlay() {
+    // TODO: Verify w/cache
+    /*
     let interfaceMode = traitCollection.userInterfaceStyle == .dark ? "dark" : "light"
     let template = "https://a.basemaps.cartocdn.com/\(interfaceMode)_nolabels/{z}/{x}/{y}@2x.png"
 
     let overlay = MKTileOverlay(urlTemplate: template)
     overlay.canReplaceMapContent = true
     mapView.addOverlay(overlay, level: .aboveLabels)
+     */
+     
+    let interfaceMode = traitCollection.userInterfaceStyle == .dark ? "dark" : "light"
+    let template = "https://{s}.basemaps.cartocdn.com/\(interfaceMode)_nolabels/{z}/{x}/{y}.png"
+    let config = MapCacheConfig(withUrlTemplate: template)
+//    let config = MapCacheConfig(withUrlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
+
+    let mapCache = MapCache(withConfig: config)
+    mapView.useCache(mapCache)
   }
   
   override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -263,7 +277,8 @@ extension MapGuessViewController: MKMapViewDelegate {
       
       return polygonRenderer
     } else if let tileOverlay = overlay as? MKTileOverlay {
-      return MKTileOverlayRenderer(tileOverlay: tileOverlay)
+//      return MKTileOverlayRenderer(tileOverlay: tileOverlay)
+      return mapView.mapCacheRenderer(forOverlay: tileOverlay)
     }
     
     return .init(overlay: overlay)

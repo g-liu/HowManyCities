@@ -7,6 +7,7 @@ target 'HowManyCities' do
 
   # Pods for HowManyCities
   pod 'SwifterSwift', '~> 5.2'
+  pod 'MapCache', '~> 0.9'
 
   target 'HowManyCitiesTests' do
     inherit! :search_paths
