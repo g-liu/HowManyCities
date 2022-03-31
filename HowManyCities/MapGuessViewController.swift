@@ -15,7 +15,7 @@ final class MapGuessViewController: UIViewController {
   
   private lazy var mapView: MKMapView = {
     let map = MKMapView().autolayoutEnabled
-    map.mapType = .satellite
+    map.mapType = .mutedStandard
     map.isPitchEnabled = false
     map.isRotateEnabled = false
     map.setRegion(.init(center: .init(latitude: 0, longitude: 0), span: .init(latitudeDelta: 180, longitudeDelta: 360)), animated: true)
@@ -111,6 +111,7 @@ final class MapGuessViewController: UIViewController {
     
     cityInputTextField.becomeFirstResponder()
     
+    addCustomTileOverlay()
     updateMap(viewModel.model.guessedCities)
   }
   
@@ -121,11 +122,12 @@ final class MapGuessViewController: UIViewController {
   private func resetMap() {
     mapView.removeOverlays(mapView.overlays)
     mapView.removeAnnotations(mapView.annotations)
+    addCustomTileOverlay()
   }
   
   private func updateMap(_ cities: Set<City>) {
     cities.forEach { city in
-      mapView.addOverlay(city.asShape)
+      mapView.addOverlay(city.asShape, level: .aboveLabels)
       
       mapView.addAnnotation(CityAnnotation(city: city))
     }
@@ -133,6 +135,23 @@ final class MapGuessViewController: UIViewController {
     guessStats.updatePopulationGuessed(viewModel.populationGuessed)
     guessStats.updateNumCitiesGuessed(viewModel.numCitiesGuessed)
     guessStats.updatePercentageTotalPopulation(viewModel.percentageTotalPopulationGuessed)
+  }
+  
+  private func addCustomTileOverlay() {
+    let interfaceMode = traitCollection.userInterfaceStyle == .dark ? "dark" : "light"
+    let template = "https://a.basemaps.cartocdn.com/\(interfaceMode)_nolabels/{z}/{x}/{y}@2x.png"
+
+    let overlay = MKTileOverlay(urlTemplate: template)
+    overlay.canReplaceMapContent = true
+    mapView.addOverlay(overlay, level: .aboveLabels)
+  }
+  
+  override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    super.traitCollectionDidChange(previousTraitCollection)
+    if traitCollection.userInterfaceStyle != previousTraitCollection?.userInterfaceStyle {
+      resetMap()
+      updateMap(viewModel.model.guessedCities)
+    }
   }
   
   @objc private func didTapReset() {
@@ -166,7 +185,7 @@ extension MapGuessViewController: MapGuessDelegate {
       guard let self = self else { return }
       
       self.cityInputTextField.text = ""
-      self.updateMap(Set<City>(cities))
+      self.updateMap(.init(cities))
       
       if let lastCity = cities.last {
         self.mapView.setCenter(lastCity.coordinates, animated: true)
@@ -194,9 +213,11 @@ extension MapGuessViewController: MKMapViewDelegate {
       polygonRenderer.strokeColor = .systemFill
       
       return polygonRenderer
+    } else if let tileOverlay = overlay as? MKTileOverlay {
+      return MKTileOverlayRenderer(tileOverlay: tileOverlay)
     }
     
-    return MKOverlayRenderer(overlay: overlay)
+    return .init(overlay: overlay)
   }
   
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
