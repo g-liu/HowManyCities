@@ -161,22 +161,27 @@ final class MapGuessViewController: UIViewController {
   
   private func addCustomTileOverlay() {
     // TODO: Verify w/cache
-    /*
+    
     let interfaceMode = traitCollection.userInterfaceStyle == .dark ? "dark" : "light"
-    let template = "https://a.basemaps.cartocdn.com/\(interfaceMode)_nolabels/{z}/{x}/{y}@2x.png"
+//    let template = "https://{s}.basemaps.cartocdn.com/\(interfaceMode)_nolabels/{z}/{x}/{y}@2x.png"
+//    let template = Bundle.main.resourceURL?.appendingPathComponent("\(interfaceMode)-{z}_{x}_{y}.png").path
+    let bundleUrl = Bundle.main.url(forResource: "dummy", withExtension: "png")
+    let template = bundleUrl?.deletingLastPathComponent().appendingPathComponent("\(interfaceMode)-{z}_{x}_{y}.png").absoluteString.removingPercentEncoding
 
+    
     let overlay = MKTileOverlay(urlTemplate: template)
     overlay.canReplaceMapContent = true
     mapView.addOverlay(overlay, level: .aboveLabels)
-     */
      
-    let interfaceMode = traitCollection.userInterfaceStyle == .dark ? "dark" : "light"
-    let template = "https://{s}.basemaps.cartocdn.com/\(interfaceMode)_nolabels/{z}/{x}/{y}.png"
-    let config = MapCacheConfig(withUrlTemplate: template)
-//    let config = MapCacheConfig(withUrlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
-
-    let mapCache = MapCache(withConfig: config)
-    mapView.useCache(mapCache)
+     
+//    let interfaceMode = traitCollection.userInterfaceStyle == .dark ? "dark" : "light"
+//    let template = "https://{s}.basemaps.cartocdn.com/\(interfaceMode)_nolabels/{z}/{x}/{y}.png"
+//    let config = MapCacheConfig(withUrlTemplate: template)
+////    let config = MapCacheConfig(withUrlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
+//
+//    let mapCache = MapCache(withConfig: config)
+//    print("STORING ALL YOUR SHIT AT \(mapCache.diskCache.path)")
+//    mapView.useCache(mapCache)
   }
   
   override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -284,8 +289,8 @@ extension MapGuessViewController: MKMapViewDelegate {
       
       return polygonRenderer
     } else if let tileOverlay = overlay as? MKTileOverlay {
-//      return MKTileOverlayRenderer(tileOverlay: tileOverlay)
-      return mapView.mapCacheRenderer(forOverlay: tileOverlay)
+      return MKTileOverlayRenderer(tileOverlay: tileOverlay)
+//      return mapView.mapCacheRenderer(forOverlay: tileOverlay)
     }
     
     return .init(overlay: overlay)
