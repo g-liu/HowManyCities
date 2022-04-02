@@ -185,6 +185,8 @@ final class MapGuessViewController: UIViewController {
       DispatchQueue.main.async { [weak self] in
         guard let self = self else { return }
         self.resetMap()
+        self.mapView.removeOverlays(self.mapView.overlays.filter { type(of: $0) == MKTileOverlay.self || type(of: $0) == CachedTileOverlay.self })
+        self.addCustomTileOverlay()
         self.updateMap(self.viewModel.guessedCities)
       }
     }
