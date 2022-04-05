@@ -50,8 +50,8 @@ final class MapGuessViewController: UIViewController {
     button.addTarget(self, action: #selector(didTapFinish), for: .touchUpInside)
     
     // TODO: Make this work (see CSRF) and then re enable the button
-    button.isEnabled = false
-    button.isHidden = true
+//    button.isEnabled = false
+//    button.isHidden = true
     
     return button
   }()
@@ -202,15 +202,19 @@ final class MapGuessViewController: UIViewController {
     confirmResetController.addAction(.init(title: "Yes", style: .destructive, handler: { _ in
       DispatchQueue.main.async { [weak self] in
         guard let self = self else { return }
-        self.viewModel.resetState()
-        self.resetMap()
-        self.updateMap(self.viewModel.guessedCities)
-        self.viewModel.saveGameState()
+        self.didConfirmReset()
       }
     }))
     confirmResetController.addAction(.init(title: "Never mind", style: .cancel))
     
     present(confirmResetController, animated: true)
+  }
+  
+  private func didConfirmReset() {
+    viewModel.resetState()
+    resetMap()
+    updateMap(viewModel.guessedCities)
+    viewModel.saveGameState()
   }
   
   @objc private func didTapFinish() {
@@ -266,6 +270,36 @@ extension MapGuessViewController: MapGuessDelegate {
   
   func didReceiveError() {
     cityInputTextField.shake()
+  }
+  
+  func didSaveResult(_ response: GameFinishResponse?) {
+    // TODO: better ui for sure here
+    guard let response = response else {
+      // TODO: ERROR HANDLING
+      return
+    }
+
+    let resultLink = "https://iafisher.com/projects/cities/world/share/\(response.pk)"
+    let alert = UIAlertController(title: "Congratulations! You named \(viewModel.numCitiesGuessed) world cities!", message: "Check out your results on the web at \(resultLink)", preferredStyle: .alert)
+    alert.addAction(.init(title: "Open in web browser", style: .default, handler: { _ in
+      DispatchQueue.main.async { [weak self] in
+        guard let url = URL(string: resultLink) else { return } // TODO: error handling here!!!
+        UIApplication.shared.open(url)
+      }
+    }))
+    alert.addAction(.init(title: "Copy link", style: .default, handler: { _ in
+      UIPasteboard.general.string = resultLink
+    }))
+    alert.addAction(.init(title: "Close", style: .cancel))
+    
+    DispatchQueue.main.async { [weak self] in
+      self?.present(alert, animated: true) {
+        self?.didConfirmReset()
+      }
+    }
+    
+    // TODO: Share sheet!
+    // TODO: Tabulate saved results
   }
 
 }

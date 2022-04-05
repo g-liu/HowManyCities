@@ -12,6 +12,7 @@ import MapKit
 protocol MapGuessDelegate: AnyObject {
   func didReceiveCities(_ cities: [City])
   func didReceiveError()
+  func didSaveResult(_ response: GameFinishResponse?)
 }
 
 final class MapGuessViewModel {
@@ -77,7 +78,7 @@ final class MapGuessViewModel {
   }
   
   private func retrieveConfiguration() {
-    HMCRequestHandler.retrieveConfiguration { [weak self] config in
+    HMCRequestHandler.shared.retrieveConfiguration { [weak self] config in
       self?.model.gameConfiguration = config
     }
   }
@@ -90,7 +91,7 @@ final class MapGuessViewModel {
   }
   
   func submitGuess(_ guess: String) {
-    HMCRequestHandler.submitGuess(guess) { [weak self] response in
+    HMCRequestHandler.shared.submitGuess(guess) { [weak self] response in
       if let cities = response?.cities,
          !cities.isEmpty {
         self?.model.usedMultiCityInput ||= (cities.count > 1)
@@ -123,9 +124,8 @@ final class MapGuessViewModel {
   }
   
   func finishGame() {
-    HMCRequestHandler.finishGame(cities: Array(model.guessedCities), startTime: model.startTime, usedMultiCityInput: model.usedMultiCityInput) { res in
-      print("yeah saved")
-      print(res)
+    HMCRequestHandler.shared.finishGame(cities: Array(model.guessedCities), startTime: model.startTime, usedMultiCityInput: model.usedMultiCityInput) { [weak self] res in
+      self?.delegate?.didSaveResult(res)
     }
   }
 }
