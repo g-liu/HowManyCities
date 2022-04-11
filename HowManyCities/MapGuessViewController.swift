@@ -12,6 +12,8 @@ import MapCache
 
 final class MapGuessViewController: UIViewController {
   
+  private weak var currentlyVisibleToast: MapToast? = nil
+  
   private var viewModel: MapGuessViewModel
   
   private lazy var mapView: MKMapView = {
@@ -48,10 +50,6 @@ final class MapGuessViewController: UIViewController {
     button.titleLabel?.textColor = .label
     button.setTitle("Finish", for: .normal)
     button.addTarget(self, action: #selector(didTapFinish), for: .touchUpInside)
-    
-    // TODO: Make this work (see CSRF) and then re enable the button
-//    button.isEnabled = false
-//    button.isHidden = true
     
     return button
   }()
@@ -237,7 +235,7 @@ extension MapGuessViewController: UITextFieldDelegate {
     guard textField == cityInputTextField else { return false }
     guard let textInput = textField.text,
           !textInput.isEmpty else {
-            didReceiveError()
+            didReceiveError(.emptyGuess)
             return false
           }
     
@@ -246,6 +244,40 @@ extension MapGuessViewController: UITextFieldDelegate {
     mapView.closeAllAnnotations()
     
     return false
+  }
+}
+
+// TODO: Move this into separate file or vc???
+extension MapGuessViewController {
+  func showToast(_ message: String, toastType: ToastType) {
+    currentlyVisibleToast?.removeFromSuperview()
+    currentlyVisibleToast = nil
+    
+    let populationToast = MapToast(message, toastType: toastType).autolayoutEnabled
+    populationToast.layer.opacity = 0
+    populationToast.transform = .init(translationX: 0, y: 24)
+    mapView.addSubview(populationToast)
+    mapView.bringSubviewToFront(populationToast)
+    NSLayoutConstraint.activate([
+      populationToast.centerXAnchor.constraint(equalTo: mapView.centerXAnchor),
+      populationToast.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -8),
+      populationToast.widthAnchor.constraint(lessThanOrEqualTo: mapView.widthAnchor, multiplier: 0.66),
+      ])
+    currentlyVisibleToast = populationToast
+    
+    UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut) {
+      self.currentlyVisibleToast?.layer.opacity = 1
+      self.currentlyVisibleToast?.transform = .init(translationX: 0, y: 0)
+    } completion: { _ in
+      UIView.animate(withDuration: 0.2, delay: 1.8, options: .curveEaseOut) {
+        self.currentlyVisibleToast?.layer.opacity = 0
+        self.currentlyVisibleToast?.transform = .init(translationX: 0, y: -24)
+      } completion: { _ in
+        self.currentlyVisibleToast?.removeFromSuperview()
+        self.currentlyVisibleToast = nil
+      }
+    }
+
   }
 }
 
@@ -265,11 +297,17 @@ extension MapGuessViewController: MapGuessDelegate {
       } else */if let lastCity = cities.last {
         self.mapView.setCenter(lastCity.coordinates, animated: true)
       }
+      
+      self.showToast("+\(cities.totalPopulation.abbreviated)", toastType: .population)
     }
   }
   
-  func didReceiveError() {
-    cityInputTextField.shake()
+  func didReceiveError(_ error: CityGuessError) {
+    // TODO: handle error
+    DispatchQueue.main.async {
+      self.cityInputTextField.shake()
+      self.showToast(error.message, toastType: .error)
+    }
   }
   
   func didSaveResult(_ response: GameFinishResponse?) {
@@ -334,5 +372,47 @@ extension MapGuessViewController: MKMapViewDelegate {
     let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "MKAnnotationView", for: annotation)
     annotationView.canShowCallout = true
     return annotationView
+  }
+}
+
+enum ToastType {
+  case population
+  case error
+  case general
+}
+
+final class MapToast: UIView {
+  private lazy var label: UILabel = {
+    let label = UILabel().autolayoutEnabled
+    
+    label.numberOfLines = 0
+    label.font = .systemFont(ofSize: 16)
+    label.textColor = .systemBackground
+    label.textAlignment = .center
+    
+    return label
+  }()
+  
+  init(_ text: String, toastType: ToastType) {
+    super.init(frame: .zero)
+  
+    label.text = text
+    
+    backgroundColor = { switch toastType {
+    case .population:
+      return .systemGreen
+    case .error:
+      return .systemRed
+    case .general:
+      return .systemGray3
+    }}()
+    addSubview(label)
+    label.pin(to: self, margins: .init(horizontal: 8, vertical: 4))
+    
+    cornerRadius = 10
+  }
+  
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
   }
 }

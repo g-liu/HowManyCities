@@ -11,7 +11,7 @@ import MapKit
 
 protocol MapGuessDelegate: AnyObject {
   func didReceiveCities(_ cities: [City])
-  func didReceiveError()
+  func didReceiveError(_ error: CityGuessError)
   func didSaveResult(_ response: GameFinishResponse?)
 }
 
@@ -92,25 +92,28 @@ final class MapGuessViewModel {
   
   func submitGuess(_ guess: String) {
     HMCRequestHandler.shared.submitGuess(guess) { [weak self] response in
-      if let cities = response?.cities,
-         !cities.isEmpty {
-        self?.model.usedMultiCityInput ||= (cities.count > 1)
-        
-        var newCities = [City]()
-        cities.forEach { city in
-          let result = self?.model.guessedCities.insert(city)
-          if result?.inserted ?? false {
-            newCities.append(city)
+      if let cities = response?.cities {
+        if !cities.isEmpty {
+          self?.model.usedMultiCityInput ||= (cities.count > 1)
+          
+          var newCities = [City]()
+          cities.forEach { city in
+            let result = self?.model.guessedCities.insert(city)
+            if result?.inserted ?? false {
+              newCities.append(city)
+            }
           }
-        }
-        
-        if newCities.isEmpty {
-          self?.delegate?.didReceiveError()
+          
+          if newCities.isEmpty {
+            self?.delegate?.didReceiveError(.alreadyGuessed)
+          } else {
+            self?.delegate?.didReceiveCities(newCities)
+          }
         } else {
-          self?.delegate?.didReceiveCities(newCities)
+          self?.delegate?.didReceiveError(.noneFound(guess))
         }
       } else {
-        self?.delegate?.didReceiveError()
+        self?.delegate?.didReceiveError(.serverError)
       }
     }
   }
@@ -139,5 +142,25 @@ struct MapGuessModel: Codable {
   
   mutating func resetState() {
     guessedCities = .init()
+  }
+}
+
+enum CityGuessError: Error {
+  case noneFound(_ cityName: String)
+  case alreadyGuessed
+  case emptyGuess
+  case serverError
+  
+  var message: String {
+    switch self {
+      case .noneFound(let name):
+        return "No city named \(name.capitalized) found!"
+      case .alreadyGuessed:
+        return "Already guessed!"
+      case .emptyGuess:
+        return "Please enter a city name"
+      case .serverError:
+        return "We're having technical issues, please try again"
+    }
   }
 }
