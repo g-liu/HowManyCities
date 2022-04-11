@@ -12,8 +12,6 @@ import MapCache
 
 final class MapGuessViewController: UIViewController {
   
-  private weak var currentlyVisibleToast: MapToast? = nil
-  
   private var viewModel: MapGuessViewModel
   
   private lazy var mapView: MKMapView = {
@@ -250,9 +248,6 @@ extension MapGuessViewController: UITextFieldDelegate {
 // TODO: Move this into separate file or vc???
 extension MapGuessViewController {
   func showToast(_ message: String, toastType: ToastType) {
-    currentlyVisibleToast?.removeFromSuperview()
-    currentlyVisibleToast = nil
-    
     let populationToast = MapToast(message, toastType: toastType).autolayoutEnabled
     populationToast.layer.opacity = 0
     populationToast.transform = .init(translationX: 0, y: 24)
@@ -263,18 +258,16 @@ extension MapGuessViewController {
       populationToast.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -8),
       populationToast.widthAnchor.constraint(lessThanOrEqualTo: mapView.widthAnchor, multiplier: 0.66),
       ])
-    currentlyVisibleToast = populationToast
     
     UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut) {
-      self.currentlyVisibleToast?.layer.opacity = 1
-      self.currentlyVisibleToast?.transform = .init(translationX: 0, y: 0)
+      populationToast.layer.opacity = 1
+      populationToast.transform = .init(translationX: 0, y: 0)
     } completion: { _ in
       UIView.animate(withDuration: 0.2, delay: 1.8, options: .curveEaseOut) {
-        self.currentlyVisibleToast?.layer.opacity = 0
-        self.currentlyVisibleToast?.transform = .init(translationX: 0, y: -24)
+        populationToast.layer.opacity = 0
+        populationToast.transform = .init(translationX: 0, y: -24)
       } completion: { _ in
-        self.currentlyVisibleToast?.removeFromSuperview()
-        self.currentlyVisibleToast = nil
+        populationToast.removeFromSuperview()
       }
     }
 
