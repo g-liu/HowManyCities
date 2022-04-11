@@ -24,6 +24,10 @@ struct GameConfiguration: Codable {
   // states is another nested level... sigh
   // dunt know if we want to handle this case
   let states: [State]
+  
+  var topLevelStates: [State] {
+    states.filter { $0.states?.isEmpty ?? true }
+  }
 }
 
 struct State: Codable {
@@ -44,16 +48,16 @@ struct State: Codable {
   
   init(from decoder: Decoder) throws {
     do {
-      let values = try decoder.container(keyedBy: CodingKeys.self)
+      let values = try decoder.container(keyedBy: AnotherCodingKeys.self)
       self.value = try values.decode(String.self, forKey: .value)
       self.name = try values.decode(String.self, forKey: .name)
-      self.states = nil
+      self.states = try values.decode([State].self, forKey: .states)
     } catch {
       do {
-        let values = try decoder.container(keyedBy: AnotherCodingKeys.self)
+        let values = try decoder.container(keyedBy: CodingKeys.self)
         self.value = try values.decode(String.self, forKey: .value)
         self.name = try values.decode(String.self, forKey: .name)
-        self.states = try values.decode([State].self, forKey: .states)
+        self.states = nil
       } catch {
         fatalError("You're stupid")
       }

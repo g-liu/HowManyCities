@@ -76,6 +76,15 @@ final class MapGuessViewController: UIViewController {
     return textField
   }()
   
+  private lazy var countryDropdownButton: UIButton = {
+    let cfg = UIButton.Configuration.bordered()
+    let button = UIButton(configuration: cfg).autolayoutEnabled
+    button.setTitle("🌎 ▼", for: .normal)
+    button.addTarget(self, action: #selector(didTapCountryDropdown), for: .touchUpInside)
+    
+    return button
+  }()
+  
   private lazy var guessStats: MapGuessStatsBar = {
     .init().autolayoutEnabled
   }()
@@ -113,6 +122,7 @@ final class MapGuessViewController: UIViewController {
     view.addSubview(finishButton)
     view.addSubview(guessStats)
     view.addSubview(cityInputTextField)
+    view.addSubview(countryDropdownButton)
     NSLayoutConstraint.activate([
       mapView.topAnchor.constraint(equalTo: view.topAnchor),
       mapView.bottomAnchor.constraint(equalTo: view.centerYAnchor, constant: -64),
@@ -126,8 +136,11 @@ final class MapGuessViewController: UIViewController {
       finishButton.trailingAnchor.constraint(equalTo: mapView.trailingAnchor, constant: -16),
       
       cityInputTextField.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 32),
-      cityInputTextField.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -32),
-      cityInputTextField.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+//      cityInputTextField.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -32),
+      cityInputTextField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 8),
+      countryDropdownButton.leadingAnchor.constraint(equalTo: cityInputTextField.trailingAnchor, constant: 16),
+      countryDropdownButton.centerYAnchor.constraint(equalTo: cityInputTextField.centerYAnchor),
+      countryDropdownButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -8),
       
       guessStats.topAnchor.constraint(equalTo: mapView.bottomAnchor),
       guessStats.widthAnchor.constraint(equalTo: view.widthAnchor),
@@ -142,6 +155,26 @@ final class MapGuessViewController: UIViewController {
   
   private func submitGuess(_ guess: String) {
     viewModel.submitGuess(guess)
+  }
+  
+  @objc private func didTapCountryDropdown(_ sender: UIButton) {
+    // TODO: impl
+    let alert = UIAlertController(title: "Select a location", message: nil, preferredStyle: .actionSheet)
+    
+    let selector = CountrySelector().autolayoutEnabled
+    selector.delegate = viewModel
+    selector.dataSource = viewModel
+    alert.view.addSubview(selector)
+    alert.view.translatesAutoresizingMaskIntoConstraints = false
+    selector.pin(to: alert.view.safeAreaLayoutGuide, margins: .init(top: 0, left: 0, bottom: 48, right: 0))
+    NSLayoutConstraint.activate([
+      alert.view.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.size.height / 2.0),
+      ])
+    selector.selectRow(viewModel.selectedRow, inComponent: 0, animated: false)
+    
+    alert.addAction(title: "Select", style: .default, isEnabled: true)
+    
+    present(alert, animated: true)
   }
   
   private func resetMap() {
@@ -283,7 +316,12 @@ extension MapGuessViewController {
   }
 }
 
+// MARK: - MapGuessDelegate
 extension MapGuessViewController: MapGuessDelegate {
+  func didChangeGuessMode(_ mode: GuessMode) {
+    countryDropdownButton.setTitle("\(mode.displayedString) ▼", for: .normal)
+  }
+  
   func didReceiveCities(_ cities: [City]) {
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
