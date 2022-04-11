@@ -32,20 +32,29 @@ final class MapGuessViewController: UIViewController {
   }()
   
   private lazy var resetButton: UIButton = {
-    let button = UIButton().autolayoutEnabled
-    button.backgroundColor = .systemFill.withAlphaComponent(1.0)
-    button.titleLabel?.textColor = .systemBackground
+    var cfg = UIButton.Configuration.gray()
+    cfg.cornerStyle = .fixed
+    cfg.baseForegroundColor = .label
+    cfg.baseBackgroundColor = .systemFill.withAlphaComponent(1.0)
+    cfg.buttonSize = .medium
+    cfg.contentInsets = .init(top: 4, leading: 8, bottom: 4, trailing: 8)
+  
+    let button = UIButton(configuration: cfg).autolayoutEnabled
     button.setTitle("Reset", for: .normal)
-//    button.font = .systemFont(ofSize: UIFont.buttonFontSize)
     button.addTarget(self, action: #selector(didTapReset), for: .touchUpInside)
     
     return button
   }()
   
   private lazy var finishButton: UIButton = {
-    let button = UIButton().autolayoutEnabled
-    button.backgroundColor = .systemGreen
-    button.titleLabel?.textColor = .label
+    var cfg = UIButton.Configuration.filled()
+    cfg.cornerStyle = .fixed
+    cfg.baseBackgroundColor = .systemGreen
+    cfg.baseForegroundColor = .label
+    cfg.buttonSize = .medium
+    cfg.contentInsets = .init(top: 4, leading: 8, bottom: 4, trailing: 8)
+    
+    let button = UIButton(configuration: cfg).autolayoutEnabled
     button.setTitle("Finish", for: .normal)
     button.addTarget(self, action: #selector(didTapFinish), for: .touchUpInside)
     
@@ -380,7 +389,7 @@ final class MapToast: UIView {
     
     label.numberOfLines = 0
     label.font = .systemFont(ofSize: 16)
-    label.textColor = .systemBackground
+    label.textColor = .white
     label.textAlignment = .center
     
     return label
