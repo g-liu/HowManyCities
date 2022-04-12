@@ -97,7 +97,14 @@ final class MapGuessViewModel: NSObject {
   }
   
   func submitGuess(_ guess: String) {
-    HMCRequestHandler.shared.submitGuess(guess) { [weak self] response in
+    let formattedGuess: String
+    if case .any = guessMode {
+      formattedGuess = guess
+    } else {
+      formattedGuess = guess + ", \(guessMode.string)"
+    }
+    
+    HMCRequestHandler.shared.submitGuess(formattedGuess) { [weak self] response in
       if let cities = response?.cities {
         if !cities.isEmpty {
           self?.model.usedMultiCityInput ||= (cities.count > 1)

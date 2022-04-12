@@ -21,7 +21,7 @@ final class MapGuessViewController: UIViewController {
     map.isRotateEnabled = false
 //    map.setRegion(.init(center: .init(latitude: 0, longitude: 0), span: .init(latitudeDelta: 180, longitudeDelta: 360)), animated: true)
     map.setRegion(viewModel.lastRegion, animated: true)
-    map.setCameraZoomRange(.init(minCenterCoordinateDistance: 1000000), animated: true)
+    map.setCameraZoomRange(.init(minCenterCoordinateDistance: 1250000), animated: true)
     map.pointOfInterestFilter = .excludingAll
     
     map.delegate = self
