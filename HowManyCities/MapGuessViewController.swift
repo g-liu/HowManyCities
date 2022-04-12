@@ -77,10 +77,13 @@ final class MapGuessViewController: UIViewController {
   }()
   
   private lazy var countryDropdownButton: UIButton = {
-    let cfg = UIButton.Configuration.bordered()
+    var cfg = UIButton.Configuration.bordered()
+    cfg.baseForegroundColor = .label
+    
     let button = UIButton(configuration: cfg).autolayoutEnabled
     button.setTitle("🌎 ▼", for: .normal)
     button.addTarget(self, action: #selector(didTapCountryDropdown), for: .touchUpInside)
+    button.contentVerticalAlignment = .center
     
     return button
   }()
@@ -319,7 +322,9 @@ extension MapGuessViewController {
 // MARK: - MapGuessDelegate
 extension MapGuessViewController: MapGuessDelegate {
   func didChangeGuessMode(_ mode: GuessMode) {
-    countryDropdownButton.setTitle("\(mode.displayedString) ▼", for: .normal)
+    let ms = NSMutableAttributedString(attributedString: mode.displayedString)
+    ms.append(.init(string: " ▼"))
+    countryDropdownButton.setAttributedTitle(ms, for: .normal)
   }
   
   func didReceiveCities(_ cities: [City]) {
@@ -360,7 +365,7 @@ extension MapGuessViewController: MapGuessDelegate {
     let resultLink = "https://iafisher.com/projects/cities/world/share/\(response.pk)"
     let alert = UIAlertController(title: "Congratulations! You named \(viewModel.numCitiesGuessed) world cities!", message: "Check out your results on the web at \(resultLink)", preferredStyle: .alert)
     alert.addAction(.init(title: "Open in web browser", style: .default, handler: { _ in
-      DispatchQueue.main.async { [weak self] in
+      DispatchQueue.main.async {
         guard let url = URL(string: resultLink) else { return } // TODO: error handling here!!!
         UIApplication.shared.open(url)
       }

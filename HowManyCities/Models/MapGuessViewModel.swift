@@ -223,19 +223,30 @@ enum GuessMode {
     }
   }
   
-  var displayedString: String {
+  var displayedString: NSAttributedString {
+    let offsetFactor = (UIFont.systemFontSize - UIFont.smallSystemFontSize) / 2
+    
     switch self {
       case .any:
-        return "🌎"
+        return NSAttributedString(string: "🌎")
         
       case .every:
-        return "🌎ALL"
+        let countryCodeString = NSAttributedString(string: " ALL", attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
+                                                                                .baselineOffset: offsetFactor])
+        let ms = NSMutableAttributedString(string: "🌎")
+        ms.append(countryCodeString)
+        return .init(attributedString: ms)
         
       case .specific(let location):
         let countryCode = locale(for: location)
         let flag = flag(for: countryCode)
         
-        return "\(flag) \(countryCode)"
+        let countryCodeString = NSAttributedString(string: " \(countryCode)", attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
+                                                                                           .baselineOffset: offsetFactor])
+        let ms = NSMutableAttributedString(string: flag)
+        ms.append(countryCodeString)
+        
+        return .init(attributedString: ms)
     }
   }
   
