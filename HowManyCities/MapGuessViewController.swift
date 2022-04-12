@@ -61,6 +61,16 @@ final class MapGuessViewController: UIViewController {
     return button
   }()
   
+  private lazy var guessStackView: UIStackView = {
+    let stackView = UIStackView(arrangedSubviews: [cityInputTextField, countryDropdownButton]).autolayoutEnabled
+    stackView.axis = .horizontal
+    stackView.spacing = 8.0
+    stackView.alignment = .center
+    stackView.distribution = .fill
+    
+    return stackView
+  }()
+  
   private lazy var cityInputTextField: UITextField = {
     let textField = UITextField().autolayoutEnabled
     textField.delegate = self
@@ -69,6 +79,8 @@ final class MapGuessViewController: UIViewController {
     textField.font = .systemFont(ofSize: 36)
     textField.textAlignment = .center
     textField.clearButtonMode = .whileEditing
+    
+    textField.setContentHuggingPriority(.defaultLow, for: .horizontal)
     
     textField.autocapitalizationType = .words
     textField.autocorrectionType = .no
@@ -84,6 +96,10 @@ final class MapGuessViewController: UIViewController {
     button.setTitle("🌎 ▼", for: .normal)
     button.addTarget(self, action: #selector(didTapCountryDropdown), for: .touchUpInside)
     button.contentVerticalAlignment = .center
+    button.titleLabel?.numberOfLines = 1
+    
+    button.setContentHuggingPriority(.required, for: .horizontal)
+    button.setContentCompressionResistancePriority(.required, for: .horizontal)
     
     return button
   }()
@@ -124,8 +140,10 @@ final class MapGuessViewController: UIViewController {
     view.addSubview(resetButton)
     view.addSubview(finishButton)
     view.addSubview(guessStats)
-    view.addSubview(cityInputTextField)
-    view.addSubview(countryDropdownButton)
+    view.addSubview(guessStackView)
+    
+//    view.addSubview(cityInputTextField)
+//    view.addSubview(countryDropdownButton)
     NSLayoutConstraint.activate([
       mapView.topAnchor.constraint(equalTo: view.topAnchor),
       mapView.bottomAnchor.constraint(equalTo: view.centerYAnchor, constant: -64),
@@ -138,16 +156,20 @@ final class MapGuessViewController: UIViewController {
       finishButton.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -16),
       finishButton.trailingAnchor.constraint(equalTo: mapView.trailingAnchor, constant: -16),
       
-      cityInputTextField.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 32),
-//      cityInputTextField.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -32),
-      cityInputTextField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 8),
-      countryDropdownButton.leadingAnchor.constraint(equalTo: cityInputTextField.trailingAnchor, constant: 16),
-      countryDropdownButton.centerYAnchor.constraint(equalTo: cityInputTextField.centerYAnchor),
-      countryDropdownButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -8),
+//      cityInputTextField.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 32),
+//      cityInputTextField.widthAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.widthAnchor, constant: -32).with(priority: .required),
+//      cityInputTextField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+//      countryDropdownButton.leadingAnchor.constraint(equalTo: cityInputTextField.trailingAnchor, constant: 16),
+//      countryDropdownButton.centerYAnchor.constraint(equalTo: cityInputTextField.centerYAnchor),
+//      countryDropdownButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
       
       guessStats.topAnchor.constraint(equalTo: mapView.bottomAnchor),
       guessStats.widthAnchor.constraint(equalTo: view.widthAnchor),
       guessStats.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+      
+      guessStackView.topAnchor.constraint(equalTo: guessStats.bottomAnchor, constant: 16),
+      guessStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+      guessStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
     ])
     
     cityInputTextField.becomeFirstResponder()
