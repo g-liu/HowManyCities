@@ -21,7 +21,7 @@ final class MapGuessViewController: UIViewController {
     map.isRotateEnabled = false
 //    map.setRegion(.init(center: .init(latitude: 0, longitude: 0), span: .init(latitudeDelta: 180, longitudeDelta: 360)), animated: true)
     map.setRegion(viewModel.lastRegion, animated: true)
-    map.setCameraZoomRange(.init(minCenterCoordinateDistance: 1000000), animated: true)
+    map.setCameraZoomRange(.init(minCenterCoordinateDistance: 1250000), animated: true)
     map.pointOfInterestFilter = .excludingAll
     
     map.delegate = self
@@ -32,24 +32,43 @@ final class MapGuessViewController: UIViewController {
   }()
   
   private lazy var resetButton: UIButton = {
-    let button = UIButton().autolayoutEnabled
-    button.backgroundColor = .systemFill.withAlphaComponent(1.0)
-    button.titleLabel?.textColor = .systemBackground
+    var cfg = UIButton.Configuration.gray()
+    cfg.cornerStyle = .fixed
+    cfg.baseForegroundColor = .label
+    cfg.baseBackgroundColor = .systemFill.withAlphaComponent(1.0)
+    cfg.buttonSize = .medium
+    cfg.contentInsets = .init(top: 4, leading: 8, bottom: 4, trailing: 8)
+  
+    let button = UIButton(configuration: cfg).autolayoutEnabled
     button.setTitle("Reset", for: .normal)
-//    button.font = .systemFont(ofSize: UIFont.buttonFontSize)
     button.addTarget(self, action: #selector(didTapReset), for: .touchUpInside)
     
     return button
   }()
   
   private lazy var finishButton: UIButton = {
-    let button = UIButton().autolayoutEnabled
-    button.backgroundColor = .systemGreen
-    button.titleLabel?.textColor = .label
+    var cfg = UIButton.Configuration.filled()
+    cfg.cornerStyle = .fixed
+    cfg.baseBackgroundColor = .systemGreen
+    cfg.baseForegroundColor = .label
+    cfg.buttonSize = .medium
+    cfg.contentInsets = .init(top: 4, leading: 8, bottom: 4, trailing: 8)
+    
+    let button = UIButton(configuration: cfg).autolayoutEnabled
     button.setTitle("Finish", for: .normal)
     button.addTarget(self, action: #selector(didTapFinish), for: .touchUpInside)
     
     return button
+  }()
+  
+  private lazy var guessStackView: UIStackView = {
+    let stackView = UIStackView(arrangedSubviews: [cityInputTextField, countryDropdownButton]).autolayoutEnabled
+    stackView.axis = .horizontal
+    stackView.spacing = 8.0
+    stackView.alignment = .center
+    stackView.distribution = .fill
+    
+    return stackView
   }()
   
   private lazy var cityInputTextField: UITextField = {
@@ -61,10 +80,28 @@ final class MapGuessViewController: UIViewController {
     textField.textAlignment = .center
     textField.clearButtonMode = .whileEditing
     
+    textField.setContentHuggingPriority(.defaultLow, for: .horizontal)
+    
     textField.autocapitalizationType = .words
     textField.autocorrectionType = .no
   
     return textField
+  }()
+  
+  private lazy var countryDropdownButton: UIButton = {
+    var cfg = UIButton.Configuration.bordered()
+    cfg.baseForegroundColor = .label
+    
+    let button = UIButton(configuration: cfg).autolayoutEnabled
+    button.setTitle("🌎 ▼", for: .normal)
+    button.addTarget(self, action: #selector(didTapCountryDropdown), for: .touchUpInside)
+    button.contentVerticalAlignment = .center
+    button.titleLabel?.numberOfLines = 1
+    
+    button.setContentHuggingPriority(.required, for: .horizontal)
+    button.setContentCompressionResistancePriority(.required, for: .horizontal)
+    
+    return button
   }()
   
   private lazy var guessStats: MapGuessStatsBar = {
@@ -103,7 +140,10 @@ final class MapGuessViewController: UIViewController {
     view.addSubview(resetButton)
     view.addSubview(finishButton)
     view.addSubview(guessStats)
-    view.addSubview(cityInputTextField)
+    view.addSubview(guessStackView)
+    
+//    view.addSubview(cityInputTextField)
+//    view.addSubview(countryDropdownButton)
     NSLayoutConstraint.activate([
       mapView.topAnchor.constraint(equalTo: view.topAnchor),
       mapView.bottomAnchor.constraint(equalTo: view.centerYAnchor, constant: -64),
@@ -116,13 +156,20 @@ final class MapGuessViewController: UIViewController {
       finishButton.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -16),
       finishButton.trailingAnchor.constraint(equalTo: mapView.trailingAnchor, constant: -16),
       
-      cityInputTextField.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 32),
-      cityInputTextField.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -32),
-      cityInputTextField.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+//      cityInputTextField.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 32),
+//      cityInputTextField.widthAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.widthAnchor, constant: -32).with(priority: .required),
+//      cityInputTextField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+//      countryDropdownButton.leadingAnchor.constraint(equalTo: cityInputTextField.trailingAnchor, constant: 16),
+//      countryDropdownButton.centerYAnchor.constraint(equalTo: cityInputTextField.centerYAnchor),
+//      countryDropdownButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
       
       guessStats.topAnchor.constraint(equalTo: mapView.bottomAnchor),
       guessStats.widthAnchor.constraint(equalTo: view.widthAnchor),
       guessStats.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+      
+      guessStackView.topAnchor.constraint(equalTo: guessStats.bottomAnchor, constant: 16),
+      guessStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+      guessStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
     ])
     
     cityInputTextField.becomeFirstResponder()
@@ -133,6 +180,26 @@ final class MapGuessViewController: UIViewController {
   
   private func submitGuess(_ guess: String) {
     viewModel.submitGuess(guess)
+  }
+  
+  @objc private func didTapCountryDropdown(_ sender: UIButton) {
+    // TODO: impl
+    let alert = UIAlertController(title: "Select a location", message: nil, preferredStyle: .actionSheet)
+    
+    let selector = CountrySelector().autolayoutEnabled
+    selector.delegate = viewModel
+    selector.dataSource = viewModel
+    alert.view.addSubview(selector)
+    alert.view.translatesAutoresizingMaskIntoConstraints = false
+    selector.pin(to: alert.view.safeAreaLayoutGuide, margins: .init(top: 0, left: 0, bottom: 48, right: 0))
+    NSLayoutConstraint.activate([
+      alert.view.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.size.height / 2.0),
+      ])
+    selector.selectRow(viewModel.selectedRow, inComponent: 0, animated: false)
+    
+    alert.addAction(title: "Select", style: .default, isEnabled: true)
+    
+    present(alert, animated: true)
   }
   
   private func resetMap() {
@@ -274,7 +341,14 @@ extension MapGuessViewController {
   }
 }
 
+// MARK: - MapGuessDelegate
 extension MapGuessViewController: MapGuessDelegate {
+  func didChangeGuessMode(_ mode: GuessMode) {
+    let ms = NSMutableAttributedString(attributedString: mode.displayedString)
+    ms.append(.init(string: " ▼"))
+    countryDropdownButton.setAttributedTitle(ms, for: .normal)
+  }
+  
   func didReceiveCities(_ cities: [City]) {
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
@@ -313,7 +387,7 @@ extension MapGuessViewController: MapGuessDelegate {
     let resultLink = "https://iafisher.com/projects/cities/world/share/\(response.pk)"
     let alert = UIAlertController(title: "Congratulations! You named \(viewModel.numCitiesGuessed) world cities!", message: "Check out your results on the web at \(resultLink)", preferredStyle: .alert)
     alert.addAction(.init(title: "Open in web browser", style: .default, handler: { _ in
-      DispatchQueue.main.async { [weak self] in
+      DispatchQueue.main.async {
         guard let url = URL(string: resultLink) else { return } // TODO: error handling here!!!
         UIApplication.shared.open(url)
       }
@@ -380,7 +454,7 @@ final class MapToast: UIView {
     
     label.numberOfLines = 0
     label.font = .systemFont(ofSize: 16)
-    label.textColor = .systemBackground
+    label.textColor = .white
     label.textAlignment = .center
     
     return label

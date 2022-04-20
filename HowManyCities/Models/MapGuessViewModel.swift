@@ -13,10 +13,15 @@ protocol MapGuessDelegate: AnyObject {
   func didReceiveCities(_ cities: [City])
   func didReceiveError(_ error: CityGuessError)
   func didSaveResult(_ response: GameFinishResponse?)
+  
+  func didChangeGuessMode(_ mode: GuessMode)
 }
 
-final class MapGuessViewModel {
+final class MapGuessViewModel: NSObject {
   var delegate: MapGuessDelegate?
+  
+  private var guessMode: GuessMode = .any
+  var selectedRow: Int = 0 // TODO: BAD!!!!
   
   private var model: MapGuessModel = .init()
   
@@ -66,7 +71,8 @@ final class MapGuessViewModel {
     return populationGuessed / config.totalPopulation.asDouble
   }
   
-  init() {
+  override init() {
+    super.init()
     let decoder = JSONDecoder()
     if let savedGameState = UserDefaults.standard.object(forKey: "gamestate") as? Data,
        let decodedModel = try? decoder.decode(MapGuessModel.self, from: savedGameState) {
@@ -91,7 +97,14 @@ final class MapGuessViewModel {
   }
   
   func submitGuess(_ guess: String) {
-    HMCRequestHandler.shared.submitGuess(guess) { [weak self] response in
+    let formattedGuess: String
+    if case .any = guessMode {
+      formattedGuess = guess
+    } else {
+      formattedGuess = guess + ", \(guessMode.string)"
+    }
+    
+    HMCRequestHandler.shared.submitGuess(formattedGuess) { [weak self] response in
       if let cities = response?.cities {
         if !cities.isEmpty {
           self?.model.usedMultiCityInput ||= (cities.count > 1)
@@ -162,5 +175,129 @@ enum CityGuessError: Error {
       case .serverError:
         return "We're having technical issues, please try again"
     }
+  }
+}
+
+extension MapGuessViewModel: UIPickerViewDelegate, UIPickerViewDataSource {
+  func numberOfComponents(in pickerView: UIPickerView) -> Int {
+    1
+  }
+  
+  func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+    (model.gameConfiguration?.topLevelStates.count ?? 0) + 2
+  }
+  
+  func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+    if row == 0 { return "Any country" }
+    if row == 1 { return "Every country" }
+    
+    guard let states = model.gameConfiguration?.topLevelStates else {
+      return nil
+    }
+    
+    return states[row-2].name
+  }
+  
+  func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+    selectedRow = row
+    
+    if row == 0 { guessMode = .any }
+    if row == 1 { guessMode = .every }
+    
+    if row >= 2, let states = model.gameConfiguration?.topLevelStates {
+      guessMode = .specific(states[row-2].value)
+    }
+    
+    delegate?.didChangeGuessMode(guessMode)
+  }
+  
+}
+
+
+enum GuessMode {
+  case any
+  case every
+  case specific(_ location: String)
+  
+  var string: String {
+    switch self {
+      case .any:
+        return ""
+      case .every:
+        return "all"
+      case .specific(let location):
+        return location
+    }
+  }
+  
+  var displayedString: NSAttributedString {
+    let offsetFactor = (UIFont.systemFontSize - UIFont.smallSystemFontSize) / 2
+    
+    switch self {
+      case .any:
+        return NSAttributedString(string: "🌎")
+        
+      case .every:
+        let countryCodeString = NSAttributedString(string: " ALL", attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
+                                                                                .baselineOffset: offsetFactor])
+        let ms = NSMutableAttributedString(string: "🌎")
+        ms.append(countryCodeString)
+        return .init(attributedString: ms)
+        
+      case .specific(let location):
+        let countryCode = locale(for: location)
+        let flag = flag(for: countryCode)
+        
+        let countryCodeString = NSAttributedString(string: " \(countryCode)", attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
+                                                                                           .baselineOffset: offsetFactor])
+        let ms = NSMutableAttributedString(string: flag)
+        ms.append(countryCodeString)
+        
+        return .init(attributedString: ms)
+    }
+  }
+  
+  private func flag(for countryCode: String) -> String {
+    let base: UInt32 = 127397
+    var s = ""
+    for v in countryCode.unicodeScalars {
+      s.unicodeScalars.append(UnicodeScalar(base + v.value)!)
+    }
+    return String(s)
+  }
+  
+  
+  private func locale(for fullCountryName: String) -> String {
+    // special cases
+    if fullCountryName.lowercased() == "China".lowercased() {
+      return "CN"
+    } else if fullCountryName.lowercased() == "Democratic Republic of the Congo".lowercased() {
+      return "CD"
+    } else if fullCountryName.lowercased() == "Republic of the Congo".lowercased() {
+      return "CG"
+    } else if fullCountryName.lowercased() == "Federated States of Micronesia".lowercased() {
+      return "FM"
+    } else if fullCountryName.lowercased() == "Ivory Coast".lowercased() {
+      return "CI"
+    } else if fullCountryName.lowercased() == "Myanmar".lowercased() {
+      return "MM"
+    } else if fullCountryName.lowercased() == "Palestine".lowercased() {
+      return "PS"
+    } else if fullCountryName.lowercased() == "St. Vincent and the Grenadines".lowercased() {
+      return "VC"
+    } else if fullCountryName.lowercased() == "The Gambia".lowercased() {
+      return "GM"
+    }
+    
+    let locales = ""
+    for localeCode in NSLocale.isoCountryCodes {
+      let identifier = NSLocale(localeIdentifier: "en_US")
+      let countryName = identifier.displayName(forKey: NSLocale.Key.countryCode, value: localeCode)
+      if fullCountryName.lowercased() == countryName?.lowercased() ||
+          fullCountryName.replacingOccurrences(of: " and ", with: " & ").lowercased() == countryName?.lowercased() {
+        return localeCode
+      }
+    }
+    return locales
   }
 }
