@@ -21,7 +21,7 @@ final class MapGuessViewController: UIViewController {
     map.isRotateEnabled = false
 //    map.setRegion(.init(center: .init(latitude: 0, longitude: 0), span: .init(latitudeDelta: 180, longitudeDelta: 360)), animated: true)
     map.setRegion(viewModel.lastRegion, animated: true)
-    map.setCameraZoomRange(.init(minCenterCoordinateDistance: 1250000), animated: true)
+    map.setCameraZoomRange(.init(minCenterCoordinateDistance: 1500000), animated: true)
     map.pointOfInterestFilter = .excludingAll
     
     map.delegate = self
@@ -416,7 +416,7 @@ extension MapGuessViewController: MKMapViewDelegate {
   
   func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
     if let circle = overlay as? MKCircle {
-      let circleRenderer = MKCircleRenderer(circle: circle)
+      let circleRenderer = MKZoomableCircleRenderer(circle: circle)
       circleRenderer.fillColor = .systemRed.withAlphaComponent(0.5)
       circleRenderer.strokeColor = .systemFill
       
@@ -481,5 +481,49 @@ final class MapToast: UIView {
   
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+}
+
+
+final class MKZoomableCircleRenderer: MKCircleRenderer {
+  override func draw(_ mapRect: MKMapRect, zoomScale: MKZoomScale, in context: CGContext) {
+//    super.draw(mapRect, zoomScale: zoomScale, in: context)
+    context.saveGState()
+    context.setBlendMode(.normal)
+    if let fillColor = fillColor {
+      context.setFillColor(fillColor.cgColor)
+    }
+    context.setLineWidth(1.0)
+    context.setStrokeColor(UIColor.white.cgColor)
+    
+    
+//    let centerPoint = MKMapPoint(circle.coordinate)
+//
+//    context.move(to: CGPoint(x: centerPoint.x, y: centerPoint.y))
+//    context.addLine(to: .init(x: 0, y: 0)) // LMAO IDK
+    
+    let rekt = rect(for: circle.boundingMapRect) * (1.0 / (1.0+Double(zoomScale.asLevel-3)))
+    context.addEllipse(in: rekt)
+    
+    print("ZOOM LEVEL???? \(zoomScale.asLevel)")
+    print("MAP RECT???? \(mapRect)")
+//    print(zoomScale.asLevel)
+    
+    context.closePath()
+    context.drawPath(using: .fillStroke)
+    context.restoreGState()
+//
+//    print("idk???")
+//    print(mapRect)
+//    print(zoomScale)
+  }
+}
+
+extension MKZoomScale {
+  var asLevel: Double {
+    let totalTilesAtMaxZoom = MKMapSize.world.width / 256.0
+    let zoomLevelAtMaxZoom = log2(totalTilesAtMaxZoom)
+    
+    return Swift.max(0.0, zoomLevelAtMaxZoom + log2(Double(self)))
   }
 }
