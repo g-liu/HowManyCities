@@ -295,23 +295,6 @@ final class MapGuessViewController: UIViewController {
   }
 }
 
-extension MapGuessViewController: UITextFieldDelegate {
-  func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-    guard textField == cityInputTextField else { return false }
-    guard let textInput = textField.text,
-          !textInput.isEmpty else {
-            didReceiveError(.emptyGuess)
-            return false
-          }
-    
-    submitGuess(textInput)
-    
-    mapView.closeAllAnnotations()
-    
-    return false
-  }
-}
-
 // TODO: Move this into separate file or vc???
 extension MapGuessViewController {
   func showToast(_ message: String, toastType: ToastType) {
@@ -338,6 +321,24 @@ extension MapGuessViewController {
       }
     }
 
+  }
+}
+
+// MARK: - UITextFieldDelegate
+extension MapGuessViewController: UITextFieldDelegate {
+  func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    guard textField == cityInputTextField else { return false }
+    guard let textInput = textField.text,
+          !textInput.isEmpty else {
+            didReceiveError(.emptyGuess)
+            return false
+          }
+    
+    submitGuess(textInput)
+    
+    mapView.closeAllAnnotations()
+    
+    return false
   }
 }
 
@@ -409,6 +410,7 @@ extension MapGuessViewController: MapGuessDelegate {
 
 }
 
+// MARK: - MKMapViewDelegate
 extension MapGuessViewController: MKMapViewDelegate {
   func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
     viewModel.lastRegion = mapView.region
@@ -422,7 +424,7 @@ extension MapGuessViewController: MKMapViewDelegate {
       
       return circleRenderer
     } else if let polygon = overlay as? MKPolygon {
-      let polygonRenderer = MKPolygonRenderer(polygon: polygon)
+      let polygonRenderer = MKZoomablePolygonRenderer(polygon: polygon)
       polygonRenderer.fillColor = .systemYellow.withAlphaComponent(0.7)
       polygonRenderer.strokeColor = .systemFill
       
@@ -442,88 +444,3 @@ extension MapGuessViewController: MKMapViewDelegate {
   }
 }
 
-enum ToastType {
-  case population
-  case error
-  case general
-}
-
-final class MapToast: UIView {
-  private lazy var label: UILabel = {
-    let label = UILabel().autolayoutEnabled
-    
-    label.numberOfLines = 0
-    label.font = .systemFont(ofSize: 16)
-    label.textColor = .white
-    label.textAlignment = .center
-    
-    return label
-  }()
-  
-  init(_ text: String, toastType: ToastType) {
-    super.init(frame: .zero)
-  
-    label.text = text
-    
-    backgroundColor = { switch toastType {
-    case .population:
-      return .systemGreen
-    case .error:
-      return .systemRed
-    case .general:
-      return .systemGray3
-    }}()
-    addSubview(label)
-    label.pin(to: self, margins: .init(horizontal: 8, vertical: 4))
-    
-    cornerRadius = 10
-  }
-  
-  required init?(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
-  }
-}
-
-
-final class MKZoomableCircleRenderer: MKCircleRenderer {
-  override func draw(_ mapRect: MKMapRect, zoomScale: MKZoomScale, in context: CGContext) {
-//    super.draw(mapRect, zoomScale: zoomScale, in: context)
-    context.saveGState()
-    context.setBlendMode(.normal)
-    if let fillColor = fillColor {
-      context.setFillColor(fillColor.cgColor)
-    }
-    context.setLineWidth(1.0)
-    context.setStrokeColor(UIColor.white.cgColor)
-    
-    
-//    let centerPoint = MKMapPoint(circle.coordinate)
-//
-//    context.move(to: CGPoint(x: centerPoint.x, y: centerPoint.y))
-//    context.addLine(to: .init(x: 0, y: 0)) // LMAO IDK
-    let scaleFactor = 1.0/pow(1.5, zoomScale.asLevel-3)
-    let rekt = rect(for: circle.boundingMapRect) * scaleFactor // (1.0 / (1.0+Double(zoomScale.asLevel-3)))
-    context.addEllipse(in: rekt)
-    
-    print("ZOOM LEVEL???? \(zoomScale.asLevel)")
-    print("MAP RECT???? \(mapRect)")
-//    print(zoomScale.asLevel)
-    
-    context.closePath()
-    context.drawPath(using: .fillStroke)
-    context.restoreGState()
-//
-//    print("idk???")
-//    print(mapRect)
-//    print(zoomScale)
-  }
-}
-
-extension MKZoomScale {
-  var asLevel: Double {
-    let totalTilesAtMaxZoom = MKMapSize.world.width / 256.0
-    let zoomLevelAtMaxZoom = log2(totalTilesAtMaxZoom)
-    
-    return Swift.max(0.0, zoomLevelAtMaxZoom + log2(Double(self)))
-  }
-}
