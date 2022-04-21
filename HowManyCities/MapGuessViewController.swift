@@ -21,7 +21,7 @@ final class MapGuessViewController: UIViewController {
     map.isRotateEnabled = false
 //    map.setRegion(.init(center: .init(latitude: 0, longitude: 0), span: .init(latitudeDelta: 180, longitudeDelta: 360)), animated: true)
     map.setRegion(viewModel.lastRegion, animated: true)
-    map.setCameraZoomRange(.init(minCenterCoordinateDistance: 1500000), animated: true)
+    map.setCameraZoomRange(.init(minCenterCoordinateDistance: 100000), animated: true)
     map.pointOfInterestFilter = .excludingAll
     
     map.delegate = self
@@ -225,26 +225,26 @@ final class MapGuessViewController: UIViewController {
   private func addCustomTileOverlay() {
     // TODO: Verify w/cache
     
-    let interfaceMode = traitCollection.userInterfaceStyle == .dark ? "dark" : "light"
-//    let template = "https://{s}.basemaps.cartocdn.com/\(interfaceMode)_nolabels/{z}/{x}/{y}@2x.png"
-//    let template = Bundle.main.resourceURL?.appendingPathComponent("\(interfaceMode)-{z}_{x}_{y}.png").path
-    let bundleUrl = Bundle.main.url(forResource: "dummy", withExtension: "png")
-    let template = bundleUrl?.deletingLastPathComponent().appendingPathComponent("\(interfaceMode)-{z}_{x}_{y}.png").absoluteString.removingPercentEncoding
-
-    
-    let overlay = MKTileOverlay(urlTemplate: template)
-    overlay.canReplaceMapContent = true
-    mapView.addOverlay(overlay, level: .aboveLabels)
-     
-     
 //    let interfaceMode = traitCollection.userInterfaceStyle == .dark ? "dark" : "light"
-//    let template = "https://{s}.basemaps.cartocdn.com/\(interfaceMode)_nolabels/{z}/{x}/{y}.png"
-//    let config = MapCacheConfig(withUrlTemplate: template)
-////    let config = MapCacheConfig(withUrlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
+////    let template = "https://{s}.basemaps.cartocdn.com/\(interfaceMode)_nolabels/{z}/{x}/{y}@2x.png"
+////    let template = Bundle.main.resourceURL?.appendingPathComponent("\(interfaceMode)-{z}_{x}_{y}.png").path
+//    let bundleUrl = Bundle.main.url(forResource: "dummy", withExtension: "png")
+//    let template = bundleUrl?.deletingLastPathComponent().appendingPathComponent("\(interfaceMode)-{z}_{x}_{y}.png").absoluteString.removingPercentEncoding
 //
-//    let mapCache = MapCache(withConfig: config)
-//    print("STORING ALL YOUR SHIT AT \(mapCache.diskCache.path)")
-//    mapView.useCache(mapCache)
+//
+//    let overlay = MKTileOverlay(urlTemplate: template)
+//    overlay.canReplaceMapContent = true
+//    mapView.addOverlay(overlay, level: .aboveLabels)
+     
+     
+    let interfaceMode = traitCollection.userInterfaceStyle == .dark ? "dark" : "light"
+    let template = "https://{s}.basemaps.cartocdn.com/\(interfaceMode)_nolabels/{z}/{x}/{y}.png"
+    let config = MapCacheConfig(withUrlTemplate: template)
+//    let config = MapCacheConfig(withUrlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
+
+    let mapCache = MapCache(withConfig: config)
+    print("STORING ALL YOUR SHIT AT \(mapCache.diskCache.path)")
+    mapView.useCache(mapCache)
   }
   
   override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -501,8 +501,8 @@ final class MKZoomableCircleRenderer: MKCircleRenderer {
 //
 //    context.move(to: CGPoint(x: centerPoint.x, y: centerPoint.y))
 //    context.addLine(to: .init(x: 0, y: 0)) // LMAO IDK
-    
-    let rekt = rect(for: circle.boundingMapRect) * (1.0 / (1.0+Double(zoomScale.asLevel-3)))
+    let scaleFactor = 1.0/pow(1.5, zoomScale.asLevel-3)
+    let rekt = rect(for: circle.boundingMapRect) * scaleFactor // (1.0 / (1.0+Double(zoomScale.asLevel-3)))
     context.addEllipse(in: rekt)
     
     print("ZOOM LEVEL???? \(zoomScale.asLevel)")
