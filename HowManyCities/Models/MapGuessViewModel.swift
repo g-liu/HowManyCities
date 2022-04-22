@@ -301,3 +301,9 @@ enum GuessMode {
     return locales
   }
 }
+
+extension MapGuessViewModel: CountrySearchDelegate {
+  var countries: [State] {
+    model.gameConfiguration?.topLevelStates ?? []
+  }
+}

@@ -201,6 +201,7 @@ final class MapGuessViewController: UIViewController {
 //
 //    present(alert, animated: true)
     let searchController = CountrySearchController()
+    searchController.countryDelegate = viewModel
     present(searchController, animated: true)
   }
   
