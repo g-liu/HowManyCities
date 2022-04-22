@@ -21,7 +21,7 @@ final class MapGuessViewController: UIViewController {
     map.isRotateEnabled = false
 //    map.setRegion(.init(center: .init(latitude: 0, longitude: 0), span: .init(latitudeDelta: 180, longitudeDelta: 360)), animated: true)
     map.setRegion(viewModel.lastRegion, animated: true)
-    map.setCameraZoomRange(.init(minCenterCoordinateDistance: 1250000), animated: true)
+    map.setCameraZoomRange(.init(minCenterCoordinateDistance: 100000), animated: true)
     map.pointOfInterestFilter = .excludingAll
     
     map.delegate = self
@@ -225,26 +225,26 @@ final class MapGuessViewController: UIViewController {
   private func addCustomTileOverlay() {
     // TODO: Verify w/cache
     
-    let interfaceMode = traitCollection.userInterfaceStyle == .dark ? "dark" : "light"
-//    let template = "https://{s}.basemaps.cartocdn.com/\(interfaceMode)_nolabels/{z}/{x}/{y}@2x.png"
-//    let template = Bundle.main.resourceURL?.appendingPathComponent("\(interfaceMode)-{z}_{x}_{y}.png").path
-    let bundleUrl = Bundle.main.url(forResource: "dummy", withExtension: "png")
-    let template = bundleUrl?.deletingLastPathComponent().appendingPathComponent("\(interfaceMode)-{z}_{x}_{y}.png").absoluteString.removingPercentEncoding
-
-    
-    let overlay = MKTileOverlay(urlTemplate: template)
-    overlay.canReplaceMapContent = true
-    mapView.addOverlay(overlay, level: .aboveLabels)
-     
-     
 //    let interfaceMode = traitCollection.userInterfaceStyle == .dark ? "dark" : "light"
-//    let template = "https://{s}.basemaps.cartocdn.com/\(interfaceMode)_nolabels/{z}/{x}/{y}.png"
-//    let config = MapCacheConfig(withUrlTemplate: template)
-////    let config = MapCacheConfig(withUrlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
+////    let template = "https://{s}.basemaps.cartocdn.com/\(interfaceMode)_nolabels/{z}/{x}/{y}@2x.png"
+////    let template = Bundle.main.resourceURL?.appendingPathComponent("\(interfaceMode)-{z}_{x}_{y}.png").path
+//    let bundleUrl = Bundle.main.url(forResource: "dummy", withExtension: "png")
+//    let template = bundleUrl?.deletingLastPathComponent().appendingPathComponent("\(interfaceMode)-{z}_{x}_{y}.png").absoluteString.removingPercentEncoding
 //
-//    let mapCache = MapCache(withConfig: config)
-//    print("STORING ALL YOUR SHIT AT \(mapCache.diskCache.path)")
-//    mapView.useCache(mapCache)
+//
+//    let overlay = MKTileOverlay(urlTemplate: template)
+//    overlay.canReplaceMapContent = true
+//    mapView.addOverlay(overlay, level: .aboveLabels)
+     
+     
+    let interfaceMode = traitCollection.userInterfaceStyle == .dark ? "dark" : "light"
+    let template = "https://{s}.basemaps.cartocdn.com/\(interfaceMode)_nolabels/{z}/{x}/{y}.png"
+    let config = MapCacheConfig(withUrlTemplate: template)
+//    let config = MapCacheConfig(withUrlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
+
+    let mapCache = MapCache(withConfig: config)
+    print("STORING ALL YOUR SHIT AT \(mapCache.diskCache.path)")
+    mapView.useCache(mapCache)
   }
   
   override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -295,23 +295,6 @@ final class MapGuessViewController: UIViewController {
   }
 }
 
-extension MapGuessViewController: UITextFieldDelegate {
-  func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-    guard textField == cityInputTextField else { return false }
-    guard let textInput = textField.text,
-          !textInput.isEmpty else {
-            didReceiveError(.emptyGuess)
-            return false
-          }
-    
-    submitGuess(textInput)
-    
-    mapView.closeAllAnnotations()
-    
-    return false
-  }
-}
-
 // TODO: Move this into separate file or vc???
 extension MapGuessViewController {
   func showToast(_ message: String, toastType: ToastType) {
@@ -338,6 +321,24 @@ extension MapGuessViewController {
       }
     }
 
+  }
+}
+
+// MARK: - UITextFieldDelegate
+extension MapGuessViewController: UITextFieldDelegate {
+  func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    guard textField == cityInputTextField else { return false }
+    guard let textInput = textField.text,
+          !textInput.isEmpty else {
+            didReceiveError(.emptyGuess)
+            return false
+          }
+    
+    submitGuess(textInput)
+    
+    mapView.closeAllAnnotations()
+    
+    return false
   }
 }
 
@@ -409,6 +410,7 @@ extension MapGuessViewController: MapGuessDelegate {
 
 }
 
+// MARK: - MKMapViewDelegate
 extension MapGuessViewController: MKMapViewDelegate {
   func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
     viewModel.lastRegion = mapView.region
@@ -416,20 +418,22 @@ extension MapGuessViewController: MKMapViewDelegate {
   
   func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
     if let circle = overlay as? MKCircle {
-      let circleRenderer = MKCircleRenderer(circle: circle)
+      let circleRenderer = MKZoomableCircleRenderer(circle: circle)
       circleRenderer.fillColor = .systemRed.withAlphaComponent(0.5)
       circleRenderer.strokeColor = .systemFill
+      circleRenderer.lineWidth = 2
       
       return circleRenderer
     } else if let polygon = overlay as? MKPolygon {
-      let polygonRenderer = MKPolygonRenderer(polygon: polygon)
+      let polygonRenderer = MKZoomablePolygonRenderer(polygon: polygon)
       polygonRenderer.fillColor = .systemYellow.withAlphaComponent(0.7)
       polygonRenderer.strokeColor = .systemFill
+      polygonRenderer.lineWidth = 2
       
       return polygonRenderer
     } else if let tileOverlay = overlay as? MKTileOverlay {
-      return MKTileOverlayRenderer(tileOverlay: tileOverlay)
-//      return mapView.mapCacheRenderer(forOverlay: tileOverlay)
+//      return MKTileOverlayRenderer(tileOverlay: tileOverlay)
+      return mapView.mapCacheRenderer(forOverlay: tileOverlay)
     }
     
     return .init(overlay: overlay)
@@ -442,44 +446,3 @@ extension MapGuessViewController: MKMapViewDelegate {
   }
 }
 
-enum ToastType {
-  case population
-  case error
-  case general
-}
-
-final class MapToast: UIView {
-  private lazy var label: UILabel = {
-    let label = UILabel().autolayoutEnabled
-    
-    label.numberOfLines = 0
-    label.font = .systemFont(ofSize: 16)
-    label.textColor = .white
-    label.textAlignment = .center
-    
-    return label
-  }()
-  
-  init(_ text: String, toastType: ToastType) {
-    super.init(frame: .zero)
-  
-    label.text = text
-    
-    backgroundColor = { switch toastType {
-    case .population:
-      return .systemGreen
-    case .error:
-      return .systemRed
-    case .general:
-      return .systemGray3
-    }}()
-    addSubview(label)
-    label.pin(to: self, margins: .init(horizontal: 8, vertical: 4))
-    
-    cornerRadius = 10
-  }
-  
-  required init?(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
-  }
-}
