@@ -10,9 +10,7 @@ import MapKit
 
 final class MKZoomablePolygonRenderer: MKPolygonRenderer {
   override func draw(_ mapRect: MKMapRect, zoomScale: MKZoomScale, in context: CGContext) {
-//    super.draw(mapRect, zoomScale: zoomScale, in: context)
     context.saveGState()
-    context.setBlendMode(.normal)
     if let fillColor = fillColor {
       context.setFillColor(fillColor.cgColor)
     }
@@ -22,28 +20,25 @@ final class MKZoomablePolygonRenderer: MKPolygonRenderer {
     }
     
     let scaleFactor = scaleFactor(at: zoomScale)
-//    var scaledPointSet: [MKMapPoint]
     let polygonCenter = polygon.centroid
-//
-//    polygon.points()
-    
+
     if polygon.pointCount > 1 {
       context.beginPath()
       
-      let firstPoint = point(for: polygon.points()[0].scaled(to: polygonCenter, by: scaleFactor))
-      context.move(to: firstPoint)
-      
-      (1..<polygon.pointCount).forEach {
+      (0..<polygon.pointCount).forEach {
         let nextPoint = point(for: polygon.points()[$0].scaled(to: polygonCenter, by: scaleFactor))
-        context.addLine(to: nextPoint)
+        if $0 == 0 {
+          context.move(to: nextPoint)
+        } else {
+          context.addLine(to: nextPoint)
+        }
       }
       
       context.closePath()
+//      context.strokePath()
       context.drawPath(using: .fillStroke)
+//      context.fillPath(using: .winding)
     }
-    
-    print("WE DREW SOME POINTS")
-    print(polygon.points())
     
     context.restoreGState()
   }

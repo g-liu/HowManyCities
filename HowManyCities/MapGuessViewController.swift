@@ -421,17 +421,19 @@ extension MapGuessViewController: MKMapViewDelegate {
       let circleRenderer = MKZoomableCircleRenderer(circle: circle)
       circleRenderer.fillColor = .systemRed.withAlphaComponent(0.5)
       circleRenderer.strokeColor = .systemFill
+      circleRenderer.lineWidth = 1
       
       return circleRenderer
     } else if let polygon = overlay as? MKPolygon {
       let polygonRenderer = MKZoomablePolygonRenderer(polygon: polygon)
       polygonRenderer.fillColor = .systemYellow.withAlphaComponent(0.7)
       polygonRenderer.strokeColor = .systemFill
+      polygonRenderer.lineWidth = 1
       
       return polygonRenderer
     } else if let tileOverlay = overlay as? MKTileOverlay {
-      return MKTileOverlayRenderer(tileOverlay: tileOverlay)
-//      return mapView.mapCacheRenderer(forOverlay: tileOverlay)
+//      return MKTileOverlayRenderer(tileOverlay: tileOverlay)
+      return mapView.mapCacheRenderer(forOverlay: tileOverlay)
     }
     
     return .init(overlay: overlay)

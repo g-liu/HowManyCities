@@ -10,9 +10,7 @@ import MapKit
 
 final class MKZoomableCircleRenderer: MKCircleRenderer {
   override func draw(_ mapRect: MKMapRect, zoomScale: MKZoomScale, in context: CGContext) {
-//    super.draw(mapRect, zoomScale: zoomScale, in: context)
     context.saveGState()
-    context.setBlendMode(.normal)
     if let fillColor = fillColor {
       context.setFillColor(fillColor.cgColor)
     }
@@ -22,25 +20,14 @@ final class MKZoomableCircleRenderer: MKCircleRenderer {
       context.setStrokeColor(strokeColor.cgColor)
     }
     
-    
-//    let centerPoint = MKMapPoint(circle.coordinate)
-//
-//    context.move(to: CGPoint(x: centerPoint.x, y: centerPoint.y))
-//    context.addLine(to: .init(x: 0, y: 0)) // LMAO IDK
     let scaleFactor = scaleFactor(at: zoomScale)
-    let rekt = rect(for: circle.boundingMapRect) * scaleFactor // (1.0 / (1.0+Double(zoomScale.asLevel-3)))
+    let rekt = rect(for: circle.boundingMapRect) * scaleFactor
     context.addEllipse(in: rekt)
     
-//    print("ZOOM LEVEL???? \(zoomScale.asLevel)")
-//    print("MAP RECT???? \(mapRect)")
-//    print(zoomScale.asLevel)
-    
     context.closePath()
+//    context.strokePath()
     context.drawPath(using: .fillStroke)
+//    context.fillPath(using: .winding)
     context.restoreGState()
-//
-//    print("idk???")
-//    print(mapRect)
-//    print(zoomScale)
   }
 }
