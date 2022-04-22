@@ -27,9 +27,7 @@ final class MKZoomableCircleRenderer: MKCircleRenderer {
     context.addEllipse(in: rekt)
     
     context.closePath()
-//    context.strokePath()
     context.drawPath(using: .fillStroke)
-//    context.fillPath(using: .winding)
     context.restoreGState()
   }
 }

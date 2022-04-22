@@ -37,9 +37,7 @@ final class MKZoomablePolygonRenderer: MKPolygonRenderer {
       }
       
       context.closePath()
-//      context.strokePath()
       context.drawPath(using: .fillStroke)
-//      context.fillPath(using: .winding)
     }
     
     context.restoreGState()
