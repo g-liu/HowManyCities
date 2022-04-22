@@ -11,13 +11,17 @@ import CoreAudio
 
 extension MKPolygon {
   var area: CGFloat {
-    var runningArea: CGFloat = 0
-    (0..<pointCount).forEach {
-      let nextIndex = ($0 + 1) % pointCount
-      runningArea += points()[$0].x * points()[nextIndex].y
-      runningArea -= points()[$0].y * points()[nextIndex].x
+    0.5 * (0..<pointCount).reduce(0.0) {
+      let nextIndex = ($1 + 1) % pointCount
+      let thisPoint = points()[$1]
+      let nextPoint = points()[nextIndex]
+      
+      return $0 + thisPoint.x*nextPoint.y - thisPoint.y*nextPoint.x
     }
-    return runningArea / 2.0
+  }
+  
+  var center: MKMapPoint {
+    points().mean(pointCount)
   }
   
   // https://stackoverflow.com/questions/53569830/how-can-i-find-the-center-coordinate-in-a-mglmultipolygonfeature
@@ -31,25 +35,21 @@ extension MKPolygon {
     }
     
     if pointCount == 2 {
-      return points().mean(pointCount)
+      return center
     }
     
-    var centerX = 0.0
-    var centerY = 0.0
-    var runningArea = area
-    (0..<pointCount).forEach {
-      let nextIndex = ($0 + 1) % pointCount
-      let factor1 = points()[$0].x * points()[nextIndex].y - points()[nextIndex].x * points()[$0].y
-      centerX += (points()[$0].x + points()[nextIndex].x) * factor1
-      centerY += (points()[$0].y + points()[nextIndex].y) * factor1
+    let runningCentroid = (0..<pointCount).reduce(MKMapPoint.zero) {
+      let nextIndex = ($1 + 1) % pointCount
+      let thisPoint = points()[$1]
+      let nextPoint = points()[nextIndex]
+      
+      let factor1 = thisPoint.x * nextPoint.y - nextPoint.x * thisPoint.y
+      let nextCentroid = MKMapPoint(x: thisPoint.x + nextPoint.x, y: thisPoint.y + nextPoint.y) * factor1
+      
+      return $0 + nextCentroid
     }
     
-    runningArea *= 6.0
-    let factor2 = 1.0 / runningArea
-    centerX *= factor2
-    centerY *= factor2
-    
-    return .init(x: centerX, y: centerY)
+    return runningCentroid * (1.0 / (6.0*area))
   }
 }
 
