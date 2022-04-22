@@ -11,15 +11,17 @@ import MapKit
 final class MKZoomablePolygonRenderer: MKPolygonRenderer {
   override func draw(_ mapRect: MKMapRect, zoomScale: MKZoomScale, in context: CGContext) {
     context.saveGState()
+    let scaleFactor = scaleFactor(at: zoomScale)
+    
     if let fillColor = fillColor {
       context.setFillColor(fillColor.cgColor)
     }
-    context.setLineWidth(lineWidth)
+    let nominalLineWidth: CGFloat = 100000 * lineWidth * scaleFactor
+    context.setLineWidth(nominalLineWidth)
     if let strokeColor = strokeColor {
       context.setStrokeColor(strokeColor.cgColor)
     }
     
-    let scaleFactor = scaleFactor(at: zoomScale)
     let polygonCenter = polygon.centroid
 
     if polygon.pointCount > 1 {
