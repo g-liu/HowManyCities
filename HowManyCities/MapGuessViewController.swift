@@ -184,22 +184,24 @@ final class MapGuessViewController: UIViewController {
   
   @objc private func didTapCountryDropdown(_ sender: UIButton) {
     // TODO: impl
-    let alert = UIAlertController(title: "Select a location", message: nil, preferredStyle: .actionSheet)
-    
-    let selector = CountrySelector().autolayoutEnabled
-    selector.delegate = viewModel
-    selector.dataSource = viewModel
-    alert.view.addSubview(selector)
-    alert.view.translatesAutoresizingMaskIntoConstraints = false
-    selector.pin(to: alert.view.safeAreaLayoutGuide, margins: .init(top: 0, left: 0, bottom: 48, right: 0))
-    NSLayoutConstraint.activate([
-      alert.view.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.size.height / 2.0),
-      ])
-    selector.selectRow(viewModel.selectedRow, inComponent: 0, animated: false)
-    
-    alert.addAction(title: "Select", style: .default, isEnabled: true)
-    
-    present(alert, animated: true)
+//    let alert = UIAlertController(title: "Select a location", message: nil, preferredStyle: .actionSheet)
+//
+//    let selector = CountrySelector().autolayoutEnabled
+//    selector.delegate = viewModel
+//    selector.dataSource = viewModel
+//    alert.view.addSubview(selector)
+//    alert.view.translatesAutoresizingMaskIntoConstraints = false
+//    selector.pin(to: alert.view.safeAreaLayoutGuide, margins: .init(top: 0, left: 0, bottom: 48, right: 0))
+//    NSLayoutConstraint.activate([
+//      alert.view.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.size.height / 2.0),
+//      ])
+//    selector.selectRow(viewModel.selectedRow, inComponent: 0, animated: false)
+//
+//    alert.addAction(title: "Select", style: .default, isEnabled: true)
+//
+//    present(alert, animated: true)
+    let searchController = CountrySearchController()
+    present(searchController, animated: true)
   }
   
   private func resetMap() {
