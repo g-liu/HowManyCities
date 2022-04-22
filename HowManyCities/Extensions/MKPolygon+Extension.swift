@@ -38,6 +38,7 @@ extension MKPolygon {
       return center
     }
     
+    var runningArea = 0.0
     let runningCentroid = (0..<pointCount).reduce(MKMapPoint.zero) {
       let nextIndex = ($1 + 1) % pointCount
       let thisPoint = points()[$1]
@@ -46,10 +47,12 @@ extension MKPolygon {
       let factor1 = thisPoint.x * nextPoint.y - nextPoint.x * thisPoint.y
       let nextCentroid = MKMapPoint(x: thisPoint.x + nextPoint.x, y: thisPoint.y + nextPoint.y) * factor1
       
+      runningArea += factor1
+      
       return $0 + nextCentroid
     }
     
-    return runningCentroid * (1.0 / (6.0*area))
+    return runningCentroid * (1.0 / (6.0*(runningArea/2.0)))
   }
 }
 
