@@ -21,20 +21,20 @@ final class MKZoomablePolygonRenderer: MKPolygonRenderer {
       context.setStrokeColor(strokeColor.cgColor)
     }
     
-    // TODO: Unify this with MKZoomableCircleRenderer's scale factor
-//    let scaleFactor = 1.0/pow(1.5, zoomScale.asLevel-3)
+    let scaleFactor = scaleFactor(at: zoomScale)
 //    var scaledPointSet: [MKMapPoint]
-//    let pointSetCenter = polygon.centroid
+    let polygonCenter = polygon.centroid
+//
 //    polygon.points()
     
     if polygon.pointCount > 1 {
       context.beginPath()
       
-      let firstPoint = point(for: polygon.points()[0])
+      let firstPoint = point(for: polygon.points()[0].scaled(to: polygonCenter, by: scaleFactor))
       context.move(to: firstPoint)
       
       (1..<polygon.pointCount).forEach {
-        let nextPoint = point(for: polygon.points()[$0])
+        let nextPoint = point(for: polygon.points()[$0].scaled(to: polygonCenter, by: scaleFactor))
         context.addLine(to: nextPoint)
       }
       

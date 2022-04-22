@@ -27,7 +27,7 @@ final class MKZoomableCircleRenderer: MKCircleRenderer {
 //
 //    context.move(to: CGPoint(x: centerPoint.x, y: centerPoint.y))
 //    context.addLine(to: .init(x: 0, y: 0)) // LMAO IDK
-    let scaleFactor = 1.0/pow(1.5, zoomScale.asLevel-3)
+    let scaleFactor = scaleFactor(at: zoomScale)
     let rekt = rect(for: circle.boundingMapRect) * scaleFactor // (1.0 / (1.0+Double(zoomScale.asLevel-3)))
     context.addEllipse(in: rekt)
     
