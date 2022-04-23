@@ -230,7 +230,21 @@ enum GuessMode {
     }
   }
   
-  var displayedString: NSAttributedString {
+  var fullDisplayName: String {
+    switch self {
+      case .any:
+        return "Any country"
+      case .every:
+        return "Every country"
+      case .specific(let location):
+        let countryCode = locale(for: location)
+        let flag = flag(for: countryCode)
+        
+        return "\(flag) \(location)"
+    }
+  }
+  
+  var shortDisplayName: NSAttributedString {
     let offsetFactor = (UIFont.systemFontSize - UIFont.smallSystemFontSize) / 2
     
     switch self {

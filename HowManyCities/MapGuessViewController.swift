@@ -348,7 +348,7 @@ extension MapGuessViewController: UITextFieldDelegate {
 // MARK: - MapGuessDelegate
 extension MapGuessViewController: MapGuessDelegate {
   func didChangeGuessMode(_ mode: GuessMode) {
-    let ms = NSMutableAttributedString(attributedString: mode.displayedString)
+    let ms = NSMutableAttributedString(attributedString: mode.shortDisplayName)
     ms.append(.init(string: " ▼"))
     countryDropdownButton.setAttributedTitle(ms, for: .normal)
   }
