@@ -263,10 +263,6 @@ extension StatePickerViewController: UISearchResultsUpdating {
   }
 }
 
-extension StatePickerViewController: UISearchControllerDelegate {
-  
-}
-
 final class StateTableViewCell: UITableViewCell {
   static let identifier = "StateTableViewCell"
   
