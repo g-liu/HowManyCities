@@ -15,7 +15,7 @@ protocol StateSearchDelegate: AnyObject {
 
 final class StateSearchController: UIViewController {
   
-  private var specialSectionLabels: [GuessMode] = [.any, .every]
+  private var specialModes: [GuessMode] = [.any, .every]
   
   private var normalizedSearchText: String? {
     searchController.searchBar.text?.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
@@ -48,6 +48,8 @@ final class StateSearchController: UIViewController {
       return countryNameNormalized.contains(searchText)
     } ?? []
   }
+  
+  private var selectedMode: GuessMode? = nil
   
   private lazy var searchController: UISearchController = {
     let searchController = UISearchController(searchResultsController: nil)
@@ -108,7 +110,7 @@ final class StateSearchController: UIViewController {
     
     tableView.dataSource = self
     tableView.delegate = self
-    tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+    tableView.register(StateTableViewCell.self, forCellReuseIdentifier: StateTableViewCell.identifier)
     
     searchController.searchBar.becomeFirstResponder()
   }
@@ -156,7 +158,7 @@ extension StateSearchController: UITableViewDelegate, UITableViewDataSource {
   
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     if section == 0 {
-      return specialSectionLabels.count
+      return specialModes.count
     }
     
     if 1 <= section && section <= 26 {
@@ -172,42 +174,54 @@ extension StateSearchController: UITableViewDelegate, UITableViewDataSource {
   }
   
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+    guard let cell = tableView.dequeueReusableCell(withIdentifier: StateTableViewCell.identifier, for: indexPath) as? StateTableViewCell else {
+      return UITableViewCell()
+    }
     cell.selectionStyle = .none
     cell.indentationLevel = 0
     
-    if indexPath == tableView.indexPathForSelectedRow {
-      cell.accessoryType = .checkmark
-    } else {
-      cell.accessoryType = .none
-    }
-    
-    if indexPath.section == 0 {
-      cell.textLabel?.text = specialSectionLabels[indexPath.row].fullDisplayName
-      return cell
-    }
+//    if indexPath == tableView.indexPathForSelectedRow {
+//      cell.accessoryType = .checkmark
+//    } else {
+//      cell.accessoryType = .none
+//    }
     
     let letter = Character(UnicodeScalar(65+(indexPath.section-1))!)
-    if 1 <= indexPath.section && indexPath.section <= 26 {
+    
+    if indexPath.section == 0 {
+//      cell.textLabel?.text = specialSectionLabels[indexPath.row].fullDisplayName
+      cell.associatedMode = specialModes[indexPath.row]
+//      return cell
+    }
+    
+    else if 1 <= indexPath.section && indexPath.section <= 26 {
       // countries
       let statesWithLetter = topLevelStatesStartingWith(letter)
       
-      let stateName = statesWithLetter[indexPath.row].name
-      cell.textLabel?.text = GuessMode.specific(stateName).fullDisplayName
+      let state = statesWithLetter[indexPath.row]
+      let guessMode = GuessMode.specific(state)
+      cell.associatedMode = guessMode
       
-      return cell
+//      return cell
     }
     
-    if indexPath.section >= 1+26 {
+    else if indexPath.section >= 1+26 {
       // provinces states territories
       // TODO: figure out filtering
-      guard let parentState = statesDelegate?.lowerDivisionStates[indexPath.section-(1+26)] else { return cell }
+      guard var parentState = statesDelegate?.lowerDivisionStates[indexPath.section-(1+26)] else { return cell }
       let childStates = presentedLowerDivisionStates(for: parentState)
-      let stateName = childStates[indexPath.row].name
-      cell.textLabel?.text = stateName
+      parentState.states = [childStates[indexPath.row]]
+      let guessMode = GuessMode.specific(parentState)
+      cell.associatedMode = guessMode
       cell.indentationLevel = 1
       
-      return cell
+//      return cell
+    }
+    
+    if cell.associatedMode == selectedMode {
+      cell.accessoryType = .checkmark
+    } else {
+      cell.accessoryType = .none
     }
     
     return cell
@@ -226,7 +240,9 @@ extension StateSearchController: UITableViewDelegate, UITableViewDataSource {
 //    return indexPath
 //  }
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
+    guard let stateCell = tableView.cellForRow(at: indexPath) as? StateTableViewCell else { return }
+    stateCell.accessoryType = .checkmark
+    selectedMode = stateCell.associatedMode
   }
   
   func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
@@ -256,4 +272,14 @@ extension StateSearchController: UISearchResultsUpdating {
 
 extension StateSearchController: UISearchControllerDelegate {
   
+}
+
+final class StateTableViewCell: UITableViewCell {
+  static let identifier = "StateTableViewCell"
+  
+  var associatedMode: GuessMode = .any {
+    didSet {
+      textLabel?.text = associatedMode.fullDisplayName
+    }
+  }
 }

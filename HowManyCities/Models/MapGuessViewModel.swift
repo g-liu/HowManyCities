@@ -205,7 +205,7 @@ extension MapGuessViewModel: UIPickerViewDelegate, UIPickerViewDataSource {
     if row == 1 { guessMode = .every }
     
     if row >= 2, let states = model.gameConfiguration?.topLevelStates {
-      guessMode = .specific(states[row-2].value)
+      guessMode = .specific(states[row-2])
     }
     
     delegate?.didChangeGuessMode(guessMode)
@@ -217,7 +217,7 @@ extension MapGuessViewModel: UIPickerViewDelegate, UIPickerViewDataSource {
 enum GuessMode {
   case any
   case every
-  case specific(_ location: String)
+  case specific(_ state: State)
   
   var string: String {
     switch self {
@@ -226,7 +226,7 @@ enum GuessMode {
       case .every:
         return "all"
       case .specific(let location):
-        return location
+        return location.name
     }
   }
   
@@ -237,10 +237,19 @@ enum GuessMode {
       case .every:
         return "Every country"
       case .specific(let location):
-        let countryCode = locale(for: location)
+        // recursive case
+        if let childState = location.states?.first {
+          return GuessMode.specific(childState).fullDisplayName
+        }
+        
+        // base case
+        let countryCode = locale(for: location.name)
         let flag = flag(for: countryCode)
         
-        return "\(flag) \(location)"
+        if flag.isEmpty {
+          return location.name
+        }
+        return "\(flag) \(location.name)"
     }
   }
   
@@ -259,7 +268,7 @@ enum GuessMode {
         return .init(attributedString: ms)
         
       case .specific(let location):
-        let countryCode = locale(for: location)
+        let countryCode = locale(for: location.name)
         let flag = flag(for: countryCode)
         
         let countryCodeString = NSAttributedString(string: " \(countryCode)", attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
@@ -314,6 +323,21 @@ enum GuessMode {
     }
     return locales
   }
+}
+
+extension GuessMode: Equatable {
+//  static func == (lhs: GuessMode, rhs: GuessMode) -> Bool {
+//    switch (lhs, rhs) {
+//      case (.any, .any):
+//        return true
+//      case (.every, .every):
+//        return true
+//      case (.specific(let state1), .specific(let state2)):
+//        return state1 == state2
+//      default:
+//        return false
+//    }
+//  }
 }
 
 extension MapGuessViewModel: StateSearchDelegate {
