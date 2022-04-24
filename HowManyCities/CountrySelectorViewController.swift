@@ -17,7 +17,8 @@ final class CountrySearchController: UIViewController {
   private var specialSectionLabels: [GuessMode] = [.any, .every]
   
   private var countriesPostSearch: [State] {
-    guard let searchText = searchBar.text,
+//    guard let searchText = searchBar.text,
+    guard let searchText = searchController.searchBar.text,
           !searchText.isEmpty else { return countryDelegate?.countries ?? [] }
     
     return countryDelegate?.countries.filter { $0.name.lowercased().contains(searchText.lowercased()) } ?? []
@@ -27,13 +28,22 @@ final class CountrySearchController: UIViewController {
     countriesPostSearch.filter { $0.name.starts(with: String(letter)) }
   }
   
-  private lazy var searchBar: UISearchBar = {
-    let bar = UISearchBar().autolayoutEnabled
-    bar.autocapitalizationType = .words
-    bar.delegate = self
+//  private lazy var searchBar: UISearchBar = {
+//    let bar = UISearchBar().autolayoutEnabled
+//    bar.autocapitalizationType = .words
+//    bar.delegate = self
+//
+//
+//    return bar
+//  }()
+  
+  private lazy var searchController: UISearchController = {
+    let ctrl = UISearchController(searchResultsController: nil)
+    ctrl.searchResultsUpdater = self
+    ctrl.obscuresBackgroundDuringPresentation = false
+    ctrl.searchBar.placeholder = "Search for a country"
     
-    
-    return bar
+    return ctrl
   }()
   
   private lazy var doneButton: UIButton = {
@@ -65,6 +75,9 @@ final class CountrySearchController: UIViewController {
     
     view.backgroundColor = .systemBackground
     
+    navigationItem.searchController = searchController
+    navigationItem.hidesSearchBarWhenScrolling = false
+    
     view.addSubview(tableView)
     view.addSubview(doneButton)
     
@@ -76,14 +89,15 @@ final class CountrySearchController: UIViewController {
 //    definesPresentationContext = true
     
     view.backgroundColor = .systemBackground
-    view.addSubview(searchBar)
+//    view.addSubview(searchBar)
     
     NSLayoutConstraint.activate([
-      searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-      searchBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-      searchBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-      
-      tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
+//      searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+//      searchBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+//      searchBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+//
+//      tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
+      tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
       tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
       tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
       tableView.bottomAnchor.constraint(equalTo: doneButton.topAnchor),
@@ -176,8 +190,14 @@ extension CountrySearchController: UITableViewDelegate, UITableViewDataSource {
   }
 }
 
-extension CountrySearchController: UISearchBarDelegate {
-  func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+//extension CountrySearchController: UISearchBarDelegate {
+//  func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+//    tableView.reloadData()
+//  }
+//}
+
+extension CountrySearchController: UISearchResultsUpdating {
+  func updateSearchResults(for searchController: UISearchController) {
     tableView.reloadData()
   }
 }
