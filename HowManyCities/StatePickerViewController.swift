@@ -227,6 +227,8 @@ extension StatePickerViewController: UITableViewDelegate, UITableViewDataSource 
       cell.indentationLevel = 1
     }
     
+    cell.highlightSearch(normalizedSearchText)
+    
     if cell.associatedMode == selectedMode {
       cell.accessoryType = .checkmark
       DispatchQueue.main.async {
@@ -272,5 +274,18 @@ final class StateTableViewCell: UITableViewCell {
     didSet {
       textLabel?.text = associatedMode.fullDisplayName
     }
+  }
+  
+  func highlightSearch(_ term: String?) {
+    guard let term = term, !term.isEmpty,
+          let existingText = textLabel?.text else {
+      return
+    }
+    
+    let highlightRange = NSString(string: existingText).range(of: term, options: [.caseInsensitive, .diacriticInsensitive])
+    let attributedString = NSMutableAttributedString(string: existingText)
+    attributedString.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: UIFont.labelFontSize), range: highlightRange)
+      
+    textLabel?.attributedText = attributedString
   }
 }
