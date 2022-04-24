@@ -91,7 +91,6 @@ enum GuessMode {
           let normalizedTopLevelCountryName = normalizedCountryName(location.name)
           let string = NSMutableAttributedString(attributedString: shortName(for: normalizedTopLevelCountryName))
           string.append(.init(string: "/", attributes: shortNameAttributes))
-//          string.append(shortName(for: childState.name))
           string.append(GuessMode.specific(childState).shortDisplayName)
           
           return string
@@ -108,7 +107,6 @@ enum GuessMode {
     
     if countryCode.isEmpty {
       // maybe it's a state we're dealing with
-      // TODO: apply this to all given states
       countryCode = stateAbbreviations[locationName] ?? ""
     }
     

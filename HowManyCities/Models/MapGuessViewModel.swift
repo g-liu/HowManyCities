@@ -21,7 +21,6 @@ final class MapGuessViewModel: NSObject {
   var delegate: MapGuessDelegate?
   
   private(set) var guessMode: GuessMode = .any
-  var selectedRow: Int = 0 // TODO: BAD!!!!
   
   private var model: MapGuessModel = .init()
   
