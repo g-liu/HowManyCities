@@ -39,12 +39,12 @@ struct State: Codable {
   var name: String
   var states: [State]?
   
-  enum CodingKeys: String, CodingKey {
+  enum BaseCodingKeys: String, CodingKey {
     case value
     case name
   }
   
-  enum AnotherCodingKeys: String, CodingKey {
+  enum RecursiveCodingKeys: String, CodingKey {
     case value = "group"
     case name = "label"
     case states
@@ -52,19 +52,38 @@ struct State: Codable {
   
   init(from decoder: Decoder) throws {
     do {
-      let values = try decoder.container(keyedBy: AnotherCodingKeys.self)
+      // Nested level of states
+      let values = try decoder.container(keyedBy: RecursiveCodingKeys.self)
       self.value = try values.decode(String.self, forKey: .value)
       self.name = try values.decode(String.self, forKey: .name)
       self.states = try values.decode([State].self, forKey: .states)
     } catch {
       do {
-        let values = try decoder.container(keyedBy: CodingKeys.self)
+        // No nested levels
+        let values = try decoder.container(keyedBy: BaseCodingKeys.self)
         self.value = try values.decode(String.self, forKey: .value)
         self.name = try values.decode(String.self, forKey: .name)
         self.states = nil
       } catch {
-        fatalError("You're stupid")
+        fatalError("Well shit")
       }
     }
+  }
+  
+  func encode(to encoder: Encoder) throws {
+    // depends on if it's nested or not
+    if !(states?.isEmpty ?? true) {
+      // nested encoding OH BOYYYYY
+      var container = encoder.container(keyedBy: RecursiveCodingKeys.self)
+      try container.encode(value, forKey: .value)
+      try container.encode(name, forKey: .name)
+      try container.encode(states, forKey: .states)
+    } else {
+      // that's all
+      var container = encoder.container(keyedBy: BaseCodingKeys.self)
+      try container.encode(value, forKey: .value)
+      try container.encode(name, forKey: .name)
+    }
+    
   }
 }
