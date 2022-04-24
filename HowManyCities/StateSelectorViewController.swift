@@ -241,7 +241,9 @@ extension StateSearchController: UITableViewDelegate, UITableViewDataSource {
     
     if cell.associatedMode == selectedMode {
       cell.accessoryType = .checkmark
-//      cell.setSelected(true, animated: false)
+      DispatchQueue.main.async {
+        tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
+      }
     } else {
       cell.accessoryType = .none
 //      cell.setSelected(false, animated: false)

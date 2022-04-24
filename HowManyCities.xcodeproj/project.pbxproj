@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6C7F4D9C2814F52000F90FDE /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7F4D9B2814F52000F90FDE /* State.swift */; };
+		6C7F4D9E2815054000F90FDE /* StateAbbreviations.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6C7F4D9D2815054000F90FDE /* StateAbbreviations.plist */; };
 		6C82DBD527F533D80084159F /* ArraySlice+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C82DBD427F533D80084159F /* ArraySlice+Extension.swift */; };
 		6C82DBD727F5380D0084159F /* CLLocationCoordinate2D+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C82DBD627F5380D0084159F /* CLLocationCoordinate2D+Extension.swift */; };
 		6C82DBD927F53A310084159F /* Bool+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C82DBD827F53A310084159F /* Bool+Extension.swift */; };
@@ -75,6 +76,7 @@
 		51E341790A486DEC11C8DED5 /* Pods_HowManyCities_HowManyCitiesUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HowManyCities_HowManyCitiesUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E08EA20EB451FE21A3BAC71 /* Pods_HowManyCities.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HowManyCities.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C7F4D9B2814F52000F90FDE /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
+		6C7F4D9D2815054000F90FDE /* StateAbbreviations.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = StateAbbreviations.plist; sourceTree = "<group>"; };
 		6C82DBD427F533D80084159F /* ArraySlice+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ArraySlice+Extension.swift"; sourceTree = "<group>"; };
 		6C82DBD627F5380D0084159F /* CLLocationCoordinate2D+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CLLocationCoordinate2D+Extension.swift"; sourceTree = "<group>"; };
 		6C82DBD827F53A310084159F /* Bool+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bool+Extension.swift"; sourceTree = "<group>"; };
@@ -218,6 +220,7 @@
 				6CAD7FF227F381E10057A41E /* LaunchScreen.storyboard */,
 				6CAD7FF527F381E10057A41E /* Info.plist */,
 				6CC3C57D2804E41300AE5C50 /* StateSelectorViewController.swift */,
+				6C7F4D9D2815054000F90FDE /* StateAbbreviations.plist */,
 			);
 			path = HowManyCities;
 			sourceTree = "<group>";
@@ -425,6 +428,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6C7F4D9E2815054000F90FDE /* StateAbbreviations.plist in Resources */,
 				6CAD7FF427F381E10057A41E /* LaunchScreen.storyboard in Resources */,
 				6CAD7FF127F381E10057A41E /* Assets.xcassets in Resources */,
 			);

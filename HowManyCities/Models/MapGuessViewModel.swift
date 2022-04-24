@@ -222,6 +222,24 @@ extension MapGuessViewModel: guessModeDelegate {
 
 
 enum GuessMode {
+  private var shortNameAttributes: [NSAttributedString.Key: Any] {
+    [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
+     .baselineOffset: (UIFont.systemFontSize - UIFont.smallSystemFontSize) / 2.0]
+  }
+  
+  private var stateAbbreviations: [String: String] {
+    guard let url = Bundle.main.url(forResource: "StateAbbreviations", withExtension: "plist") else { return [:] }
+    
+    do {
+      let data = try Data(contentsOf: url)
+      let decoder = PropertyListDecoder()
+      return try decoder.decode([String: String].self, from: data)
+    } catch {
+      print("Unable to read plist of state abbreviations")
+      return [:]
+    }
+  }
+  
   case any
   case every
   // Precondition: state.states is either nil, empty, or contains exactly 1 item
@@ -268,15 +286,13 @@ enum GuessMode {
   }
   
   var shortDisplayName: NSAttributedString {
-    let offsetFactor = (UIFont.systemFontSize - UIFont.smallSystemFontSize) / 2
     
     switch self {
       case .any:
         return NSAttributedString(string: "🌎")
         
       case .every:
-        let countryCodeString = NSAttributedString(string: " ALL", attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
-                                                                                .baselineOffset: offsetFactor])
+        let countryCodeString = NSAttributedString(string: " ALL", attributes: shortNameAttributes)
         let ms = NSMutableAttributedString(string: "🌎")
         ms.append(countryCodeString)
         return .init(attributedString: ms)
@@ -284,19 +300,39 @@ enum GuessMode {
       case .specific(let location):
         // recursive case
         if let childState = location.states?.first {
-          return GuessMode.specific(childState).shortDisplayName
+          // in this case location.name could be something like "U.S. States" in which case we have to normalize it
+          let normalizedTopLevelCountryName = normalizedCountryName(location.name)
+          let string = NSMutableAttributedString(attributedString: shortName(for: normalizedTopLevelCountryName))
+          string.append(.init(string: "/", attributes: shortNameAttributes))
+//          string.append(shortName(for: childState.name))
+          string.append(GuessMode.specific(childState).shortDisplayName)
+          
+          return string
         }
         
         // base case
-        let countryCode = locale(for: location.name)
-        let flag = flag(for: countryCode)
-        
-        let countryCodeString = NSAttributedString(string: " \(countryCode)", attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
-                                                                                           .baselineOffset: offsetFactor])
-        let ms = NSMutableAttributedString(string: flag)
-        ms.append(countryCodeString)
-        
-        return .init(attributedString: ms)
+        return shortName(for: location.name)
+    }
+  }
+  
+  private func shortName(for locationName: String) -> NSAttributedString {
+    var countryCode = locale(for: locationName)
+    let flag = flag(for: countryCode)
+    
+    if countryCode.isEmpty {
+      // maybe it's a state we're dealing with
+      // TODO: apply this to all given states
+      countryCode = stateAbbreviations[locationName] ?? ""
+    }
+    
+    let countryCodeString = NSAttributedString(string: "\(countryCode)", attributes: shortNameAttributes)
+  
+    if !flag.isEmpty {
+      let ms = NSMutableAttributedString(string: "\(flag) ")
+      ms.append(countryCodeString)
+      return .init(attributedString: ms)
+    } else {
+      return countryCodeString
     }
   }
   
@@ -342,6 +378,22 @@ enum GuessMode {
       }
     }
     return locales
+  }
+  
+  private func normalizedCountryName(_ string: String) -> String {
+    if string.starts(with: "Australian") {
+      return "Australia"
+    } else if string.starts(with: "Brazilian") {
+      return "Brazil"
+    } else if string.starts(with: "Canadian") {
+      return "Canada"
+    } else if string.starts(with: "Mexican") {
+      return "Mexico"
+    } else if string.starts(with: "U.S.") {
+      return "United States"
+    } else {
+      return ""
+    }
   }
 }
 
