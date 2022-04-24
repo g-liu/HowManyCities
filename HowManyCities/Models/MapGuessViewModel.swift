@@ -316,8 +316,12 @@ enum GuessMode {
   }
 }
 
-extension MapGuessViewModel: CountrySearchDelegate {
-  var countries: [State] {
+extension MapGuessViewModel: StateSearchDelegate {
+  var topLevelStates: [State] {
     model.gameConfiguration?.topLevelStates ?? []
+  }
+  
+  var lowerDivisionStates: [State] {
+    model.gameConfiguration?.lowerDivisionStates ?? []
   }
 }

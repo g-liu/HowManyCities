@@ -28,6 +28,10 @@ struct GameConfiguration: Codable {
   var topLevelStates: [State] {
     states.filter { $0.states?.isEmpty ?? true }
   }
+  
+  var lowerDivisionStates: [State] {
+    states.filter { !($0.states?.isEmpty ?? true) }
+  }
 }
 
 struct State: Codable {

@@ -1,5 +1,5 @@
 //
-//  CountrySelectorViewController.swift
+//  StateSelectorViewController.swift
 //  HowManyCities
 //
 //  Created by Geoffrey Liu on 4/11/22.
@@ -7,25 +7,37 @@
 
 import UIKit
 
-protocol CountrySearchDelegate: AnyObject {
-  var countries: [State] { get }
+protocol StateSearchDelegate: AnyObject {
+  var topLevelStates: [State] { get }
+  var lowerDivisionStates: [State] { get }
 }
 
 
-final class CountrySearchController: UIViewController {
+final class StateSearchController: UIViewController {
   
   private var specialSectionLabels: [GuessMode] = [.any, .every]
   
-  private var countriesPostSearch: [State] {
+  private var presentedStates: [State] {
 //    guard let searchText = searchBar.text,
+    let scopeIndex = searchController.searchBar.selectedScopeButtonIndex
     guard let searchText = searchController.searchBar.text,
-          !searchText.isEmpty else { return countryDelegate?.countries ?? [] }
+          !searchText.isEmpty else {
+      if scopeIndex == 0 {
+        return statesDelegate?.topLevelStates ?? []
+      } else {
+        return statesDelegate?.lowerDivisionStates ?? []
+      }
+    }
     
-    return countryDelegate?.countries.filter { $0.name.lowercased().contains(searchText.lowercased()) } ?? []
+    if scopeIndex == 0 {
+      return statesDelegate?.topLevelStates.filter { $0.name.lowercased().contains(searchText.lowercased()) } ?? []
+    } else {
+      return statesDelegate?.lowerDivisionStates.filter { $0.name.lowercased().contains(searchText.lowercased()) } ?? []
+    }
   }
   
-  private func countriesStartingWith(_ letter: Character) -> [State] {
-    countriesPostSearch.filter { $0.name.starts(with: String(letter)) }
+  private func statesStartingWith(_ letter: Character) -> [State] {
+    presentedStates.filter { $0.name.starts(with: String(letter)) }
   }
   
 //  private lazy var searchBar: UISearchBar = {
@@ -38,12 +50,16 @@ final class CountrySearchController: UIViewController {
 //  }()
   
   private lazy var searchController: UISearchController = {
-    let ctrl = UISearchController(searchResultsController: nil)
-    ctrl.searchResultsUpdater = self
-    ctrl.obscuresBackgroundDuringPresentation = false
-    ctrl.searchBar.placeholder = "Search for a country"
+    let searchController = UISearchController(searchResultsController: nil)
+    searchController.searchResultsUpdater = self
+    searchController.obscuresBackgroundDuringPresentation = false
+    searchController.searchBar.autocapitalizationType = .words
+    searchController.searchBar.placeholder = "Search for a country"
+    searchController.searchBar.scopeButtonTitles = ["Countries", "States"]
+    searchController.searchBar.showsScopeBar = true
+    searchController.searchBar.delegate = self
     
-    return ctrl
+    return searchController
   }()
   
   private lazy var doneButton: UIButton = {
@@ -53,7 +69,7 @@ final class CountrySearchController: UIViewController {
     button.titleLabel?.numberOfLines = 1
     button.setTitleColor(.systemBlue, for: .normal)
     button.contentHorizontalAlignment = .center
-    button.addTarget(self, action: #selector(didSelectCountry), for: .touchUpInside)
+    button.addTarget(self, action: #selector(didSelectState), for: .touchUpInside)
     
     return button
   }()
@@ -68,7 +84,7 @@ final class CountrySearchController: UIViewController {
     return tableView
   }()
   
-  weak var countryDelegate: CountrySearchDelegate?
+  weak var statesDelegate: StateSearchDelegate?
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -83,7 +99,7 @@ final class CountrySearchController: UIViewController {
     
     title = "Pick a country"
     navigationItem.title = "Pick a country"
-    navigationItem.rightBarButtonItem = .init(title: "Done", style: .done, target: self, action: #selector(didSelectCountry)) // TODO: impl
+    navigationItem.rightBarButtonItem = .init(title: "Done", style: .done, target: self, action: #selector(didSelectState)) // TODO: impl
     navigationItem.leftBarButtonItem = .init(barButtonSystemItem: .close, target: self, action: #selector(didCloseSelector))
     
 //    definesPresentationContext = true
@@ -110,9 +126,11 @@ final class CountrySearchController: UIViewController {
     tableView.dataSource = self
     tableView.delegate = self
     tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+    
+    searchController.searchBar.becomeFirstResponder()
   }
   
-  @objc private func didSelectCountry() {
+  @objc private func didSelectState() {
     // TODO: impl
     dismiss(animated: true)
   }
@@ -122,7 +140,7 @@ final class CountrySearchController: UIViewController {
   }
 }
 
-extension CountrySearchController: UITableViewDelegate, UITableViewDataSource {
+extension StateSearchController: UITableViewDelegate, UITableViewDataSource {
   func numberOfSections(in tableView: UITableView) -> Int {
     // 1 special section at the top
     1 + 26 // TODO: Update this based on search results
@@ -142,7 +160,7 @@ extension CountrySearchController: UITableViewDelegate, UITableViewDataSource {
     }
     
     let letter = Character(UnicodeScalar(65+(section-1))!)
-    return countriesStartingWith(letter).count
+    return statesStartingWith(letter).count
   }
   
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -161,10 +179,10 @@ extension CountrySearchController: UITableViewDelegate, UITableViewDataSource {
     }
     
     let letter = Character(UnicodeScalar(65+(indexPath.section-1))!)
-    let countriesWithLetter = countriesStartingWith(letter)
+    let statesWithLetter = statesStartingWith(letter)
     
-    let countryName = countriesWithLetter[indexPath.row].name
-    cell.textLabel?.text = GuessMode.specific(countryName).fullDisplayName
+    let stateName = statesWithLetter[indexPath.row].name
+    cell.textLabel?.text = GuessMode.specific(stateName).fullDisplayName
     
     return cell
   }
@@ -190,14 +208,26 @@ extension CountrySearchController: UITableViewDelegate, UITableViewDataSource {
   }
 }
 
-//extension CountrySearchController: UISearchBarDelegate {
+extension StateSearchController: UISearchBarDelegate {
 //  func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
 //    tableView.reloadData()
 //  }
-//}
+//
+  func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+    // TODO: do this
+    let term = selectedScope == 0 ? "country" : "state"
+    searchBar.placeholder = "Search for a \(term)"
+    title = "Pick a \(term)"
+    navigationItem.title = "Pick a \(term)"
+  }
+}
 
-extension CountrySearchController: UISearchResultsUpdating {
+extension StateSearchController: UISearchResultsUpdating {
   func updateSearchResults(for searchController: UISearchController) {
     tableView.reloadData()
   }
+}
+
+extension StateSearchController: UISearchControllerDelegate {
+  
 }
