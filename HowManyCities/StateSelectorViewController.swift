@@ -96,6 +96,9 @@ final class StateSearchController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    NotificationCenter.default.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillShowNotification, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
+    
     view.backgroundColor = .systemBackground
     
     navigationItem.searchController = searchController
@@ -125,6 +128,20 @@ final class StateSearchController: UIViewController {
     super.viewDidAppear(animated)
     DispatchQueue.main.async { [weak self] in
       self?.searchController.searchBar.becomeFirstResponder()
+    }
+  }
+  
+  @objc private func adjustForKeyboard(notification: Notification) {
+    guard let userInfo = notification.userInfo else { return }
+    let keyboardRect = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+    let keyboardFrame = view.convert(keyboardRect, from: view.window)
+
+    if notification.name == UIResponder.keyboardWillShowNotification {
+      tableView.contentInset.top = 0
+      tableView.contentInset.bottom = keyboardFrame.height
+    } else {
+      tableView.contentInset.top = 0
+      tableView.contentInset.bottom = 0
     }
   }
   
