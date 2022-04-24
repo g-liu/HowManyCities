@@ -200,8 +200,9 @@ final class MapGuessViewController: UIViewController {
 //    alert.addAction(title: "Select", style: .default, isEnabled: true)
 //
 //    present(alert, animated: true)
-    let searchController = StateSearchController()
-    searchController.statesDelegate = viewModel
+    let searchController = StateSearchController(selectedMode: viewModel.guessMode)
+    searchController.guessModeDelegate = viewModel
+    searchController.statesDataSource = viewModel
     present(UINavigationController(rootViewController: searchController), animated: true)
   }
   

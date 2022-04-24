@@ -7,9 +7,13 @@
 
 import UIKit
 
-protocol StateSearchDelegate: AnyObject {
+protocol StatesDataSource: AnyObject {
   var topLevelStates: [State] { get }
   var lowerDivisionStates: [State] { get }
+}
+
+protocol guessModeDelegate: AnyObject {
+  func didChangeGuessMode(_ mode: GuessMode)
 }
 
 
@@ -24,10 +28,10 @@ final class StateSearchController: UIViewController {
   private var presentedTopLevelStates: [State] {
     guard let searchText = normalizedSearchText,
           !searchText.isEmpty else {
-      return statesDelegate?.topLevelStates ?? []
+      return statesDataSource?.topLevelStates ?? []
     }
   
-    return statesDelegate?.topLevelStates.filter {
+    return statesDataSource?.topLevelStates.filter {
       let countryNameNormalized = $0.name.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
       return countryNameNormalized.contains(searchText)
     } ?? []
@@ -49,7 +53,13 @@ final class StateSearchController: UIViewController {
     } ?? []
   }
   
-  private var selectedMode: GuessMode? = nil
+  private var selectedMode: GuessMode {
+    didSet {
+//      if let selectedMode = selectedMode {
+        guessModeDelegate?.didChangeGuessMode(selectedMode)
+//      }
+    }
+  }
   
   private lazy var searchController: UISearchController = {
     let searchController = UISearchController(searchResultsController: nil)
@@ -74,7 +84,18 @@ final class StateSearchController: UIViewController {
     return tableView
   }()
   
-  weak var statesDelegate: StateSearchDelegate?
+  weak var statesDataSource: StatesDataSource?
+  
+  weak var guessModeDelegate: guessModeDelegate?
+  
+  init(selectedMode: GuessMode) {
+    self.selectedMode = selectedMode
+    super.init(nibName: nil, bundle: nil)
+  }
+  
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -128,13 +149,13 @@ final class StateSearchController: UIViewController {
 extension StateSearchController: UITableViewDelegate, UITableViewDataSource {
   func numberOfSections(in tableView: UITableView) -> Int {
     // 1 special section at the top
-    1 + 26 + (statesDelegate?.lowerDivisionStates.count ?? 0) // TODO: Update this based on search results
+    1 + 26 + (statesDataSource?.lowerDivisionStates.count ?? 0) // TODO: Update this based on search results
   }
   
   func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
     if section >= 26 + 1,
        (tableView.dataSource?.tableView(tableView, numberOfRowsInSection: section) ?? 0) > 0 {
-      return statesDelegate?.lowerDivisionStates[section - (26+1)].name
+      return statesDataSource?.lowerDivisionStates[section - (26+1)].name
     } else {
       return nil
     }
@@ -168,7 +189,7 @@ extension StateSearchController: UITableViewDelegate, UITableViewDataSource {
     
     else {
       // this is states, territories, and provinces
-      guard let parentState = statesDelegate?.lowerDivisionStates[section-(26+1)] else { return 0 }
+      guard let parentState = statesDataSource?.lowerDivisionStates[section-(26+1)] else { return 0 }
       return presentedLowerDivisionStates(for: parentState).count
     }
   }
@@ -208,7 +229,7 @@ extension StateSearchController: UITableViewDelegate, UITableViewDataSource {
     else if indexPath.section >= 1+26 {
       // provinces states territories
       // TODO: figure out filtering
-      guard var parentState = statesDelegate?.lowerDivisionStates[indexPath.section-(1+26)] else { return cell }
+      guard var parentState = statesDataSource?.lowerDivisionStates[indexPath.section-(1+26)] else { return cell }
       let childStates = presentedLowerDivisionStates(for: parentState)
       parentState.states = [childStates[indexPath.row]]
       let guessMode = GuessMode.specific(parentState)
@@ -220,8 +241,10 @@ extension StateSearchController: UITableViewDelegate, UITableViewDataSource {
     
     if cell.associatedMode == selectedMode {
       cell.accessoryType = .checkmark
+//      cell.setSelected(true, animated: false)
     } else {
       cell.accessoryType = .none
+//      cell.setSelected(false, animated: false)
     }
     
     return cell
@@ -242,10 +265,12 @@ extension StateSearchController: UITableViewDelegate, UITableViewDataSource {
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     guard let stateCell = tableView.cellForRow(at: indexPath) as? StateTableViewCell else { return }
     stateCell.accessoryType = .checkmark
+//    tableView.reloadRows(at: [indexPath], with: .none)
     selectedMode = stateCell.associatedMode
   }
   
   func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+//    tableView.reloadRows(at: [indexPath], with: .none)
     tableView.cellForRow(at: indexPath)?.accessoryType = .none
   }
 }

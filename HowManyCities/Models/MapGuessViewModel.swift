@@ -20,7 +20,7 @@ protocol MapGuessDelegate: AnyObject {
 final class MapGuessViewModel: NSObject {
   var delegate: MapGuessDelegate?
   
-  private var guessMode: GuessMode = .any
+  private(set) var guessMode: GuessMode = .any
   var selectedRow: Int = 0 // TODO: BAD!!!!
   
   private var model: MapGuessModel = .init()
@@ -178,46 +178,54 @@ enum CityGuessError: Error {
   }
 }
 
-extension MapGuessViewModel: UIPickerViewDelegate, UIPickerViewDataSource {
-  func numberOfComponents(in pickerView: UIPickerView) -> Int {
-    1
+extension MapGuessViewModel: guessModeDelegate {
+  func didChangeGuessMode(_ mode: GuessMode) {
+    guessMode = mode
+    delegate?.didChangeGuessMode(mode)
   }
-  
-  func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-    (model.gameConfiguration?.topLevelStates.count ?? 0) + 2
-  }
-  
-  func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-    if row == 0 { return "Any country" }
-    if row == 1 { return "Every country" }
-    
-    guard let states = model.gameConfiguration?.topLevelStates else {
-      return nil
-    }
-    
-    return states[row-2].name
-  }
-  
-  func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-    selectedRow = row
-    
-    if row == 0 { guessMode = .any }
-    if row == 1 { guessMode = .every }
-    
-    if row >= 2, let states = model.gameConfiguration?.topLevelStates {
-      guessMode = .specific(states[row-2])
-    }
-    
-    delegate?.didChangeGuessMode(guessMode)
-  }
-  
 }
+
+//extension MapGuessViewModel: UIPickerViewDelegate, UIPickerViewDataSource {
+//  func numberOfComponents(in pickerView: UIPickerView) -> Int {
+//    1
+//  }
+//
+//  func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+//    (model.gameConfiguration?.topLevelStates.count ?? 0) + 2
+//  }
+//
+//  func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+//    if row == 0 { return "Any country" }
+//    if row == 1 { return "Every country" }
+//
+//    guard let states = model.gameConfiguration?.topLevelStates else {
+//      return nil
+//    }
+//
+//    return states[row-2].name
+//  }
+//
+//  func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+//    selectedRow = row
+//
+//    if row == 0 { guessMode = .any }
+//    if row == 1 { guessMode = .every }
+//
+//    if row >= 2, let states = model.gameConfiguration?.topLevelStates {
+//      guessMode = .specific(states[row-2])
+//    }
+//
+//    delegate?.didChangeGuessMode(guessMode)
+//  }
+//
+//}
 
 
 enum GuessMode {
   case any
   case every
-  case specific(_ state: State)
+  // Precondition: state.states is either nil, empty, or contains exactly 1 item
+  case specific(_ state: State) // TODO: As State can be hierarchical, must differentiate between top level and lower level states especially in the derived variables
   
   var string: String {
     switch self {
@@ -226,6 +234,12 @@ enum GuessMode {
       case .every:
         return "all"
       case .specific(let location):
+        // recursive case
+        if let childState = location.states?.first {
+          return GuessMode.specific(childState).string + ", " + location.name
+        }
+        
+        // base case
         return location.name
     }
   }
@@ -268,6 +282,12 @@ enum GuessMode {
         return .init(attributedString: ms)
         
       case .specific(let location):
+        // recursive case
+        if let childState = location.states?.first {
+          return GuessMode.specific(childState).shortDisplayName
+        }
+        
+        // base case
         let countryCode = locale(for: location.name)
         let flag = flag(for: countryCode)
         
@@ -340,7 +360,7 @@ extension GuessMode: Equatable {
 //  }
 }
 
-extension MapGuessViewModel: StateSearchDelegate {
+extension MapGuessViewModel: StatesDataSource {
   var topLevelStates: [State] {
     model.gameConfiguration?.topLevelStates ?? []
   }
