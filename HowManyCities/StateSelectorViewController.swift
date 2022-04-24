@@ -148,10 +148,13 @@ final class StateSearchController: UIViewController {
   }
   
   @objc private func didCloseSelector() {
-    searchController.searchBar.resignFirstResponder()
-    resignFirstResponder()
-    DispatchQueue.main.async {
-      self.dismiss(animated: true)
+    // Yes we have to call it twice once to dismiss the keyboard and once to dismiss the vc itself
+    DispatchQueue.main.async { [weak self] in
+      self?.searchController.dismiss(animated: true) {
+        DispatchQueue.main.async { [weak self] in
+          self?.dismiss(animated: true)
+        }
+      }
     }
   }
 }
@@ -244,12 +247,17 @@ extension StateSearchController: UITableViewDelegate, UITableViewDataSource {
   
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     guard let stateCell = tableView.cellForRow(at: indexPath) as? StateTableViewCell else { return }
+    searchController.dismiss(animated: true)
     stateCell.accessoryType = .checkmark
     selectedMode = stateCell.associatedMode
   }
   
   func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
     tableView.cellForRow(at: indexPath)?.accessoryType = .none
+  }
+  
+  func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+    searchController.dismiss(animated: true)
   }
 }
 
