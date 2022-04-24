@@ -254,7 +254,7 @@ enum GuessMode {
       case .specific(let location):
         // recursive case
         if let childState = location.states?.first {
-          return GuessMode.specific(childState).string + ", " + location.name
+          return GuessMode.specific(childState).string + ", " + normalizedCountryName(location.name)
         }
         
         // base case
@@ -392,7 +392,7 @@ enum GuessMode {
     } else if string.starts(with: "U.S.") {
       return "United States"
     } else {
-      return ""
+      return string
     }
   }
 }
