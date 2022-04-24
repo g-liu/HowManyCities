@@ -4,6 +4,8 @@
 <dict>
 	<key>Northern Territory</key>
 	<string>NT</string>
+	<key>Australian Capital Territory</key>
+	<string>ACT</string>
 	<key>Queensland</key>
 	<string>QLD</string>
 	<key>South Australia</key>
