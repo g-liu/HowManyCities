@@ -17,17 +17,36 @@ final class StateSearchController: UIViewController {
   
   private var specialSectionLabels: [GuessMode] = [.any, .every]
   
+  private var normalizedSearchText: String? {
+    searchController.searchBar.text?.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
+  }
+  
   private var presentedTopLevelStates: [State] {
-    guard let searchText = searchController.searchBar.text,
+    guard let searchText = normalizedSearchText,
           !searchText.isEmpty else {
       return statesDelegate?.topLevelStates ?? []
     }
   
-    return statesDelegate?.topLevelStates.filter { $0.name.lowercased().contains(searchText.lowercased()) } ?? []
+    return statesDelegate?.topLevelStates.filter {
+      let countryNameNormalized = $0.name.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
+      return countryNameNormalized.contains(searchText)
+    } ?? []
   }
   
   private func topLevelStatesStartingWith(_ letter: Character) -> [State] {
     presentedTopLevelStates.filter { $0.name.starts(with: String(letter)) }
+  }
+  
+  private func presentedLowerDivisionStates(for state: State) -> [State] {
+    guard let searchText = normalizedSearchText,
+          !searchText.isEmpty else {
+      return state.states ?? []
+    }
+    
+    return state.states?.filter {
+      let countryNameNormalized = $0.name.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
+      return countryNameNormalized.contains(searchText)
+    } ?? []
   }
   
   private lazy var searchController: UISearchController = {
@@ -111,7 +130,8 @@ extension StateSearchController: UITableViewDelegate, UITableViewDataSource {
   }
   
   func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-    if section >= 26 + 1 {
+    if section >= 26 + 1,
+       (tableView.dataSource?.tableView(tableView, numberOfRowsInSection: section) ?? 0) > 0 {
       return statesDelegate?.lowerDivisionStates[section - (26+1)].name
     } else {
       return nil
@@ -121,6 +141,14 @@ extension StateSearchController: UITableViewDelegate, UITableViewDataSource {
   func sectionIndexTitles(for tableView: UITableView) -> [String]? {
     "🌎ABCDEFGHIJKLMNOPQRSTUVWXYZ🗺".map(String.init)
   }
+  
+//  func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+//    if tableView.numberOfRows(inSection: section) == 0 {
+//      return 0
+//    } else {
+//      return UITableView.automaticDimension
+//    }
+//  }
       
   func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
       index
@@ -138,13 +166,15 @@ extension StateSearchController: UITableViewDelegate, UITableViewDataSource {
     
     else {
       // this is states, territories, and provinces
-      return statesDelegate?.lowerDivisionStates[section-(26+1)].states?.count ?? 0
+      guard let parentState = statesDelegate?.lowerDivisionStates[section-(26+1)] else { return 0 }
+      return presentedLowerDivisionStates(for: parentState).count
     }
   }
   
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
     cell.selectionStyle = .none
+    cell.indentationLevel = 0
     
     if indexPath == tableView.indexPathForSelectedRow {
       cell.accessoryType = .checkmark
@@ -171,8 +201,11 @@ extension StateSearchController: UITableViewDelegate, UITableViewDataSource {
     if indexPath.section >= 1+26 {
       // provinces states territories
       // TODO: figure out filtering
-      let stateName = statesDelegate?.lowerDivisionStates[indexPath.section-(1+26)].states?[indexPath.row].name
+      guard let parentState = statesDelegate?.lowerDivisionStates[indexPath.section-(1+26)] else { return cell }
+      let childStates = presentedLowerDivisionStates(for: parentState)
+      let stateName = childStates[indexPath.row].name
       cell.textLabel?.text = stateName
+      cell.indentationLevel = 1
       
       return cell
     }
