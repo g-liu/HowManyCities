@@ -178,7 +178,7 @@ enum CityGuessError: Error {
   }
 }
 
-extension MapGuessViewModel: guessModeDelegate {
+extension MapGuessViewModel: GuessModeDelegate {
   func didChangeGuessMode(_ mode: GuessMode) {
     guessMode = mode
     delegate?.didChangeGuessMode(mode)

@@ -12,7 +12,7 @@ protocol StatesDataSource: AnyObject {
   var lowerDivisionStates: [State] { get }
 }
 
-protocol guessModeDelegate: AnyObject {
+protocol GuessModeDelegate: AnyObject {
   func didChangeGuessMode(_ mode: GuessMode)
 }
 
@@ -87,7 +87,7 @@ final class StateSearchController: UIViewController {
   
   weak var statesDataSource: StatesDataSource?
   
-  weak var guessModeDelegate: guessModeDelegate?
+  weak var guessModeDelegate: GuessModeDelegate?
   
   init(selectedMode: GuessMode) {
     self.selectedMode = selectedMode
