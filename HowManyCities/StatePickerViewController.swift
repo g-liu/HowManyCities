@@ -1,5 +1,5 @@
 //
-//  StateSelectorViewController.swift
+//  StatePickerViewController.swift
 //  HowManyCities
 //
 //  Created by Geoffrey Liu on 4/11/22.
@@ -17,7 +17,7 @@ protocol GuessModeDelegate: AnyObject {
 }
 
 
-final class StateSearchController: UIViewController {
+final class StatePickerViewController: UIViewController {
   
   private var specialModes: [GuessMode] = [.any, .every]
   
@@ -107,19 +107,13 @@ final class StateSearchController: UIViewController {
     navigationItem.hidesSearchBarWhenScrolling = false
     
     view.addSubview(tableView)
+    tableView.pin(to: view)
     
     title = "Pick a location"
     navigationItem.title = "Pick a location"
     navigationItem.rightBarButtonItem = .init(title: "Done", style: .done, target: self, action: #selector(didCloseSelector))
     
     view.backgroundColor = .systemBackground
-    
-    NSLayoutConstraint.activate([
-      tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-      tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-      tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-      tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-    ])
     
     tableView.dataSource = self
     tableView.delegate = self
@@ -159,7 +153,7 @@ final class StateSearchController: UIViewController {
   }
 }
 
-extension StateSearchController: UITableViewDelegate, UITableViewDataSource {
+extension StatePickerViewController: UITableViewDelegate, UITableViewDataSource {
   func numberOfSections(in tableView: UITableView) -> Int {
     // 1 special section at the top
     // 26 sections for countries ordered by name
@@ -261,13 +255,13 @@ extension StateSearchController: UITableViewDelegate, UITableViewDataSource {
   }
 }
 
-extension StateSearchController: UISearchResultsUpdating {
+extension StatePickerViewController: UISearchResultsUpdating {
   func updateSearchResults(for searchController: UISearchController) {
     tableView.reloadData()
   }
 }
 
-extension StateSearchController: UISearchControllerDelegate {
+extension StatePickerViewController: UISearchControllerDelegate {
   
 }
 

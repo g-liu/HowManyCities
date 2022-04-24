@@ -174,7 +174,7 @@ final class MapGuessViewController: UIViewController {
   }
   
   @objc private func didTapCountryDropdown(_ sender: UIButton) {
-    let searchController = StateSearchController(selectedMode: viewModel.guessMode)
+    let searchController = StatePickerViewController(selectedMode: viewModel.guessMode)
     searchController.guessModeDelegate = viewModel
     searchController.statesDataSource = viewModel
     present(UINavigationController(rootViewController: searchController), animated: true)
