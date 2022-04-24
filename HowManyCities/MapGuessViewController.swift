@@ -202,7 +202,7 @@ final class MapGuessViewController: UIViewController {
 //    present(alert, animated: true)
     let searchController = CountrySearchController()
     searchController.countryDelegate = viewModel
-    present(searchController, animated: true)
+    present(UINavigationController(rootViewController: searchController), animated: true)
   }
   
   private func resetMap() {

@@ -36,11 +36,24 @@ final class CountrySearchController: UIViewController {
     return bar
   }()
   
+  private lazy var doneButton: UIButton = {
+    // TODO: This may not be the right style...
+    let button = UIButton(type: .system).autolayoutEnabled
+    button.setTitle("Done", for: .normal)
+    button.titleLabel?.numberOfLines = 1
+    button.setTitleColor(.systemBlue, for: .normal)
+    button.contentHorizontalAlignment = .center
+    button.addTarget(self, action: #selector(didSelectCountry), for: .touchUpInside)
+    
+    return button
+  }()
+  
   private lazy var tableView: UITableView = {
     let tableView = UITableView(frame: .zero, style: .plain)
     tableView.translatesAutoresizingMaskIntoConstraints = false
     tableView.allowsSelection = true
     tableView.allowsMultipleSelection = false
+    tableView.backgroundColor = .systemBackground
 
     return tableView
   }()
@@ -53,9 +66,16 @@ final class CountrySearchController: UIViewController {
     view.backgroundColor = .systemBackground
     
     view.addSubview(tableView)
+    view.addSubview(doneButton)
+    
+    title = "Pick a country"
+    navigationItem.title = "Pick a country"
+    navigationItem.rightBarButtonItem = .init(title: "Done", style: .done, target: self, action: #selector(didSelectCountry)) // TODO: impl
+    navigationItem.leftBarButtonItem = .init(barButtonSystemItem: .close, target: self, action: #selector(didCloseSelector))
     
 //    definesPresentationContext = true
     
+    view.backgroundColor = .systemBackground
     view.addSubview(searchBar)
     
     NSLayoutConstraint.activate([
@@ -66,12 +86,25 @@ final class CountrySearchController: UIViewController {
       tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
       tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
       tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-      tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+      tableView.bottomAnchor.constraint(equalTo: doneButton.topAnchor),
+      
+      doneButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+      doneButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+      doneButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
     ])
     
     tableView.dataSource = self
     tableView.delegate = self
     tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+  }
+  
+  @objc private func didSelectCountry() {
+    // TODO: impl
+    dismiss(animated: true)
+  }
+  
+  @objc private func didCloseSelector() {
+    dismiss(animated: true)
   }
 }
 
