@@ -109,8 +109,8 @@ final class StateSearchController: UIViewController {
     
     title = "Pick a location"
     navigationItem.title = "Pick a location"
-    navigationItem.rightBarButtonItem = .init(title: "Done", style: .done, target: self, action: #selector(didSelectState)) // TODO: impl
-    navigationItem.leftBarButtonItem = .init(barButtonSystemItem: .close, target: self, action: #selector(didCloseSelector))
+    navigationItem.rightBarButtonItem = .init(title: "Done", style: .done, target: self, action: #selector(didCloseSelector))
+//    navigationItem.leftBarButtonItem = .init(barButtonSystemItem: .close, target: self, action: #selector(didCloseSelector))
     
 //    definesPresentationContext = true
     
@@ -134,11 +134,6 @@ final class StateSearchController: UIViewController {
     tableView.register(StateTableViewCell.self, forCellReuseIdentifier: StateTableViewCell.identifier)
     
     searchController.searchBar.becomeFirstResponder()
-  }
-  
-  @objc private func didSelectState() {
-    // TODO: impl
-    dismiss(animated: true)
   }
   
   @objc private func didCloseSelector() {
