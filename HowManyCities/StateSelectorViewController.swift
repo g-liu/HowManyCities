@@ -65,7 +65,9 @@ final class StateSearchController: UIViewController {
     searchController.obscuresBackgroundDuringPresentation = false
     searchController.searchBar.autocapitalizationType = .words
     searchController.searchBar.placeholder = "Search for a location"
+    searchController.searchBar.textContentType = .countryName
     searchController.hidesNavigationBarDuringPresentation = false
+    searchController.automaticallyShowsCancelButton = false
     
     return searchController
   }()
