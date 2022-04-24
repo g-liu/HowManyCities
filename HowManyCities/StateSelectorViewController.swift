@@ -67,6 +67,7 @@ final class StateSearchController: UIViewController {
     searchController.obscuresBackgroundDuringPresentation = false
     searchController.searchBar.autocapitalizationType = .words
     searchController.searchBar.placeholder = "Search for a location"
+    searchController.hidesNavigationBarDuringPresentation = false
 //    searchController.searchBar.scopeButtonTitles = ["Countries", "States"]
 //    searchController.searchBar.showsScopeBar = true
     searchController.searchBar.delegate = self
@@ -132,12 +133,21 @@ final class StateSearchController: UIViewController {
     tableView.dataSource = self
     tableView.delegate = self
     tableView.register(StateTableViewCell.self, forCellReuseIdentifier: StateTableViewCell.identifier)
-    
-    searchController.searchBar.becomeFirstResponder()
+  }
+  
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    DispatchQueue.main.async { [weak self] in
+      self?.searchController.searchBar.becomeFirstResponder()
+    }
   }
   
   @objc private func didCloseSelector() {
-    dismiss(animated: true)
+    searchController.searchBar.resignFirstResponder()
+    resignFirstResponder()
+    DispatchQueue.main.async {
+      self.dismiss(animated: true)
+    }
   }
 }
 
