@@ -148,14 +148,11 @@ enum GuessMode {
     let normalizedName = normalizedCountryName(fullCountryName)
     
     let identifier = NSLocale(localeIdentifier: "en_US")
-    for localeCode in NSLocale.isoCountryCodes {
+    return NSLocale.isoCountryCodes.first { localeCode in
       let countryName = identifier.displayName(forKey: NSLocale.Key.countryCode, value: localeCode)
-      if normalizedName.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current) == countryName?.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current) {
-        return localeCode
-      }
-    }
-    
-    return ""
+      
+      return normalizedName.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current) == countryName?.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+    } ?? ""
   }
   
   private func normalizedCountryName(_ string: String) -> String {
