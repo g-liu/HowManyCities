@@ -268,7 +268,7 @@ final class StateTableViewCell: UITableViewCell {
   
   var associatedMode: GuessMode = .any {
     didSet {
-      textLabel?.text = associatedMode.fullDisplayName
+      textLabel?.text = associatedMode.menuName
     }
   }
   

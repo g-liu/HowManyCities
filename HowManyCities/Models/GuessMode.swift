@@ -62,7 +62,7 @@ enum GuessMode {
     }
   }
   
-  var fullDisplayName: String {
+  var menuName: String {
     switch self {
       case .any:
         return "Any country"
@@ -71,7 +71,13 @@ enum GuessMode {
       case .specific(let location):
         // recursive case
         if let childState = location.states?.first {
-          return GuessMode.specific(childState).fullDisplayName
+          // Unfortunately, can't use recursion here
+          // There are locations in the world with same names as countries
+          // e.g. Georgia (U.S. state) vs Georgia (country)
+          // And we don't want to be mistakenly assigning country flags to non-countries with the same name
+//          return GuessMode.specific(childState).menuName
+          
+          return childState.name
         }
         
         // base case
@@ -85,7 +91,7 @@ enum GuessMode {
     }
   }
   
-  var shortDisplayName: NSAttributedString {
+  var dropdownName: NSAttributedString {
     
     switch self {
       case .any:
@@ -104,7 +110,10 @@ enum GuessMode {
           let normalizedTopLevelCountryName = normalizedCountryName(location.name)
           let string = NSMutableAttributedString(attributedString: shortName(for: normalizedTopLevelCountryName))
           string.append(.init(string: "/", attributes: shortNameAttributes))
-          string.append(GuessMode.specific(childState).shortDisplayName)
+          // Can't use recursion here for the same reason as `menuName` :(
+//          string.append(GuessMode.specific(childState).dropdownName)
+          
+          string.append(.init(string: stateAbbreviations[childState.name] ?? "", attributes: shortNameAttributes))
           
           return string
         }
