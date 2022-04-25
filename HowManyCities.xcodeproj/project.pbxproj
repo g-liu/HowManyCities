@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6C7C8D9828161AA60091E09F /* NormalizedCountryNames.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6C7C8D9728161AA60091E09F /* NormalizedCountryNames.plist */; };
 		6C7F4D9C2814F52000F90FDE /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7F4D9B2814F52000F90FDE /* State.swift */; };
 		6C7F4D9E2815054000F90FDE /* StateAbbreviations.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6C7F4D9D2815054000F90FDE /* StateAbbreviations.plist */; };
 		6C7F4DA0281515DC00F90FDE /* GuessMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7F4D9F281515DC00F90FDE /* GuessMode.swift */; };
@@ -77,6 +78,7 @@
 		498133EDACA682E2064FDA55 /* Pods_HowManyCitiesTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HowManyCitiesTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		51E341790A486DEC11C8DED5 /* Pods_HowManyCities_HowManyCitiesUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HowManyCities_HowManyCitiesUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E08EA20EB451FE21A3BAC71 /* Pods_HowManyCities.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HowManyCities.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6C7C8D9728161AA60091E09F /* NormalizedCountryNames.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = NormalizedCountryNames.plist; sourceTree = "<group>"; };
 		6C7F4D9B2814F52000F90FDE /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
 		6C7F4D9D2815054000F90FDE /* StateAbbreviations.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = StateAbbreviations.plist; sourceTree = "<group>"; };
 		6C7F4D9F281515DC00F90FDE /* GuessMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuessMode.swift; sourceTree = "<group>"; };
@@ -225,6 +227,7 @@
 				6CAD7FF527F381E10057A41E /* Info.plist */,
 				6CC3C57D2804E41300AE5C50 /* StatePickerViewController.swift */,
 				6C7F4D9D2815054000F90FDE /* StateAbbreviations.plist */,
+				6C7C8D9728161AA60091E09F /* NormalizedCountryNames.plist */,
 			);
 			path = HowManyCities;
 			sourceTree = "<group>";
@@ -437,6 +440,7 @@
 				6C7F4D9E2815054000F90FDE /* StateAbbreviations.plist in Resources */,
 				6CAD7FF427F381E10057A41E /* LaunchScreen.storyboard in Resources */,
 				6CAD7FF127F381E10057A41E /* Assets.xcassets in Resources */,
+				6C7C8D9828161AA60091E09F /* NormalizedCountryNames.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

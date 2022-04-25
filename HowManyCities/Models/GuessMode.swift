@@ -27,6 +27,19 @@ enum GuessMode {
     }
   }
   
+  private var normalizedCountryNames: [String: String] {
+    guard let url = Bundle.main.url(forResource: "NormalizedCountryNames", withExtension: "plist") else { return [:] }
+    
+    do {
+      let data = try Data(contentsOf: url)
+      let decoder = PropertyListDecoder()
+      return try decoder.decode([String: String].self, from: data)
+    } catch {
+      print("Unable to read plist of normalized country names")
+      return [:]
+    }
+  }
+  
   case any
   case every
   // Precondition: state.states is either nil, empty, or contains exactly 1 item
@@ -132,53 +145,21 @@ enum GuessMode {
   
   
   private func locale(for fullCountryName: String) -> String {
-    // special cases
-    if fullCountryName.lowercased() == "China".lowercased() {
-      return "CN"
-    } else if fullCountryName.lowercased() == "Democratic Republic of the Congo".lowercased() {
-      return "CD"
-    } else if fullCountryName.lowercased() == "Republic of the Congo".lowercased() {
-      return "CG"
-    } else if fullCountryName.lowercased() == "Federated States of Micronesia".lowercased() {
-      return "FM"
-    } else if fullCountryName.lowercased() == "Ivory Coast".lowercased() {
-      return "CI"
-    } else if fullCountryName.lowercased() == "Myanmar".lowercased() {
-      return "MM"
-    } else if fullCountryName.lowercased() == "Palestine".lowercased() {
-      return "PS"
-    } else if fullCountryName.lowercased() == "St. Vincent and the Grenadines".lowercased() {
-      return "VC"
-    } else if fullCountryName.lowercased() == "The Gambia".lowercased() {
-      return "GM"
-    }
+    let normalizedName = normalizedCountryName(fullCountryName)
     
-    let locales = ""
+    let identifier = NSLocale(localeIdentifier: "en_US")
     for localeCode in NSLocale.isoCountryCodes {
-      let identifier = NSLocale(localeIdentifier: "en_US")
       let countryName = identifier.displayName(forKey: NSLocale.Key.countryCode, value: localeCode)
-      if fullCountryName.lowercased() == countryName?.lowercased() ||
-          fullCountryName.replacingOccurrences(of: " and ", with: " & ").lowercased() == countryName?.lowercased() {
+      if normalizedName.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current) == countryName?.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current) {
         return localeCode
       }
     }
-    return locales
+    
+    return ""
   }
   
   private func normalizedCountryName(_ string: String) -> String {
-    if string.starts(with: "Australian") {
-      return "Australia"
-    } else if string.starts(with: "Brazilian") {
-      return "Brazil"
-    } else if string.starts(with: "Canadian") {
-      return "Canada"
-    } else if string.starts(with: "Mexican") {
-      return "Mexico"
-    } else if string.starts(with: "U.S.") {
-      return "United States"
-    } else {
-      return string
-    }
+    normalizedCountryNames[string] ?? string
   }
 }
 
