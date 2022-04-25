@@ -40,6 +40,19 @@ enum GuessMode {
     }
   }
   
+  // TODO: This should probably made persistent to the app session
+  private var countryNamesToLocales: [String: String] {
+    let identifier = NSLocale(localeIdentifier: "en_US")
+    return Dictionary(uniqueKeysWithValues:
+                        NSLocale.isoCountryCodes.compactMap { localeCode in
+      guard let countryName = identifier.displayName(forKey: NSLocale.Key.countryCode, value: localeCode) else {
+        return nil
+      }
+      
+      return (countryName, localeCode)
+    })
+  }
+  
   case any
   case every
   // Precondition: state.states is either nil, empty, or contains exactly 1 item
@@ -155,13 +168,7 @@ enum GuessMode {
   
   private func locale(for fullCountryName: String) -> String {
     let normalizedName = normalizedCountryName(fullCountryName)
-    
-    let identifier = NSLocale(localeIdentifier: "en_US")
-    return NSLocale.isoCountryCodes.first { localeCode in
-      let countryName = identifier.displayName(forKey: NSLocale.Key.countryCode, value: localeCode)
-      
-      return normalizedName.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current) == countryName?.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
-    } ?? ""
+    return countryNamesToLocales[normalizedName] ?? ""
   }
   
   private func normalizedCountryName(_ string: String) -> String {
