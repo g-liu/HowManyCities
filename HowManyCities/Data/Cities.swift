@@ -29,7 +29,14 @@ struct City: Codable, Hashable {
   let percentageOfSessions: Double?
   
   var fullTitle: String {
-    [name, state, territory, country].filter { !$0.isEmpty }.joined(separator: ", ")
+    let fullName = [name, state, territory, country].filter { !$0.isEmpty }.joined(separator: ", ")
+    if stateCapital {
+      return "★ \(fullName)"
+    } else if nationalCapital {
+      return "✪ \(fullName)"
+    } else {
+      return fullName
+    }
   }
   
   var coordinates: CLLocationCoordinate2D {

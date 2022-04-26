@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Antigua and Barbuda</key>
+	<string>Antigua &amp; Barbuda</string>
+	<key>Bosnia and Herzegovina</key>
+	<string>Bosnia &amp; Herzegovina</string>
+	<key>China</key>
+    <string>China mainland</string>
+	<key>Democratic Republic of the Congo</key>
+    <string>Congo - Kinshasa</string>
+	<key>Republic of the Congo</key>
+    <string>Congo - Brazzaville</string>
+	<key>Federated States of Micronesia</key>
+    <string>Micronesia</string>
+	<key>Ivory Coast</key>
+    <string>Côte d’Ivoire</string>
+	<key>Myanmar</key>
+    <string>Myanmar (Burma)</string>
+	<key>Palestine</key>
+    <string>Palestinian Territories</string>
+    <key>São Tomé and Príncipe</key>
+    <string>São Tomé &amp; Príncipe</string>
+    <key>St. Kitts and Nevis</key>
+    <string>St. Kitts &amp; Nevis</string>
+    <key>St. Pierre and Miquelon</key>
+    <string>St. Pierre &amp; Miquelon</string>
+	<key>St. Vincent and the Grenadines</key>
+    <string>St. Vincent &amp; Grenadines</string>
+	<key>The Gambia</key>
+    <string>Gambia</string>
+    <key>Trinidad and Tobago</key>
+    <string>Trinidad &amp; Tobago</string>
+    <key>Australian provinces and territories</key>
+    <string>Australia</string>
+    <key>Brazilian states</key>
+    <string>Brazil</string>
+    <key>Canadian provinces and territories</key>
+    <string>Canada</string>
+    <key>Mexican states</key>
+    <string>Mexico</string>
+    <key>U.S. states</key>
+    <string>United States</string>
+</dict>
+</plist>

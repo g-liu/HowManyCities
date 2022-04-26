@@ -142,8 +142,6 @@ final class MapGuessViewController: UIViewController {
     view.addSubview(guessStats)
     view.addSubview(guessStackView)
     
-//    view.addSubview(cityInputTextField)
-//    view.addSubview(countryDropdownButton)
     NSLayoutConstraint.activate([
       mapView.topAnchor.constraint(equalTo: view.topAnchor),
       mapView.bottomAnchor.constraint(equalTo: view.centerYAnchor, constant: -64),
@@ -155,13 +153,6 @@ final class MapGuessViewController: UIViewController {
       
       finishButton.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -16),
       finishButton.trailingAnchor.constraint(equalTo: mapView.trailingAnchor, constant: -16),
-      
-//      cityInputTextField.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 32),
-//      cityInputTextField.widthAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.widthAnchor, constant: -32).with(priority: .required),
-//      cityInputTextField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-//      countryDropdownButton.leadingAnchor.constraint(equalTo: cityInputTextField.trailingAnchor, constant: 16),
-//      countryDropdownButton.centerYAnchor.constraint(equalTo: cityInputTextField.centerYAnchor),
-//      countryDropdownButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
       
       guessStats.topAnchor.constraint(equalTo: mapView.bottomAnchor),
       guessStats.widthAnchor.constraint(equalTo: view.widthAnchor),
@@ -183,23 +174,10 @@ final class MapGuessViewController: UIViewController {
   }
   
   @objc private func didTapCountryDropdown(_ sender: UIButton) {
-    // TODO: impl
-    let alert = UIAlertController(title: "Select a location", message: nil, preferredStyle: .actionSheet)
-    
-    let selector = CountrySelector().autolayoutEnabled
-    selector.delegate = viewModel
-    selector.dataSource = viewModel
-    alert.view.addSubview(selector)
-    alert.view.translatesAutoresizingMaskIntoConstraints = false
-    selector.pin(to: alert.view.safeAreaLayoutGuide, margins: .init(top: 0, left: 0, bottom: 48, right: 0))
-    NSLayoutConstraint.activate([
-      alert.view.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.size.height / 2.0),
-      ])
-    selector.selectRow(viewModel.selectedRow, inComponent: 0, animated: false)
-    
-    alert.addAction(title: "Select", style: .default, isEnabled: true)
-    
-    present(alert, animated: true)
+    let searchController = StatePickerViewController(selectedMode: viewModel.guessMode)
+    searchController.guessModeDelegate = viewModel
+    searchController.statesDataSource = viewModel
+    present(UINavigationController(rootViewController: searchController), animated: true)
   }
   
   private func resetMap() {
@@ -345,7 +323,7 @@ extension MapGuessViewController: UITextFieldDelegate {
 // MARK: - MapGuessDelegate
 extension MapGuessViewController: MapGuessDelegate {
   func didChangeGuessMode(_ mode: GuessMode) {
-    let ms = NSMutableAttributedString(attributedString: mode.displayedString)
+    let ms = NSMutableAttributedString(attributedString: mode.dropdownName)
     ms.append(.init(string: " ▼"))
     countryDropdownButton.setAttributedTitle(ms, for: .normal)
   }

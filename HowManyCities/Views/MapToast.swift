@@ -12,6 +12,14 @@ enum ToastType {
   case population
   case error
   case general
+  
+  var color: UIColor {
+    switch self {
+      case .population: return .systemGreen
+      case .error: return .systemRed
+      case .general: return .systemGray3
+    }
+  }
 }
 
 final class MapToast: UIView {
@@ -31,14 +39,7 @@ final class MapToast: UIView {
   
     label.text = text
     
-    backgroundColor = { switch toastType {
-    case .population:
-      return .systemGreen
-    case .error:
-      return .systemRed
-    case .general:
-      return .systemGray3
-    }}()
+    backgroundColor = toastType.color
     addSubview(label)
     label.pin(to: self, margins: .init(horizontal: 8, vertical: 4))
     
