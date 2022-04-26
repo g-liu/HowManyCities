@@ -14,45 +14,6 @@ enum GuessMode {
      .baselineOffset: (UIFont.systemFontSize - UIFont.smallSystemFontSize) / 2.0]
   }
   
-  private var stateAbbreviations: [String: String] {
-    guard let url = Bundle.main.url(forResource: "StateAbbreviations", withExtension: "plist") else { return [:] }
-    
-    do {
-      let data = try Data(contentsOf: url)
-      let decoder = PropertyListDecoder()
-      return try decoder.decode([String: String].self, from: data)
-    } catch {
-      print("Unable to read plist of state abbreviations")
-      return [:]
-    }
-  }
-  
-  private var normalizedCountryNames: [String: String] {
-    guard let url = Bundle.main.url(forResource: "NormalizedCountryNames", withExtension: "plist") else { return [:] }
-    
-    do {
-      let data = try Data(contentsOf: url)
-      let decoder = PropertyListDecoder()
-      return try decoder.decode([String: String].self, from: data)
-    } catch {
-      print("Unable to read plist of normalized country names")
-      return [:]
-    }
-  }
-  
-  // TODO: This should probably made persistent to the app session
-  private var countryNamesToLocales: [String: String] {
-    let identifier = NSLocale(localeIdentifier: "en_US")
-    return Dictionary(uniqueKeysWithValues:
-                        NSLocale.isoCountryCodes.compactMap { localeCode in
-      guard let countryName = identifier.displayName(forKey: NSLocale.Key.countryCode, value: localeCode) else {
-        return nil
-      }
-      
-      return (countryName, localeCode)
-    })
-  }
-  
   case any
   case every
   // Precondition: state.states is either nil, empty, or contains exactly 1 item
@@ -126,7 +87,7 @@ enum GuessMode {
           // Can't use recursion here for the same reason as `menuName` :(
 //          string.append(GuessMode.specific(childState).dropdownName)
           
-          string.append(.init(string: stateAbbreviations[childState.name] ?? "", attributes: shortNameAttributes))
+          string.append(.init(string: Global.STATE_ABBREVIATIONS[childState.name] ?? "", attributes: shortNameAttributes))
           
           return string
         }
@@ -142,7 +103,7 @@ enum GuessMode {
     
     if countryCode.isEmpty {
       // maybe it's a state we're dealing with
-      countryCode = stateAbbreviations[locationName] ?? ""
+      countryCode = Global.STATE_ABBREVIATIONS[locationName] ?? ""
     }
     
     let countryCodeString = NSAttributedString(string: "\(countryCode)", attributes: shortNameAttributes)
@@ -168,11 +129,11 @@ enum GuessMode {
   
   private func locale(for fullCountryName: String) -> String {
     let normalizedName = normalizedCountryName(fullCountryName)
-    return countryNamesToLocales[normalizedName] ?? ""
+    return Global.COUNTRY_NAMES_TO_LOCALES[normalizedName] ?? ""
   }
   
   private func normalizedCountryName(_ string: String) -> String {
-    normalizedCountryNames[string] ?? string
+    Global.NORMALIZED_COUNTRY_NAMES[string] ?? string
   }
 }
 

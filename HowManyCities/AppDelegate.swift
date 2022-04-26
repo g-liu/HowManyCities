@@ -7,6 +7,46 @@
 
 import UIKit
 
+struct Global {
+  static let COUNTRY_NAMES_TO_LOCALES: [String: String] = {
+    let identifier = NSLocale(localeIdentifier: "en_US")
+    return Dictionary(uniqueKeysWithValues:
+                        NSLocale.isoCountryCodes.compactMap { localeCode in
+      guard let countryName = identifier.displayName(forKey: NSLocale.Key.countryCode, value: localeCode) else {
+        return nil
+      }
+      
+      return (countryName, localeCode)
+    })
+  }()
+  
+  static let STATE_ABBREVIATIONS: [String: String] = {
+    guard let url = Bundle.main.url(forResource: "StateAbbreviations", withExtension: "plist") else { return [:] }
+    
+    do {
+      let data = try Data(contentsOf: url)
+      let decoder = PropertyListDecoder()
+      return try decoder.decode([String: String].self, from: data)
+    } catch {
+      print("Unable to read plist of state abbreviations")
+      return [:]
+    }
+  }()
+  
+  static let NORMALIZED_COUNTRY_NAMES: [String: String] = {
+    guard let url = Bundle.main.url(forResource: "NormalizedCountryNames", withExtension: "plist") else { return [:] }
+    
+    do {
+      let data = try Data(contentsOf: url)
+      let decoder = PropertyListDecoder()
+      return try decoder.decode([String: String].self, from: data)
+    } catch {
+      print("Unable to read plist of normalized country names")
+      return [:]
+    }
+  }()
+}
+
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
