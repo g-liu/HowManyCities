@@ -331,7 +331,7 @@ extension MapGuessViewController: MapGuessDelegate {
       let req = MKLocalSearch.Request()
   //    req.resultTypes = MKLocalSearch.ResultType.
       req.naturalLanguageQuery = state.fullName // FIND A COUNTRY????
-      print("SEARCHING FOR \(req.naturalLanguageQuery)")
+      print("SEARCHING FOR \(req.naturalLanguageQuery!)")
       
       let search = MKLocalSearch(request: req)
       search.start { response, error in
@@ -345,6 +345,11 @@ extension MapGuessViewController: MapGuessDelegate {
           if let name = item.name,
             let location = item.placemark.location {
             print("\(name): \(location.coordinate.latitude),\(location.coordinate.longitude)")
+            DispatchQueue.main.async { [weak self] in
+              guard let self = self else { return }
+              // TODO: HOW TO GET SPAN??????
+              self.mapView.setRegion(.init(center: location.coordinate, span: self.mapView.region.span), animated: true)
+            }
           }
         }
       }

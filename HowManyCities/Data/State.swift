@@ -57,7 +57,6 @@ struct State: Codable {
       try container.encode(value, forKey: .value)
       try container.encode(name, forKey: .name)
     }
-    
   }
   
   var fullName: String {
@@ -70,6 +69,15 @@ struct State: Codable {
   
   var locale: String {
     return Global.COUNTRY_NAMES_TO_LOCALES[normalizedCountryName] ?? ""
+  }
+  
+  var flag: String {
+    let base: UInt32 = 127397
+    var s = ""
+    for v in locale.unicodeScalars {
+      s.unicodeScalars.append(UnicodeScalar(base + v.value)!)
+    }
+    return String(s)
   }
   
   var normalizedCountryName: String {

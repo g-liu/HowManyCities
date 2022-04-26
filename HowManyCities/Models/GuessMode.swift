@@ -55,8 +55,7 @@ enum GuessMode {
         }
         
         // base case
-        let countryCode = location.locale
-        let flag = flag(for: countryCode)
+        let flag = location.flag
         
         if flag.isEmpty {
           return location.name
@@ -97,7 +96,7 @@ enum GuessMode {
   
   private func shortName(for location: State) -> NSAttributedString {
     var countryCode = location.locale
-    let flag = flag(for: countryCode)
+    let flag = location.flag
     
     if countryCode.isEmpty {
       // maybe it's a state we're dealing with
@@ -113,15 +112,6 @@ enum GuessMode {
     } else {
       return countryCodeString
     }
-  }
-  
-  private func flag(for countryCode: String) -> String {
-    let base: UInt32 = 127397
-    var s = ""
-    for v in countryCode.unicodeScalars {
-      s.unicodeScalars.append(UnicodeScalar(base + v.value)!)
-    }
-    return String(s)
   }
 }
 
