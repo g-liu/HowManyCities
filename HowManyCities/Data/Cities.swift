@@ -24,10 +24,40 @@ struct City: Codable, Hashable {
   let stateCapital: Bool
   let nationalCapital: Bool
   let pk: Int
-//  let code: AnyObject // I HAVE NO FUCKING CLUE
   let quiz: String
   let archived: Bool
   let percentageOfSessions: Double?
+  
+  //  let code: AnyObject // I HAVE NO FUCKING CLUE WHAT TYPE THIS SHOULD BE
+  
+  init(
+    name: String,
+    state: String = "",
+    territory: String = "",
+    country: String = "",
+    latitude: Double = 0,
+    longitude: Double = 0,
+    population: Int,
+    stateCapital: Bool = false,
+    nationalCapital: Bool = false,
+    pk: Int = 0,
+    quiz: String = "",
+    archived: Bool = false,
+    percentageOfSessions: Double? = 0) {
+      self.name = name
+      self.state = state
+      self.territory = territory
+      self.country = country
+      self.latitude = latitude
+      self.longitude = longitude
+      self.population = population
+      self.stateCapital = stateCapital
+      self.nationalCapital = nationalCapital
+      self.pk = pk
+      self.quiz = quiz
+      self.archived = archived
+      self.percentageOfSessions = percentageOfSessions
+  }
   
   var fullTitle: String {
     let fullName = [name, state, territory, country].filter { !$0.isEmpty }.joined(separator: ", ")

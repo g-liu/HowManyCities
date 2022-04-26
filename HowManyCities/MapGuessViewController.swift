@@ -9,6 +9,7 @@ import UIKit
 import MapKit
 import SwifterSwift
 import MapCache
+import OrderedCollections
 
 final class MapGuessViewController: UIViewController {
   
@@ -196,7 +197,7 @@ final class MapGuessViewController: UIViewController {
     //    addCustomTileOverlay()
   }
   
-  private func updateMap(_ cities: Set<City>) {
+  private func updateMap(_ cities: OrderedSet<City>) {
     cities.forEach { city in
       mapView.addOverlay(city.asShape, level: .aboveLabels)
       

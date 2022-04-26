@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		6C7C8D9828161AA60091E09F /* NormalizedCountryNames.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6C7C8D9728161AA60091E09F /* NormalizedCountryNames.plist */; };
+		6C7C8D9B2817BFE60091E09F /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = 6C7C8D9A2817BFE60091E09F /* OrderedCollections */; };
+		6C7C8D9E2817C1330091E09F /* MapGuessModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7C8D9D2817C1330091E09F /* MapGuessModelTests.swift */; };
 		6C7F4D9C2814F52000F90FDE /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7F4D9B2814F52000F90FDE /* State.swift */; };
 		6C7F4D9E2815054000F90FDE /* StateAbbreviations.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6C7F4D9D2815054000F90FDE /* StateAbbreviations.plist */; };
 		6C7F4DA0281515DC00F90FDE /* GuessMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7F4D9F281515DC00F90FDE /* GuessMode.swift */; };
@@ -82,6 +84,7 @@
 		51E341790A486DEC11C8DED5 /* Pods_HowManyCities_HowManyCitiesUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HowManyCities_HowManyCitiesUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E08EA20EB451FE21A3BAC71 /* Pods_HowManyCities.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HowManyCities.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C7C8D9728161AA60091E09F /* NormalizedCountryNames.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = NormalizedCountryNames.plist; sourceTree = "<group>"; };
+		6C7C8D9D2817C1330091E09F /* MapGuessModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapGuessModelTests.swift; sourceTree = "<group>"; };
 		6C7F4D9B2814F52000F90FDE /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
 		6C7F4D9D2815054000F90FDE /* StateAbbreviations.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = StateAbbreviations.plist; sourceTree = "<group>"; };
 		6C7F4D9F281515DC00F90FDE /* GuessMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuessMode.swift; sourceTree = "<group>"; };
@@ -144,6 +147,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6C7C8D9B2817BFE60091E09F /* OrderedCollections in Frameworks */,
 				C7081157CDEE90E6052DF168 /* Pods_HowManyCities.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -175,6 +179,14 @@
 				498133EDACA682E2064FDA55 /* Pods_HowManyCitiesTests.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6C7C8D9C2817C1290091E09F /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				6C7C8D9D2817C1330091E09F /* MapGuessModelTests.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		6C9C42A328121967006529E9 /* Overlay Renderers */ = {
@@ -242,6 +254,7 @@
 		6CAD7FFD27F381E10057A41E /* HowManyCitiesTests */ = {
 			isa = PBXGroup;
 			children = (
+				6C7C8D9C2817C1290091E09F /* Models */,
 				6C9C42AF2812221E006529E9 /* Extensions */,
 				6CAD7FFE27F381E10057A41E /* HowManyCitiesTests.swift */,
 			);
@@ -363,6 +376,9 @@
 			dependencies = (
 			);
 			name = HowManyCities;
+			packageProductDependencies = (
+				6C7C8D9A2817BFE60091E09F /* OrderedCollections */,
+			);
 			productName = HowManyCities;
 			productReference = 6CAD7FE427F381DF0057A41E /* HowManyCities.app */;
 			productType = "com.apple.product-type.application";
@@ -438,6 +454,9 @@
 				Base,
 			);
 			mainGroup = 6CAD7FDB27F381DF0057A41E;
+			packageReferences = (
+				6C7C8D992817BFE60091E09F /* XCRemoteSwiftPackageReference "swift-collections" */,
+			);
 			productRefGroup = 6CAD7FE527F381DF0057A41E /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -631,6 +650,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6C7C8D9E2817C1330091E09F /* MapGuessModelTests.swift in Sources */,
 				6C9C42B128122229006529E9 /* MKPolygon+Extension_Tests.swift in Sources */,
 				6CAD7FFF27F381E10057A41E /* HowManyCitiesTests.swift in Sources */,
 			);
@@ -964,6 +984,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6C7C8D992817BFE60091E09F /* XCRemoteSwiftPackageReference "swift-collections" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-collections.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6C7C8D9A2817BFE60091E09F /* OrderedCollections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6C7C8D992817BFE60091E09F /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = OrderedCollections;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 6CAD7FDC27F381DF0057A41E /* Project object */;
 }

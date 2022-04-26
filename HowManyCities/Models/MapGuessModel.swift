@@ -7,9 +7,10 @@
 
 import Foundation
 import MapKit
+import OrderedCollections
 
 struct MapGuessModel: Codable {
-  var guessedCities: Set<City> = .init()
+  var guessedCities: OrderedSet<City> = .init()
   var gameConfiguration: GameConfiguration?
   var startTime: Date = .now
   var usedMultiCityInput: Bool = false
@@ -39,7 +40,7 @@ extension MapGuessModel {
     }
   }
   
-  private var citiesByCountry: [String: [City]] {
+  var citiesByCountry: [String: [City]] {
     var countriesDict = [String: [City]]()
     guessedCities.forEach {
       let country = $0.country
@@ -50,7 +51,7 @@ extension MapGuessModel {
     return countriesDict
   }
   
-  private var citiesByTerritory: [String: [City]] {
+  var citiesByTerritory: [String: [City]] {
     var territoriesDict = [String: [City]]()
     guessedCities.forEach {
       let territory = $0.territory
@@ -59,6 +60,10 @@ extension MapGuessModel {
     }
     
     return territoriesDict
+  }
+  
+  var nationalCapitalsGuessed: [City] {
+    guessedCities.filter { $0.nationalCapital }
   }
   
   var largestGuessed: [City] {
@@ -80,6 +85,10 @@ extension MapGuessModel {
       return 0
     }
     return populationGuessed / config.totalPopulation.asDouble
+  }
+  
+  func citiesExceeding(population: Int) -> [City] {
+    guessedCities.filter { $0.population > population }
   }
 }
 

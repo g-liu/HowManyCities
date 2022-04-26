@@ -8,6 +8,7 @@
 import Foundation
 import CoreLocation
 import MapKit
+import OrderedCollections
 
 protocol MapGuessDelegate: AnyObject {
   func didReceiveCities(_ cities: [City])
@@ -81,7 +82,7 @@ final class MapGuessViewModel: NSObject {
           
           var newCities = [City]()
           cities.forEach { city in
-            let result = self?.model.guessedCities.insert(city)
+            let result = self?.model.guessedCities.append(city)
             if result?.inserted ?? false {
               newCities.append(city)
             }
@@ -101,7 +102,7 @@ final class MapGuessViewModel: NSObject {
     }
   }
   
-  var guessedCities: Set<City> {
+  var guessedCities: OrderedSet<City> {
     model.guessedCities
   }
   
