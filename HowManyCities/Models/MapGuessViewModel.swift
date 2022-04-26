@@ -32,43 +32,9 @@ final class MapGuessViewModel: NSObject {
     }
   }
   
-  // MARK: statistics
-  
-  var numCitiesGuessed: Int { model.guessedCities.count }
-  var populationGuessed: Int { model.guessedCities.reduce(0) { $0 + $1.population } }
-  
-  private var citiesGuessedSortedIncreasing: [City] {
-    model.guessedCities.sorted { c1, c2 in
-      if c1.population == c2.population {
-        if c1.name == c2.name {
-          return c1.fullTitle < c2.fullTitle
-        }
-        return c1.name < c2.name
-      }
-      return c1.population < c2.population
-    }
-  }
-  
-  var largestGuessed: [City] {
-    citiesGuessedSortedIncreasing.suffix(10)
-  }
-  
-  var smallestGuessed: [City] {
-    citiesGuessedSortedIncreasing.prefix(10).asArray
-  }
-  
-  var rarestGuessed: [City] {
-    model.guessedCities.sorted { c1, c2 in
-      (c1.percentageOfSessions ?? 0.0) < (c2.percentageOfSessions ?? 0.0)
-    }.prefix(10).asArray
-  }
-  
-  var percentageTotalPopulationGuessed: Double {
-    guard let config = model.gameConfiguration else {
-      return 0
-    }
-    return populationGuessed / config.totalPopulation.asDouble
-  }
+  var numCitiesGuessed: Int { model.numCitiesGuessed }
+  var populationGuessed: Int { model.populationGuessed }
+  var percentageTotalPopulationGuessed: Double { model.percentageTotalPopulationGuessed }
   
   override init() {
     super.init()

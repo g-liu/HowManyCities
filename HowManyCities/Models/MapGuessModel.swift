@@ -20,6 +20,70 @@ struct MapGuessModel: Codable {
   }
 }
 
+// MARK: - Statistics
+// TODO: Perhaps convert this to a protocol that can be used??
+
+extension MapGuessModel {
+  var numCitiesGuessed: Int { guessedCities.count }
+  var populationGuessed: Int { guessedCities.reduce(0) { $0 + $1.population } }
+  
+  private var citiesGuessedSortedIncreasing: [City] {
+    guessedCities.sorted { c1, c2 in
+      if c1.population == c2.population {
+        if c1.name == c2.name {
+          return c1.fullTitle < c2.fullTitle
+        }
+        return c1.name < c2.name
+      }
+      return c1.population < c2.population
+    }
+  }
+  
+  private var citiesByCountry: [String: [City]] {
+    var countriesDict = [String: [City]]()
+    guessedCities.forEach {
+      let country = $0.country
+      guard !country.isEmpty else { return }
+      countriesDict[country, default: []].append($0)
+    }
+    
+    return countriesDict
+  }
+  
+  private var citiesByTerritory: [String: [City]] {
+    var territoriesDict = [String: [City]]()
+    guessedCities.forEach {
+      let territory = $0.territory
+      guard !territory.isEmpty else { return }
+      territoriesDict[territory, default: []].append($0)
+    }
+    
+    return territoriesDict
+  }
+  
+  var largestGuessed: [City] {
+    citiesGuessedSortedIncreasing.suffix(10)
+  }
+  
+  var smallestGuessed: [City] {
+    citiesGuessedSortedIncreasing.prefix(10).asArray
+  }
+  
+  var rarestGuessed: [City] {
+    guessedCities.sorted { c1, c2 in
+      (c1.percentageOfSessions ?? 0.0) < (c2.percentageOfSessions ?? 0.0)
+    }.prefix(10).asArray
+  }
+  
+  var percentageTotalPopulationGuessed: Double {
+    guard let config = gameConfiguration, config.totalPopulation.asDouble > 0 else {
+      return 0
+    }
+    return populationGuessed / config.totalPopulation.asDouble
+  }
+}
+
+
 enum CityGuessError: Error {
   case noneFound(_ cityName: String)
   case alreadyGuessed
