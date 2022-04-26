@@ -59,6 +59,22 @@ struct State: Codable {
     }
     
   }
+  
+  var fullName: String {
+    if let childState = states?.first {
+      return childState.fullName + ", \(normalizedCountryName)"
+    }
+    
+    return name
+  }
+  
+  var locale: String {
+    return Global.COUNTRY_NAMES_TO_LOCALES[normalizedCountryName] ?? ""
+  }
+  
+  var normalizedCountryName: String {
+    Global.NORMALIZED_COUNTRY_NAMES[name] ?? name
+  }
 }
 
 extension State: Equatable { }

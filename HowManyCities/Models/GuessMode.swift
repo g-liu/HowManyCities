@@ -28,7 +28,7 @@ enum GuessMode {
       case .specific(let location):
         // recursive case
         if let childState = location.states?.first {
-          return GuessMode.specific(childState).string + ", " + normalizedCountryName(location.name)
+          return GuessMode.specific(childState).string + ", " + location.normalizedCountryName
         }
         
         // base case
@@ -55,7 +55,7 @@ enum GuessMode {
         }
         
         // base case
-        let countryCode = locale(for: location.name)
+        let countryCode = location.locale
         let flag = flag(for: countryCode)
         
         if flag.isEmpty {
@@ -80,9 +80,7 @@ enum GuessMode {
       case .specific(let location):
         // recursive case
         if let childState = location.states?.first {
-          // in this case location.name could be something like "U.S. States" in which case we have to normalize it
-          let normalizedTopLevelCountryName = normalizedCountryName(location.name)
-          let string = NSMutableAttributedString(attributedString: shortName(for: normalizedTopLevelCountryName))
+          let string = NSMutableAttributedString(attributedString: shortName(for: location))
           string.append(.init(string: "/", attributes: shortNameAttributes))
           // Can't use recursion here for the same reason as `menuName` :(
 //          string.append(GuessMode.specific(childState).dropdownName)
@@ -93,17 +91,17 @@ enum GuessMode {
         }
         
         // base case
-        return shortName(for: location.name)
+        return shortName(for: location)
     }
   }
   
-  private func shortName(for locationName: String) -> NSAttributedString {
-    var countryCode = locale(for: locationName)
+  private func shortName(for location: State) -> NSAttributedString {
+    var countryCode = location.locale
     let flag = flag(for: countryCode)
     
     if countryCode.isEmpty {
       // maybe it's a state we're dealing with
-      countryCode = Global.STATE_ABBREVIATIONS[locationName] ?? ""
+      countryCode = Global.STATE_ABBREVIATIONS[location.name] ?? ""
     }
     
     let countryCodeString = NSAttributedString(string: "\(countryCode)", attributes: shortNameAttributes)
@@ -124,16 +122,6 @@ enum GuessMode {
       s.unicodeScalars.append(UnicodeScalar(base + v.value)!)
     }
     return String(s)
-  }
-  
-  
-  private func locale(for fullCountryName: String) -> String {
-    let normalizedName = normalizedCountryName(fullCountryName)
-    return Global.COUNTRY_NAMES_TO_LOCALES[normalizedName] ?? ""
-  }
-  
-  private func normalizedCountryName(_ string: String) -> String {
-    Global.NORMALIZED_COUNTRY_NAMES[string] ?? string
   }
 }
 

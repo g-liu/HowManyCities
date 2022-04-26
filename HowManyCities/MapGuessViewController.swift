@@ -326,6 +326,29 @@ extension MapGuessViewController: MapGuessDelegate {
     let ms = NSMutableAttributedString(attributedString: mode.dropdownName)
     ms.append(.init(string: " ▼"))
     countryDropdownButton.setAttributedTitle(ms, for: .normal)
+    
+    if case let .specific(state) = mode {
+      let req = MKLocalSearch.Request()
+  //    req.resultTypes = MKLocalSearch.ResultType.
+      req.naturalLanguageQuery = state.fullName // FIND A COUNTRY????
+      print("SEARCHING FOR \(req.naturalLanguageQuery)")
+      
+      let search = MKLocalSearch(request: req)
+      search.start { response, error in
+        guard let response = response else {
+          // Handle the error.
+          return
+        }
+        
+        print("GONAN GET YOU TO LOCATIONS")
+        for item in response.mapItems {
+          if let name = item.name,
+            let location = item.placemark.location {
+            print("\(name): \(location.coordinate.latitude),\(location.coordinate.longitude)")
+          }
+        }
+      }
+    }
   }
   
   func didReceiveCities(_ cities: [City]) {
