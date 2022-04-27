@@ -61,10 +61,10 @@ struct State: Codable {
   
   var searchName: String {
     if let childState = states?.first {
-      return childState.searchName + ", \(normalizedCountryName)"
+      return childState.name + ", \(normalizedCountryName)"
     }
     
-    return name
+    return normalizedCountryName
   }
   
   var locale: String {
