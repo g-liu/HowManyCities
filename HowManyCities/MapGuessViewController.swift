@@ -352,7 +352,7 @@ extension MapGuessViewController: MapGuessDelegate {
           }
         }
       default:
-        self.mapView.setRegion(.init(center: .zero, span: .full), animated: true)
+        self.mapView.setRegion(.init(center: self.mapView.centerCoordinate, span: .full), animated: true)
     }
   }
   

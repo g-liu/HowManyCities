@@ -216,6 +216,8 @@ extension StatePickerViewController: UITableViewDelegate, UITableViewDataSource 
       let state = statesWithLetter[indexPath.row]
       let guessMode = GuessMode.specific(state)
       cell.associatedMode = guessMode
+      
+      cell.highlightSearch(normalizedSearchText)
     }
     
     else if indexPath.section >= 1+26 {
@@ -226,9 +228,9 @@ extension StatePickerViewController: UITableViewDelegate, UITableViewDataSource 
       let guessMode = GuessMode.specific(parentState)
       cell.associatedMode = guessMode
       cell.indentationLevel = 1
+      
+      cell.highlightSearch(normalizedSearchText)
     }
-    
-    cell.highlightSearch(normalizedSearchText)
     
     if cell.associatedMode == selectedMode {
       cell.accessoryType = .checkmark
