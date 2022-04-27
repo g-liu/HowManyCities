@@ -53,11 +53,7 @@ final class StatePickerViewController: UIViewController {
     } ?? []
   }
   
-  private var selectedMode: GuessMode {
-    didSet {
-      guessModeDelegate?.didChangeGuessMode(selectedMode)
-    }
-  }
+  private var selectedMode: GuessMode
   
   private lazy var searchController: UISearchController = {
     let searchController = UISearchController(searchResultsController: nil)
@@ -112,6 +108,7 @@ final class StatePickerViewController: UIViewController {
     title = "Pick a location"
     navigationItem.title = "Pick a location"
     navigationItem.rightBarButtonItem = .init(title: "Done", style: .done, target: self, action: #selector(didCloseSelector))
+    navigationItem.leftBarButtonItem = .init(title: "Cancel", style: .plain, target: self, action: #selector(dismissSelector))
     
     view.backgroundColor = .systemBackground
     
@@ -142,7 +139,11 @@ final class StatePickerViewController: UIViewController {
   }
   
   @objc private func didCloseSelector() {
-    // Yes we have to call it twice once to dismiss the keyboard and once to dismiss the vc itself
+    guessModeDelegate?.didChangeGuessMode(selectedMode)
+    dismissSelector()
+  }
+  
+  @objc private func dismissSelector() {
     DispatchQueue.main.async { [weak self] in
       self?.searchController.dismiss(animated: true) {
         DispatchQueue.main.async { [weak self] in
@@ -215,6 +216,8 @@ extension StatePickerViewController: UITableViewDelegate, UITableViewDataSource 
       let state = statesWithLetter[indexPath.row]
       let guessMode = GuessMode.specific(state)
       cell.associatedMode = guessMode
+      
+      cell.highlightSearch(normalizedSearchText)
     }
     
     else if indexPath.section >= 1+26 {
@@ -225,9 +228,9 @@ extension StatePickerViewController: UITableViewDelegate, UITableViewDataSource 
       let guessMode = GuessMode.specific(parentState)
       cell.associatedMode = guessMode
       cell.indentationLevel = 1
+      
+      cell.highlightSearch(normalizedSearchText)
     }
-    
-    cell.highlightSearch(normalizedSearchText)
     
     if cell.associatedMode == selectedMode {
       cell.accessoryType = .checkmark

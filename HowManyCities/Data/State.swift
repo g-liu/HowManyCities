@@ -57,7 +57,31 @@ struct State: Codable {
       try container.encode(value, forKey: .value)
       try container.encode(name, forKey: .name)
     }
+  }
+  
+  var searchName: String {
+    if let childState = states?.first {
+      return childState.name + ", \(normalizedCountryName)"
+    }
     
+    return normalizedCountryName
+  }
+  
+  var locale: String {
+    return Global.COUNTRY_NAMES_TO_LOCALES[normalizedCountryName] ?? ""
+  }
+  
+  var flag: String {
+    let base: UInt32 = 127397
+    var s = ""
+    for v in locale.unicodeScalars {
+      s.unicodeScalars.append(UnicodeScalar(base + v.value)!)
+    }
+    return String(s)
+  }
+  
+  var normalizedCountryName: String {
+    Global.NORMALIZED_COUNTRY_NAMES[name] ?? name
   }
 }
 

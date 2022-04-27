@@ -19,7 +19,7 @@ final class MapGuessViewController: UIViewController {
     map.mapType = .satellite
     map.isPitchEnabled = false
     map.isRotateEnabled = false
-//    map.setRegion(.init(center: .init(latitude: 0, longitude: 0), span: .init(latitudeDelta: 180, longitudeDelta: 360)), animated: true)
+    //    map.setRegion(.init(center: .init(latitude: 0, longitude: 0), span: .init(latitudeDelta: 180, longitudeDelta: 360)), animated: true)
     map.setRegion(viewModel.lastRegion, animated: true)
     map.setCameraZoomRange(.init(minCenterCoordinateDistance: 100000), animated: true)
     map.pointOfInterestFilter = .excludingAll
@@ -38,7 +38,7 @@ final class MapGuessViewController: UIViewController {
     cfg.baseBackgroundColor = .systemFill.withAlphaComponent(1.0)
     cfg.buttonSize = .medium
     cfg.contentInsets = .init(top: 4, leading: 8, bottom: 4, trailing: 8)
-  
+    
     let button = UIButton(configuration: cfg).autolayoutEnabled
     button.setTitle("Reset", for: .normal)
     button.addTarget(self, action: #selector(didTapReset), for: .touchUpInside)
@@ -84,7 +84,7 @@ final class MapGuessViewController: UIViewController {
     
     textField.autocapitalizationType = .words
     textField.autocorrectionType = .no
-  
+    
     return textField
   }()
   
@@ -185,7 +185,7 @@ final class MapGuessViewController: UIViewController {
       type(of: $0) != MKTileOverlay.self && type(of: $0) != CachedTileOverlay.self
     })
     mapView.removeAnnotations(mapView.annotations)
-//    addCustomTileOverlay()
+    //    addCustomTileOverlay()
   }
   
   private func updateMap(_ cities: Set<City>) {
@@ -203,23 +203,23 @@ final class MapGuessViewController: UIViewController {
   private func addCustomTileOverlay() {
     // TODO: Verify w/cache
     
-//    let interfaceMode = traitCollection.userInterfaceStyle == .dark ? "dark" : "light"
-////    let template = "https://{s}.basemaps.cartocdn.com/\(interfaceMode)_nolabels/{z}/{x}/{y}@2x.png"
-////    let template = Bundle.main.resourceURL?.appendingPathComponent("\(interfaceMode)-{z}_{x}_{y}.png").path
-//    let bundleUrl = Bundle.main.url(forResource: "dummy", withExtension: "png")
-//    let template = bundleUrl?.deletingLastPathComponent().appendingPathComponent("\(interfaceMode)-{z}_{x}_{y}.png").absoluteString.removingPercentEncoding
-//
-//
-//    let overlay = MKTileOverlay(urlTemplate: template)
-//    overlay.canReplaceMapContent = true
-//    mapView.addOverlay(overlay, level: .aboveLabels)
-     
-     
+    //    let interfaceMode = traitCollection.userInterfaceStyle == .dark ? "dark" : "light"
+    ////    let template = "https://{s}.basemaps.cartocdn.com/\(interfaceMode)_nolabels/{z}/{x}/{y}@2x.png"
+    ////    let template = Bundle.main.resourceURL?.appendingPathComponent("\(interfaceMode)-{z}_{x}_{y}.png").path
+    //    let bundleUrl = Bundle.main.url(forResource: "dummy", withExtension: "png")
+    //    let template = bundleUrl?.deletingLastPathComponent().appendingPathComponent("\(interfaceMode)-{z}_{x}_{y}.png").absoluteString.removingPercentEncoding
+    //
+    //
+    //    let overlay = MKTileOverlay(urlTemplate: template)
+    //    overlay.canReplaceMapContent = true
+    //    mapView.addOverlay(overlay, level: .aboveLabels)
+    
+    
     let interfaceMode = traitCollection.userInterfaceStyle == .dark ? "dark" : "light"
     let template = "https://{s}.basemaps.cartocdn.com/\(interfaceMode)_nolabels/{z}/{x}/{y}.png"
     let config = MapCacheConfig(withUrlTemplate: template)
-//    let config = MapCacheConfig(withUrlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
-
+    //    let config = MapCacheConfig(withUrlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
+    
     let mapCache = MapCache(withConfig: config)
     print("STORING ALL YOUR SHIT AT \(mapCache.diskCache.path)")
     mapView.useCache(mapCache)
@@ -285,7 +285,7 @@ extension MapGuessViewController {
       populationToast.centerXAnchor.constraint(equalTo: mapView.centerXAnchor),
       populationToast.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -8),
       populationToast.widthAnchor.constraint(lessThanOrEqualTo: mapView.widthAnchor, multiplier: 0.66),
-      ])
+    ])
     
     UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut) {
       populationToast.layer.opacity = 1
@@ -298,7 +298,7 @@ extension MapGuessViewController {
         populationToast.removeFromSuperview()
       }
     }
-
+    
   }
 }
 
@@ -308,9 +308,9 @@ extension MapGuessViewController: UITextFieldDelegate {
     guard textField == cityInputTextField else { return false }
     guard let textInput = textField.text,
           !textInput.isEmpty else {
-            didReceiveError(.emptyGuess)
-            return false
-          }
+      didReceiveError(.emptyGuess)
+      return false
+    }
     
     submitGuess(textInput)
     
@@ -326,6 +326,34 @@ extension MapGuessViewController: MapGuessDelegate {
     let ms = NSMutableAttributedString(attributedString: mode.dropdownName)
     ms.append(.init(string: " ▼"))
     countryDropdownButton.setAttributedTitle(ms, for: .normal)
+    
+    switch mode {
+      case .specific(let state):
+        let req = MKLocalSearch.Request()
+        req.naturalLanguageQuery = state.searchName
+        req.region = .full
+        
+        let search = MKLocalSearch(request: req)
+        search.start { response, error in
+          // placemark.title has to be same country (?)
+          if let boundingRect = response?.boundingRegion,
+             response?.mapItems.count == 1 {
+            self.mapView.setRegion(boundingRect, animated: true)
+          } else if let mapItem = response?.mapItems.first(where: {$0.placemark.title?.contains($0.placemark.name ?? "💩") ?? false}) {
+            if let boundingCircle = mapItem.placemark.region as? CLCircularRegion {
+              self.mapView.setRegion(.init(center: boundingCircle.center, latitudinalMeters: boundingCircle.radius * 1.2, longitudinalMeters: boundingCircle.radius * 1.2), animated: true)
+            } else if let location = mapItem.placemark.location {
+              self.mapView.setRegion(.init(center: location.coordinate, span: self.mapView.region.span), animated: true)
+            } else {
+              self.mapView.setRegion(.init(center: mapItem.placemark.coordinate, span: self.mapView.region.span), animated: true)
+            }
+          } else {
+            // Sorry bud can't help you.
+          }
+        }
+      default:
+        self.mapView.setRegion(.init(center: self.mapView.centerCoordinate, span: .full), animated: true)
+    }
   }
   
   func didReceiveCities(_ cities: [City]) {
@@ -336,13 +364,13 @@ extension MapGuessViewController: MapGuessDelegate {
       self.updateMap(.init(cities))
       
       /*if cities.count > 1 {
-        let center = cities.reduce(.init(latitude: 0, longitude: 0)) { acc, curr -> CLLocationCoordinate2D in
-          return acc + curr.coordinates
-        } / cities.count
-        self.mapView.setCenter(center, animated: true)
-      } else */if let lastCity = cities.last {
-        self.mapView.setCenter(lastCity.coordinates, animated: true)
-      }
+       let center = cities.reduce(.init(latitude: 0, longitude: 0)) { acc, curr -> CLLocationCoordinate2D in
+       return acc + curr.coordinates
+       } / cities.count
+       self.mapView.setCenter(center, animated: true)
+       } else */if let lastCity = cities.last {
+         self.mapView.setCenter(lastCity.coordinates, animated: true)
+       }
       
       self.showToast("+\(cities.totalPopulation.abbreviated)", toastType: .population)
     }
@@ -362,7 +390,7 @@ extension MapGuessViewController: MapGuessDelegate {
       // TODO: ERROR HANDLING
       return
     }
-
+    
     let resultLink = "https://iafisher.com/projects/cities/world/share/\(response.pk)"
     let alert = UIAlertController(title: "Congratulations! You named \(viewModel.numCitiesGuessed) world cities!", message: "Check out your results on the web at \(resultLink)", preferredStyle: .alert)
     alert.addAction(.init(title: "Open in web browser", style: .default, handler: { _ in
@@ -385,7 +413,7 @@ extension MapGuessViewController: MapGuessDelegate {
     // TODO: Share sheet!
     // TODO: Tabulate saved results
   }
-
+  
 }
 
 // MARK: - MKMapViewDelegate
@@ -410,7 +438,7 @@ extension MapGuessViewController: MKMapViewDelegate {
       
       return polygonRenderer
     } else if let tileOverlay = overlay as? MKTileOverlay {
-//      return MKTileOverlayRenderer(tileOverlay: tileOverlay)
+      //      return MKTileOverlayRenderer(tileOverlay: tileOverlay)
       return mapView.mapCacheRenderer(forOverlay: tileOverlay)
     }
     

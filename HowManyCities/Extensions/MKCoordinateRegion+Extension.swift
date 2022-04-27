@@ -9,6 +9,7 @@ import Foundation
 import MapKit
 
 extension MKCoordinateRegion: Codable {
+  static var full: Self { .init(center: .zero, span: .full) }
   public func encode(to encoder: Encoder) throws {
     var container = encoder.unkeyedContainer()
     try container.encode(center)
