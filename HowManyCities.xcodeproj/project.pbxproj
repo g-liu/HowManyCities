@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		6C7C8D9828161AA60091E09F /* NormalizedCountryNames.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6C7C8D9728161AA60091E09F /* NormalizedCountryNames.plist */; };
+		6C7C8DA12818A92B0091E09F /* ExtremePointsOfCountries.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6C7C8DA02818A92B0091E09F /* ExtremePointsOfCountries.plist */; };
+		6C7C8DA42818AA7A0091E09F /* ExtremePointsValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7C8DA32818AA7A0091E09F /* ExtremePointsValidator.swift */; };
 		6C7F4D9C2814F52000F90FDE /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7F4D9B2814F52000F90FDE /* State.swift */; };
 		6C7F4D9E2815054000F90FDE /* StateAbbreviations.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6C7F4D9D2815054000F90FDE /* StateAbbreviations.plist */; };
 		6C7F4DA0281515DC00F90FDE /* GuessMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7F4D9F281515DC00F90FDE /* GuessMode.swift */; };
@@ -79,6 +81,8 @@
 		51E341790A486DEC11C8DED5 /* Pods_HowManyCities_HowManyCitiesUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HowManyCities_HowManyCitiesUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E08EA20EB451FE21A3BAC71 /* Pods_HowManyCities.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HowManyCities.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C7C8D9728161AA60091E09F /* NormalizedCountryNames.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = NormalizedCountryNames.plist; sourceTree = "<group>"; };
+		6C7C8DA02818A92B0091E09F /* ExtremePointsOfCountries.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ExtremePointsOfCountries.plist; sourceTree = "<group>"; };
+		6C7C8DA32818AA7A0091E09F /* ExtremePointsValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtremePointsValidator.swift; sourceTree = "<group>"; };
 		6C7F4D9B2814F52000F90FDE /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
 		6C7F4D9D2815054000F90FDE /* StateAbbreviations.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = StateAbbreviations.plist; sourceTree = "<group>"; };
 		6C7F4D9F281515DC00F90FDE /* GuessMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuessMode.swift; sourceTree = "<group>"; };
@@ -171,6 +175,22 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		6C7C8D9F2818A91A0091E09F /* ExtremePoints */ = {
+			isa = PBXGroup;
+			children = (
+				6C7C8DA02818A92B0091E09F /* ExtremePointsOfCountries.plist */,
+			);
+			path = ExtremePoints;
+			sourceTree = "<group>";
+		};
+		6C7C8DA22818AA680091E09F /* ExtremePoints */ = {
+			isa = PBXGroup;
+			children = (
+				6C7C8DA32818AA7A0091E09F /* ExtremePointsValidator.swift */,
+			);
+			path = ExtremePoints;
+			sourceTree = "<group>";
+		};
 		6C9C42A328121967006529E9 /* Overlay Renderers */ = {
 			isa = PBXGroup;
 			children = (
@@ -228,6 +248,7 @@
 				6CC3C57D2804E41300AE5C50 /* StatePickerViewController.swift */,
 				6C7F4D9D2815054000F90FDE /* StateAbbreviations.plist */,
 				6C7C8D9728161AA60091E09F /* NormalizedCountryNames.plist */,
+				6C7C8D9F2818A91A0091E09F /* ExtremePoints */,
 			);
 			path = HowManyCities;
 			sourceTree = "<group>";
@@ -235,6 +256,7 @@
 		6CAD7FFD27F381E10057A41E /* HowManyCitiesTests */ = {
 			isa = PBXGroup;
 			children = (
+				6C7C8DA22818AA680091E09F /* ExtremePoints */,
 				6C9C42AF2812221E006529E9 /* Extensions */,
 				6CAD7FFE27F381E10057A41E /* HowManyCitiesTests.swift */,
 			);
@@ -439,6 +461,7 @@
 			files = (
 				6C7F4D9E2815054000F90FDE /* StateAbbreviations.plist in Resources */,
 				6CAD7FF427F381E10057A41E /* LaunchScreen.storyboard in Resources */,
+				6C7C8DA12818A92B0091E09F /* ExtremePointsOfCountries.plist in Resources */,
 				6CAD7FF127F381E10057A41E /* Assets.xcassets in Resources */,
 				6C7C8D9828161AA60091E09F /* NormalizedCountryNames.plist in Resources */,
 			);
@@ -611,6 +634,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6C7C8DA42818AA7A0091E09F /* ExtremePointsValidator.swift in Sources */,
 				6C9C42B128122229006529E9 /* MKPolygon+Extension_Tests.swift in Sources */,
 				6CAD7FFF27F381E10057A41E /* HowManyCitiesTests.swift in Sources */,
 			);

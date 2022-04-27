@@ -1,0 +1,1716 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Northernmost</key>
+	<dict>
+		<key>Afghanistan</key>
+		<string>38°22′N</string>
+		<key>Åland (Finland)</key>
+		<string>60°40′N</string>
+		<key>Albania</key>
+		<string>42°30′N</string>
+		<key>Algeria</key>
+		<string>37°05′N</string>
+		<key>American Samoa (United States)</key>
+		<string>13°27′S</string>
+		<key>Andorra</key>
+		<string>42°39′N</string>
+		<key>Angola</key>
+		<string>04°24′S</string>
+		<key>Anguilla (United Kingdom)</key>
+		<string>18°18′N</string>
+		<key>Antarctica</key>
+		<string>60°35′S</string>
+		<key>Antigua and Barbuda</key>
+		<string>17°44′N</string>
+		<key>Argentina</key>
+		<string>21°48′S</string>
+		<key>Armenia</key>
+		<string>41°17′N</string>
+		<key>Aruba (Netherlands)</key>
+		<string>12°37′N</string>
+		<key>Australia</key>
+		<string>10°41′S</string>
+		<key>Austria</key>
+		<string>49°01′N</string>
+		<key>Azerbaijan</key>
+		<string>41°53′N</string>
+		<key>Bahamas</key>
+		<string>27°16′N</string>
+		<key>Bahrain</key>
+		<string>26°17′N</string>
+		<key>Bangladesh</key>
+		<string>26°38′N</string>
+		<key>Barbados</key>
+		<string>13°20′N</string>
+		<key>Belarus</key>
+		<string>56°08′N</string>
+		<key>Belgium</key>
+		<string>51°30′N</string>
+		<key>Belize</key>
+		<string>18°27′N</string>
+		<key>Benin</key>
+		<string>12°25′N</string>
+		<key>Bermuda (United Kingdom)</key>
+		<string>32°34′N</string>
+		<key>Bhutan</key>
+		<string>28°20′N</string>
+		<key>Bolivia</key>
+		<string>09°40′S</string>
+		<key>Bonaire (Netherlands)</key>
+		<string>12°18′N</string>
+		<key>Bosnia and Herzegovina</key>
+		<string>45°16′N</string>
+		<key>Botswana</key>
+		<string>17°46′S</string>
+		<key>Brazil</key>
+		<string>05°15′N</string>
+		<key>British Indian Ocean Territory (United Kingdom)</key>
+		<string>05°38′N</string>
+		<key>Brunei</key>
+		<string>05°04′N</string>
+		<key>Bulgaria</key>
+		<string>44°13′N</string>
+		<key>Burkina Faso</key>
+		<string>15°05′N</string>
+		<key>Burundi</key>
+		<string>02°18′S</string>
+		<key>Cambodia</key>
+		<string>14°30′N</string>
+		<key>Cameroon</key>
+		<string>13°05′N</string>
+		<key>Canada</key>
+		<string>72°00′N</string>
+		<key>Cape Verde</key>
+		<string>17°12′N</string>
+		<key>Central African Republic</key>
+		<string>11°01′N</string>
+		<key>Chad</key>
+		<string>23°29′N</string>
+		<key>Chile</key>
+		<string>17°19′S</string>
+		<key>China</key>
+		<string>53°34′N</string>
+		<key>Colombia</key>
+		<string>12°27′N</string>
+		<key>Comoros</key>
+		<string>11°22′S</string>
+		<key>Costa Rica</key>
+		<string>11°13′N</string>
+		<key>Cote d&apos;Ivoire</key>
+		<string>10°44′N</string>
+		<key>Croatia</key>
+		<string>46°33′N</string>
+		<key>Cuba</key>
+		<string>23°12′N</string>
+		<key>Curaçao (Netherlands)</key>
+		<string>12°23′N</string>
+		<key>Cyprus</key>
+		<string>35°42′N</string>
+		<key>Czech Republic</key>
+		<string>51°02′N</string>
+		<key>Democratic Republic of the Congo</key>
+		<string>05°22′N</string>
+		<key>Denmark</key>
+		<string>57°45′N</string>
+		<key>Djibouti</key>
+		<string>12°41′N</string>
+		<key>Dominica</key>
+		<string>15°38′N</string>
+		<key>Dominican Republic</key>
+		<string>19°55′N</string>
+		<key>Ecuador</key>
+		<string>01°40′N</string>
+		<key>Egypt</key>
+		<string>31°36′N</string>
+		<key>El Salvador</key>
+		<string>14°26′N</string>
+		<key>Equatorial Guinea</key>
+		<string>03°47′N</string>
+		<key>Eritrea</key>
+		<string>18°00′N</string>
+		<key>Estonia</key>
+		<string>59°40′N</string>
+		<key>Eswatini (Swaziland)</key>
+		<string>25°44′S</string>
+		<key>Ethiopia</key>
+		<string>14°53′N</string>
+		<key>Falkland Islands (United Kingdom)</key>
+		<string>51°02′S</string>
+		<key>Faroe Islands (Denmark)</key>
+		<string>62°23′N</string>
+		<key>Federated States of Micronesia</key>
+		<string>10°05′N</string>
+		<key>Fiji</key>
+		<string>12°30′S</string>
+		<key>Finland</key>
+		<string>70°05′N</string>
+		<key>France</key>
+		<string>51°05′N</string>
+		<key>French Guiana (France)</key>
+		<string>05°48′N</string>
+		<key>Gabon</key>
+		<string>02°19′N</string>
+		<key>Georgia</key>
+		<string>43°35′N</string>
+		<key>Germany</key>
+		<string>54°54′N</string>
+		<key>Ghana</key>
+		<string>11°10′N</string>
+		<key>Gibraltar (United Kingdom)</key>
+		<string>36°09′N</string>
+		<key>Greece</key>
+		<string>41°43′N</string>
+		<key>Greenland (Denmark)</key>
+		<string>83°39′N</string>
+		<key>Grenada</key>
+		<string>12°31′N</string>
+		<key>Guadeloupe (France)</key>
+		<string>16°29′N</string>
+		<key>Guam (United States)</key>
+		<string>13°32′N</string>
+		<key>Guatemala</key>
+		<string>17°49′N</string>
+		<key>Guinea</key>
+		<string>12°42′N</string>
+		<key>Guinea-Bissau</key>
+		<string>12°39′N</string>
+		<key>Guyana</key>
+		<string>08°24′N</string>
+		<key>Haiti</key>
+		<string>20°04′N</string>
+		<key>Honduras</key>
+		<string>16°01′N</string>
+		<key>Hong Kong</key>
+		<string>22°32′N</string>
+		<key>Hungary</key>
+		<string>48°35′N</string>
+		<key>Iceland</key>
+		<string>66°32′N</string>
+		<key>India</key>
+		<string>37°06′N</string>
+		<key>Indonesia</key>
+		<string>06°04′N</string>
+		<key>Iran</key>
+		<string>39°47′N</string>
+		<key>Iraq</key>
+		<string>37°23′N</string>
+		<key>Ireland</key>
+		<string>55°23′N</string>
+		<key>Israel</key>
+		<string>33°17′N</string>
+		<key>Italy</key>
+		<string>47°05′N</string>
+		<key>Jamaica</key>
+		<string>18°31′N</string>
+		<key>Japan</key>
+		<string>45°33′N</string>
+		<key>Jordan</key>
+		<string>33°22′N</string>
+		<key>Kazakhstan</key>
+		<string>55°43′N</string>
+		<key>Kenya</key>
+		<string>05°35′N</string>
+		<key>Kiribati</key>
+		<string>03°23′N</string>
+		<key>Kosovo</key>
+		<string>43°14′N</string>
+		<key>Kuwait</key>
+		<string>30°06′N</string>
+		<key>Kyrgyzstan</key>
+		<string>43°16′N</string>
+		<key>Laos</key>
+		<string>22°29′N</string>
+		<key>Latvia</key>
+		<string>58°05′N</string>
+		<key>Lebanon</key>
+		<string>34°43′N</string>
+		<key>Lesotho</key>
+		<string>28°34′S</string>
+		<key>Liberia</key>
+		<string>08°33′N</string>
+		<key>Libya</key>
+		<string>33°10′N</string>
+		<key>Liechtenstein</key>
+		<string>47°14′N</string>
+		<key>Lithuania</key>
+		<string>56°27′N</string>
+		<key>Luxembourg</key>
+		<string>50°11′N</string>
+		<key>Macau</key>
+		<string>22°13′N</string>
+		<key>Madagascar</key>
+		<string>11°57′S</string>
+		<key>Malawi</key>
+		<string>09°22′S</string>
+		<key>Malaysia</key>
+		<string>07°15′N</string>
+		<key>Maldives</key>
+		<string>07°07′N</string>
+		<key>Mali</key>
+		<string>25°04′N</string>
+		<key>Malta</key>
+		<string>36°05′N</string>
+		<key>Marshall Islands</key>
+		<string>14°32′N</string>
+		<key>Martinique (France)</key>
+		<string>14°52′N</string>
+		<key>Mauritania</key>
+		<string>27°19′N</string>
+		<key>Mauritius</key>
+		<string>10°25′S</string>
+		<key>Mayotte (France)</key>
+		<string>11°46′S</string>
+		<key>Mexico</key>
+		<string>32°43′N</string>
+		<key>Moldova</key>
+		<string>48°28′N</string>
+		<key>Monaco</key>
+		<string>43°45′N</string>
+		<key>Mongolia</key>
+		<string>52°09′N</string>
+		<key>Montenegro</key>
+		<string>43°32′N</string>
+		<key>Montserrat (United Kingdom)</key>
+		<string>16°49′N</string>
+		<key>Morocco</key>
+		<string>35°55′N</string>
+		<key>Mozambique</key>
+		<string>10°27′S</string>
+		<key>Myanmar</key>
+		<string>28°32′N</string>
+		<key>Namibia</key>
+		<string>16°56′S</string>
+		<key>Nauru</key>
+		<string>00°30′S</string>
+		<key>Nepal</key>
+		<string>30°26′N</string>
+		<key>Netherlands</key>
+		<string>53°27′N</string>
+		<key>New Caledonia</key>
+		<string>20°32′S</string>
+		<key>New Zealand</key>
+		<string>34°41′S</string>
+		<key>Nicaragua</key>
+		<string>15°01′N</string>
+		<key>Niger</key>
+		<string>23°31′N</string>
+		<key>Nigeria</key>
+		<string>13°50′N</string>
+		<key>North Korea</key>
+		<string>43°00′N</string>
+		<key>North Macedonia</key>
+		<string>42°21′N</string>
+		<key>Northern Mariana Islands (United States)</key>
+		<string>20°32′N</string>
+		<key>Norway</key>
+		<string>71°08′N</string>
+		<key>Oman</key>
+		<string>26°30′N</string>
+		<key>Pakistan</key>
+		<string>37°08′N</string>
+		<key>Palau</key>
+		<string>08°10′N</string>
+		<key>Palestine</key>
+		<string>32°32′N</string>
+		<key>Panama</key>
+		<string>09°38′N</string>
+		<key>Papua New Guinea</key>
+		<string>02°35′S</string>
+		<key>Paraguay</key>
+		<string>19°17′S</string>
+		<key>Peru</key>
+		<string>00°01′S</string>
+		<key>Philippines</key>
+		<string>21°07′N</string>
+		<key>Poland</key>
+		<string>54°50′N</string>
+		<key>Portugal</key>
+		<string>42°07′N</string>
+		<key>Puerto Rico (United States)</key>
+		<string>18°29′N</string>
+		<key>Qatar</key>
+		<string>26°09′N</string>
+		<key>Republic of the Congo</key>
+		<string>03°43′N</string>
+		<key>Réunion (France)</key>
+		<string>20°54′S</string>
+		<key>Romania</key>
+		<string>48°15′N</string>
+		<key>Russia</key>
+		<string>77°43′N</string>
+		<key>Rwanda</key>
+		<string>01°03′S</string>
+		<key>Saba (Netherlands)</key>
+		<string>17°39′N</string>
+		<key>Saint Barthélemy (France)</key>
+		<string>17°58′N</string>
+		<key>Saint Helena (United Kingdom)</key>
+		<string>15°46′S</string>
+		<key>Saint Kitts and Nevis</key>
+		<string>17°26′N</string>
+		<key>Saint Lucia</key>
+		<string>14°07′N</string>
+		<key>Saint Martin (France)</key>
+		<string>18°07′N</string>
+		<key>Saint Pierre and Miquelon (France)</key>
+		<string>47°06′N</string>
+		<key>Saint Vincent and the Grenadines</key>
+		<string>13°22′N</string>
+		<key>Samoa</key>
+		<string>13°25′S</string>
+		<key>San Marino</key>
+		<string>43°59′N</string>
+		<key>Sao Tome and Principe</key>
+		<string>01°42′N</string>
+		<key>Saudi Arabia</key>
+		<string>32°14′N</string>
+		<key>Senegal</key>
+		<string>16°41′N</string>
+		<key>Serbia</key>
+		<string>46°11′N</string>
+		<key>Seychelles</key>
+		<string>03°43′S</string>
+		<key>Sierra Leone</key>
+		<string>09°59′N</string>
+		<key>Singapore</key>
+		<string>01°28′N</string>
+		<key>Sint Eustatius (Netherlands)</key>
+		<string>17°31′N</string>
+		<key>Sint Maarten (Netherlands)</key>
+		<string>18°03′N</string>
+		<key>Slovakia</key>
+		<string>49°36′N</string>
+		<key>Slovenia</key>
+		<string>46°52′N</string>
+		<key>Solomon Islands</key>
+		<string>05°13′S</string>
+		<key>Somalia</key>
+		<string>11°59′N</string>
+		<key>South Africa</key>
+		<string>22°20′S</string>
+		<key>South Georgia (United Kingdom)</key>
+		<string>53°58′S</string>
+		<key>South Korea</key>
+		<string>38°36′N</string>
+		<key>South Sudan</key>
+		<string>12°14′N</string>
+		<key>Spain</key>
+		<string>43°47′N</string>
+		<key>Sri Lanka</key>
+		<string>09°30′N</string>
+		<key>Sudan</key>
+		<string>22°12′N</string>
+		<key>Suriname</key>
+		<string>06°01′N</string>
+		<key>Sweden</key>
+		<string>69°04′N</string>
+		<key>Switzerland</key>
+		<string>47°48′N</string>
+		<key>Syria</key>
+		<string>37°19′N</string>
+		<key>Taiwan</key>
+		<string>26°23′N</string>
+		<key>Tajikistan</key>
+		<string>41°02′N</string>
+		<key>Tanzania</key>
+		<string>00°59′S</string>
+		<key>Thailand</key>
+		<string>20°27′N</string>
+		<key>The Gambia</key>
+		<string>13°49′N</string>
+		<key>Timor-Leste</key>
+		<string>08°19′S</string>
+		<key>Togo</key>
+		<string>11°08′N</string>
+		<key>Tokelau (New Zealand)</key>
+		<string>08°31′S</string>
+		<key>Tonga</key>
+		<string>15°36′S</string>
+		<key>Trinidad and Tobago</key>
+		<string>11°21′N</string>
+		<key>Tunisia</key>
+		<string>37°21′N</string>
+		<key>Turkey</key>
+		<string>42°06′N</string>
+		<key>Turkmenistan</key>
+		<string>42°50′N</string>
+		<key>Tuvalu</key>
+		<string>05°39′S</string>
+		<key>Uganda</key>
+		<string>04°14′N</string>
+		<key>Ukraine</key>
+		<string>52°22′N</string>
+		<key>United Arab Emirates</key>
+		<string>26°05′N</string>
+		<key>United Kingdom</key>
+		<string>58°40′N</string>
+		<key>United States</key>
+		<string>71°23′N</string>
+		<key>Uruguay</key>
+		<string>30°05′S</string>
+		<key>Uzbekistan</key>
+		<string>45°36′N</string>
+		<key>Vanuatu</key>
+		<string>13°07′S</string>
+		<key>Vatican City</key>
+		<string>41°54′N</string>
+		<key>Venezuela</key>
+		<string>12°11′N</string>
+		<key>Vietnam</key>
+		<string>23°27′N</string>
+		<key>Wallis and Futuna (France)</key>
+		<string>13°14′S</string>
+		<key>Western Sahara</key>
+		<string>27°40′N</string>
+		<key>Yemen</key>
+		<string>18°59′N</string>
+		<key>Zambia</key>
+		<string>08°14′S</string>
+		<key>Zimbabwe</key>
+		<string>15°37′S</string>
+	</dict>
+	<key>Southernmost</key>
+	<dict>
+		<key>Antarctica</key>
+		<string>90°00′S</string>
+		<key>South Georgia and the South Sandwich Islands</key>
+		<string>59°42′S</string>
+		<key>Chile</key>
+		<string>53°53′S</string>
+		<key>Argentina</key>
+		<string>52°24′S</string>
+		<key>Australia</key>
+		<string>43°38′S</string>
+		<key>Bouvet Island</key>
+		<string>54°27′S</string>
+		<key>Falkland Islands</key>
+		<string>52°53′S</string>
+		<key>New Zealand</key>
+		<string>46°40′S</string>
+		<key>French Southern and Antarctic Lands (Except Antarctica)</key>
+		<string>50°01′S</string>
+		<key>South Africa</key>
+		<string>34°50′S</string>
+		<key>Uruguay</key>
+		<string>34°58′S</string>
+		<key>Brazil</key>
+		<string>33°45′S</string>
+		<key>Lesotho</key>
+		<string>30°40′S</string>
+		<key>Namibia</key>
+		<string>28°58′S</string>
+		<key>French Polynesia</key>
+		<string>27°55′S</string>
+		<key>Paraguay</key>
+		<string>27°43′S</string>
+		<key>Eswatini (Swaziland)</key>
+		<string>27°19′S</string>
+		<key>Botswana</key>
+		<string>26°54′S</string>
+		<key>Mozambique</key>
+		<string>26°52′S</string>
+		<key>Madagascar</key>
+		<string>25°37′S</string>
+		<key>Bolivia</key>
+		<string>22°54′S</string>
+		<key>Zimbabwe</key>
+		<string>22°25′S</string>
+		<key>France</key>
+		<string>22°23′S</string>
+		<key>Tonga</key>
+		<string>22°21′S</string>
+		<key>Fiji</key>
+		<string>21°44′S</string>
+		<key>Mauritius</key>
+		<string>20°32′S</string>
+		<key>Vanuatu</key>
+		<string>20°15′S</string>
+		<key>Peru</key>
+		<string>18°21′S</string>
+		<key>Zambia</key>
+		<string>18°05′S</string>
+		<key>Angola</key>
+		<string>18°02′S</string>
+		<key>Malawi</key>
+		<string>17°07′S</string>
+		<key>American Samoa</key>
+		<string>14°34′S</string>
+		<key>Samoa</key>
+		<string>14°04′S</string>
+		<key>Democratic Republic of the Congo</key>
+		<string>13°27′S</string>
+		<key>Comoros</key>
+		<string>12°25′S</string>
+		<key>Solomon Islands</key>
+		<string>11°47′S</string>
+		<key>Papua New Guinea</key>
+		<string>10°42′S</string>
+		<key>Tanzania</key>
+		<string>11°45′S</string>
+		<key>Kiribati</key>
+		<string>11°26′S</string>
+		<key>Indonesia</key>
+		<string>11°00′S</string>
+		<key>Tuvalu</key>
+		<string>10°48′S</string>
+		<key>Seychelles</key>
+		<string>10°13′S</string>
+		<key>East Timor</key>
+		<string>09°30′S</string>
+		<key>Tokelau</key>
+		<string>09°21′S</string>
+		<key>British Indian Ocean Territory</key>
+		<string>07°26′S</string>
+		<key>Republic of the Congo</key>
+		<string>05°02′S</string>
+		<key>Ecuador</key>
+		<string>05°00′S</string>
+		<key>Kenya</key>
+		<string>04°43′S</string>
+		<key>Burundi</key>
+		<string>04°28′S</string>
+		<key>Colombia</key>
+		<string>04°14′S</string>
+		<key>Gabon</key>
+		<string>03°59′S</string>
+		<key>Rwanda</key>
+		<string>02°51′S</string>
+		<key>Somalia</key>
+		<string>01°40′S</string>
+		<key>Uganda</key>
+		<string>01°29′S</string>
+		<key>Equatorial Guinea</key>
+		<string>01°28′S</string>
+		<key>Maldives</key>
+		<string>00°42′S</string>
+		<key>Nauru</key>
+		<string>00°33′S</string>
+		<key>São Tomé and Príncipe</key>
+		<string>00°01′S</string>
+		<key>Venezuela</key>
+		<string>00°40′N</string>
+		<key>Malaysia</key>
+		<string>00°51′N</string>
+		<key>Federated States of Micronesia</key>
+		<string>01°01′N</string>
+		<key>Singapore</key>
+		<string>01°09′N</string>
+		<key>Guyana</key>
+		<string>01°11′N</string>
+		<key>Cameroon</key>
+		<string>01°39′N</string>
+		<key>Suriname</key>
+		<string>01°50′N</string>
+		<key>French Guiana</key>
+		<string>02°06′N</string>
+		<key>Central African Republic</key>
+		<string>02°13′N</string>
+		<key>Palau</key>
+		<string>02°47′N</string>
+		<key>Ethiopia</key>
+		<string>03°24′N</string>
+		<key>South Sudan</key>
+		<string>03°29′N</string>
+		<key>Brunei</key>
+		<string>04°00′N</string>
+		<key>Nigeria</key>
+		<string>04°17′N</string>
+		<key>Liberia</key>
+		<string>04°21′N</string>
+		<key>Côte d'Ivoire</key>
+		<string>04°22′N</string>
+		<key>Marshall Islands</key>
+		<string>04°34′N</string>
+		<key>Philippines</key>
+		<string>04°35′N</string>
+		<key>Ghana</key>
+		<string>04°44′N</string>
+		<key>Costa Rica</key>
+		<string>08°04′N</string>
+		<key>Thailand</key>
+		<string>05°37′N</string>
+		<key>United States</key>
+		<string>18°54′N</string>
+		<key>Sri Lanka</key>
+		<string>05°55′N</string>
+		<key>Togo</key>
+		<string>06°07′N</string>
+		<key>Benin</key>
+		<string>06°14′N</string>
+		<key>India</key>
+		<string>08°06′N</string>
+		<key>Sierra Leone</key>
+		<string>06°56′N</string>
+		<key>Panama</key>
+		<string>07°11′N</string>
+		<key>Guinea</key>
+		<string>07°12′N</string>
+		<key>Chad</key>
+		<string>07°27′N</string>
+		<key>Vietnam</key>
+		<string>08°35′N</string>
+		<key>Sudan</key>
+		<string>09°30′N</string>
+		<key>China</key>
+		<string>18°10′N</string>
+		<key>Burkina Faso</key>
+		<string>09°24′N</string>
+		<key>Myanmar</key>
+		<string>09°59′N</string>
+		<key>Cambodia</key>
+		<string>10°24′N</string>
+		<key>Trinidad and Tobago</key>
+		<string>10°03′N</string>
+		<key>Mali</key>
+		<string>10°09′N</string>
+		<key>Taiwan</key>
+		<string>21°53′N</string>
+		<key>Nicaragua</key>
+		<string>10°43′N</string>
+		<key>Guinea-Bissau</key>
+		<string>10°55′N</string>
+		<key>Djibouti</key>
+		<string>10°56′N</string>
+		<key>Niger</key>
+		<string>11°42′N</string>
+		<key>Curaçao</key>
+		<string>11°59′N</string>
+		<key>Grenada</key>
+		<string>11°59′N</string>
+		<key>Netherlands</key>
+		<string>50°76′N</string>
+		<key>Yemen</key>
+		<string>12°36′N</string>
+		<key>Senegal</key>
+		<string>12°18′N</string>
+		<key>Eritrea</key>
+		<string>12°22′N</string>
+		<key>Saint Vincent and the Grenadines</key>
+		<string>12°32′N</string>
+		<key>Honduras</key>
+		<string>12°59′N</string>
+		<key>Gambia</key>
+		<string>13°02′N</string>
+		<key>Barbados</key>
+		<string>13°03′N</string>
+		<key>El Salvador</key>
+		<string>13°09′N</string>
+		<key>Saint Lucia</key>
+		<string>13°42′N</string>
+		<key>Guatemala</key>
+		<string>13°44′N</string>
+		<key>Laos</key>
+		<string>13°55′N</string>
+		<key>Mexico</key>
+		<string>14°32′N</string>
+		<key>Mauritania</key>
+		<string>14°43′N</string>
+		<key>Cape Verde</key>
+		<string>14°48′N</string>
+		<key>Dominica</key>
+		<string>15°12′N</string>
+		<key>Belize</key>
+		<string>15°53′N</string>
+		<key>Saudi Arabia</key>
+		<string>16°23′N</string>
+		<key>Oman</key>
+		<string>16°39′N</string>
+		<key>Montserrat</key>
+		<string>16°40′N</string>
+		<key>Antigua and Barbuda</key>
+		<string>16°56′N</string>
+		<key>Saint Kitts and Nevis</key>
+		<string>17°06′N</string>
+		<key>Dominican Republic</key>
+		<string>17°36′N</string>
+		<key>Jamaica</key>
+		<string>17°42′N</string>
+		<key>Haiti</key>
+		<string>18°01′N</string>
+		<key>Algeria</key>
+		<string>18°58′N</string>
+		<key>Libya</key>
+		<string>19°30′N</string>
+		<key>Cuba</key>
+		<string>19°50′N</string>
+		<key>Japan</key>
+		<string>24°44′N</string>
+		<key>Bangladesh</key>
+		<string>20°45′N</string>
+		<key>Western Sahara</key>
+		<string>20°47′N</string>
+		<key>Morocco*</key>
+		<string>27°40′N</string>
+		<key>Bahamas</key>
+		<string>20°55′N</string>
+		<key>Egypt</key>
+		<string>22°00′N</string>
+		<key>United Arab Emirates</key>
+		<string>22°38′N</string>
+		<key>Pakistan</key>
+		<string>23°42′N</string>
+		<key>Qatar</key>
+		<string>24°28′N</string>
+		<key>Iran</key>
+		<string>25°04′N</string>
+		<key>Bahrain</key>
+		<string>25°34′N</string>
+		<key>Nepal</key>
+		<string>26°22′N</string>
+		<key>Bhutan</key>
+		<string>26°43′N</string>
+		<key>Spain</key>
+		<string>36°00′N</string>
+		<key>Kuwait</key>
+		<string>28°32′N</string>
+		<key>Iraq</key>
+		<string>29°04′N</string>
+		<key>Jordan</key>
+		<string>29°11′N</string>
+		<key>Afghanistan</key>
+		<string>29°23′N</string>
+		<key>Israel</key>
+		<string>29°30′N</string>
+		<key>Portugal</key>
+		<string>36°57′N</string>
+		<key>Tunisia</key>
+		<string>30°15′N</string>
+		<key>Syria</key>
+		<string>32°19′N</string>
+		<key>Lebanon</key>
+		<string>33°03′N</string>
+		<key>South Korea</key>
+		<string>34°17′N</string>
+		<key>Cyprus</key>
+		<string>34°34′N</string>
+		<key>Greece</key>
+		<string>36°23′N</string>
+		<key>Turkmenistan</key>
+		<string>35°09′N</string>
+		<key>Italy</key>
+		<string>37°56′N</string>
+		<key>Malta</key>
+		<string>35°47′N</string>
+		<key>Turkey</key>
+		<string>35°49′N</string>
+		<key>Tajikistan</key>
+		<string>36°40′N</string>
+		<key>Uzbekistan</key>
+		<string>37°11′N</string>
+		<key>North Korea</key>
+		<string>37°40′N</string>
+		<key>Azerbaijan</key>
+		<string>38°24′N</string>
+		<key>Armenia</key>
+		<string>38°50′N</string>
+		<key>Kyrgyzstan</key>
+		<string>39°10′N</string>
+		<key>Albania</key>
+		<string>39°39′N</string>
+		<key>Kazakhstan</key>
+		<string>40°34′N</string>
+		<key>North Macedonia</key>
+		<string>40°52′N</string>
+		<key>Georgia</key>
+		<string>41°03′N</string>
+		<key>Russia</key>
+		<string>41°11′N</string>
+		<key>Bulgaria</key>
+		<string>41°15′N</string>
+		<key>France (Metropolitan France)</key>
+		<string>42°20′N</string>
+		<key>Mongolia</key>
+		<string>41°34′N</string>
+		<key>Canada</key>
+		<string>41°57′N</string>
+		<key>Serbia</key>
+		<string>42°13′N</string>
+		<key>Montenegro</key>
+		<string>41°51′N</string>
+		<key>Vatican City</key>
+		<string>41°54′N</string>
+		<key>Croatia</key>
+		<string>42°23′N</string>
+		<key>Andorra</key>
+		<string>42°26′N</string>
+		<key>Bosnia and Herzegovina</key>
+		<string>42°34′N</string>
+		<key>Romania</key>
+		<string>43°38′N</string>
+		<key>Monaco</key>
+		<string>43°44′N</string>
+		<key>San Marino</key>
+		<string>43°54′N</string>
+		<key>Ukraine</key>
+		<string>44°23′N</string>
+		<key>Slovenia</key>
+		<string>45°25′N</string>
+		<key>Moldova</key>
+		<string>45°28′N</string>
+		<key>Hungary</key>
+		<string>45°45′N</string>
+		<key>Switzerland</key>
+		<string>45°50′N</string>
+		<key>Austria</key>
+		<string>46°23′N</string>
+		<key>Saint Pierre and Miquelon</key>
+		<string>46°45′N</string>
+		<key>Liechtenstein</key>
+		<string>47°03′N</string>
+		<key>Germany</key>
+		<string>47°17′N</string>
+		<key>Slovakia</key>
+		<string>47°44′N</string>
+		<key>Czech Republic</key>
+		<string>48°33′N</string>
+		<key>Poland</key>
+		<string>49°00′N</string>
+		<key>Luxembourg</key>
+		<string>49°27′N</string>
+		<key>Belgium</key>
+		<string>49°30′N</string>
+		<key>United Kingdom</key>
+		<string>49°57′N</string>
+		<key>England</key>
+		<string>49°52′N</string>
+		<key>Netherlands (European Netherlands)</key>
+		<string>50°45′N</string>
+		<key>Belarus</key>
+		<string>51°15′N</string>
+		<key>Ireland</key>
+		<string>51°26′N</string>
+		<key>Wales</key>
+		<string>51°23′N</string>
+		<key>Lithuania</key>
+		<string>53°54′N</string>
+		<key>Denmark</key>
+		<string>54°34′N</string>
+		<key>Scotland</key>
+		<string>54°38′N</string>
+		<key>Sweden</key>
+		<string>55°20′N</string>
+		<key>Latvia</key>
+		<string>55°40′N</string>
+		<key>Estonia</key>
+		<string>57°31′N</string>
+		<key>Norway</key>
+		<string>58°00′N</string>
+		<key>Greenland</key>
+		<string>60°08′N</string>
+		<key>Finland</key>
+		<string>59°48′N</string>
+		<key>Faroe Islands</key>
+		<string>61°20′N</string>
+		<key>Iceland</key>
+		<string>63°23′N</string>
+	</dict>
+	<key>Westernmost</key>
+	<dict>
+		<key>Afghanistan</key>
+		<string>60°30′E</string>
+		<key>Albania</key>
+		<string>19°16′32″E</string>
+		<key>Algeria</key>
+		<string>8°40′W</string>
+		<key>Andorra</key>
+		<string>1°24′32″E</string>
+		<key>Angola</key>
+		<string>11°40′E</string>
+		<key>Antigua and Barbuda</key>
+		<string>61°55′W</string>
+		<key>Argentina</key>
+		<string>73°30′00″W</string>
+		<key>Armenia</key>
+		<string>43°27′E</string>
+		<key>Australia</key>
+		<string>113°09′E</string>
+		<key>Austria</key>
+		<string>9°31′51″E</string>
+		<key>Azerbaijan</key>
+		<string>44°46′E</string>
+		<key>Bahamas</key>
+		<string>79°15′W</string>
+		<key>Bahrain</key>
+		<string>50°23′E</string>
+		<key>Bangladesh</key>
+		<string>88°03′E</string>
+		<key>Barbados</key>
+		<string>59°40′W</string>
+		<key>Belarus</key>
+		<string>23°10′E</string>
+		<key>Belgium</key>
+		<string>2°35′E</string>
+		<key>Belize</key>
+		<string>89°12′W</string>
+		<key>Benin</key>
+		<string>0°50′E</string>
+		<key>Bhutan</key>
+		<string>88°45′E</string>
+		<key>Bolivia</key>
+		<string>69°40′W</string>
+		<key>Bosnia and Herzegovina</key>
+		<string>15°50′E</string>
+		<key>Botswana</key>
+		<string>20°00′E</string>
+		<key>Brazil</key>
+		<string>73°59′04″W</string>
+		<key>Brunei</key>
+		<string>114°05′E</string>
+		<key>Bulgaria</key>
+		<string>22°21′E</string>
+		<key>Burkina Faso</key>
+		<string>5°30′W</string>
+		<key>Burundi</key>
+		<string>28°59′E</string>
+		<key>Cambodia</key>
+		<string>102°25′E</string>
+		<key>Cameroon</key>
+		<string>8°45′E</string>
+		<key>Canada</key>
+		<string>141°00′W</string>
+		<key>Cape Verde</key>
+		<string>25°25′W</string>
+		<key>Central African Republic</key>
+		<string>14°20′E</string>
+		<key>Chad</key>
+		<string>13°40′E</string>
+		<key>Chile</key>
+		<string>75°38′W</string>
+		<key>China</key>
+		<string>73°33′29″E</string>
+		<key>Colombia</key>
+		<string>79°00′W</string>
+		<key>Comoros</key>
+		<string>43°12′E</string>
+		<key>Costa Rica</key>
+		<string>85°50′W</string>
+		<key>Côte d'Ivoire</key>
+		<string>8°35′W</string>
+		<key>Croatia</key>
+		<string>13°30′E</string>
+		<key>Cuba</key>
+		<string>84°58′W</string>
+		<key>Cyprus</key>
+		<string>32°16′E</string>
+		<key>Czech Republic</key>
+		<string>12°05′29″E</string>
+		<key>Democratic Republic of the Congo</key>
+		<string>12°20′E</string>
+		<key>Denmark</key>
+		<string>8°05′E</string>
+		<key>Djibouti</key>
+		<string>41°46′E</string>
+		<key>Dominica</key>
+		<string>61°30′W</string>
+		<key>Dominican Republic</key>
+		<string>72°00′W</string>
+		<key>Ecuador</key>
+		<string>80°05′W</string>
+		<key>Egypt</key>
+		<string>24°40′E</string>
+		<key>El Salvador</key>
+		<string>90°15′W</string>
+		<key>Equatorial Guinea</key>
+		<string>5°37′E</string>
+		<key>Eritrea</key>
+		<string>36°50′E</string>
+		<key>Estonia</key>
+		<string>23°24′15″E</string>
+		<key>Eswatini (Swaziland)</key>
+		<string>30°48′E</string>
+		<key>Ethiopia</key>
+		<string>33°00′E</string>
+		<key>Faroe Islands</key>
+		<string>7°47′W</string>
+		<key>Fiji</key>
+		<string>176°53′E</string>
+		<key>Finland</key>
+		<string>20°32′E</string>
+		<key>France</key>
+		<string>4°47′W</string>
+		<key>Gabon</key>
+		<string>8°42′E</string>
+		<key>Gambia</key>
+		<string>16°45′W</string>
+		<key>Georgia</key>
+		<string>41°30′E</string>
+		<key>Germany</key>
+		<string>5°53′E</string>
+		<key>Ghana</key>
+		<string>3°15′W</string>
+		<key>Greece</key>
+		<string>19°59′E</string>
+		<key>Greenland</key>
+		<string>73°14′W</string>
+		<key>Grenada</key>
+		<string>61°48′W</string>
+		<key>Guatemala</key>
+		<string>92°15′W</string>
+		<key>Guinea</key>
+		<string>15°03′W</string>
+		<key>Guinea-Bissau</key>
+		<string>16°42′W</string>
+		<key>Guyana</key>
+		<string>61°25′W</string>
+		<key>Haiti</key>
+		<string>74°28′W</string>
+		<key>Honduras</key>
+		<string>88°43′W</string>
+		<key>Hong Kong</key>
+		<string>113°51′E</string>
+		<key>Hungary</key>
+		<string>16°8′E</string>
+		<key>Iceland</key>
+		<string>24°32′W</string>
+		<key>India</key>
+		<string>68°03′E</string>
+		<key>Indonesia</key>
+		<string>94°45′E</string>
+		<key>Iran</key>
+		<string>44°02′50″E</string>
+		<key>Iraq</key>
+		<string>38°50′E</string>
+		<key>Ireland</key>
+		<string>10°28′W</string>
+		<key>Israel</key>
+		<string>34°15′E</string>
+		<key>Italy</key>
+		<string>6°37′E</string>
+		<key>Jamaica</key>
+		<string>78°22′W</string>
+		<key>Japan</key>
+		<string>129°43′E</string>
+		<key>Jordan</key>
+		<string>34°55′E</string>
+		<key>Kazakhstan</key>
+		<string>50°00′E</string>
+		<key>Kenya</key>
+		<string>35°00′E</string>
+		<key>Kiribati</key>
+		<string>169°32′13″E</string>
+		<key>Kuwait</key>
+		<string>46°34′E</string>
+		<key>Kyrgyzstan</key>
+		<string>69°20′E</string>
+		<key>Laos</key>
+		<string>100°08′E</string>
+		<key>Latvia</key>
+		<string>21°00′E</string>
+		<key>Lebanon</key>
+		<string>35°06′E</string>
+		<key>Lesotho</key>
+		<string>27°00′E</string>
+		<key>Liberia</key>
+		<string>11°30′W</string>
+		<key>Libya</key>
+		<string>9°20′E</string>
+		<key>Liechtenstein</key>
+		<string>9°28′18″E</string>
+		<key>Lithuania</key>
+		<string>20°58′E</string>
+		<key>Luxembourg</key>
+		<string>5°44′E</string>
+		<key>Madagascar</key>
+		<string>43°30′E</string>
+		<key>Malawi</key>
+		<string>32°40′E</string>
+		<key>Malaysia</key>
+		<string>99°37′E</string>
+		<key>Maldives</key>
+		<string>72°42′E</string>
+		<key>Mali</key>
+		<string>12°00′W</string>
+		<key>Malta</key>
+		<string>14°12′E</string>
+		<key>Marshall Islands</key>
+		<string>160°54′E</string>
+		<key>Mauritania</key>
+		<string>17°03′W</string>
+		<key>Mauritius</key>
+		<string>56°35′E</string>
+		<key>Mexico</key>
+		<string>117°02′W</string>
+		<key>Micronesia</key>
+		<string>137°30′E</string>
+		<key>Moldova</key>
+		<string>26°40′E</string>
+		<key>Monaco</key>
+		<string>07°24′33″E</string>
+		<key>Mongolia</key>
+		<string>88°00′E</string>
+		<key>Montenegro</key>
+		<string>18°26′E</string>
+		<key>Morocco</key>
+		<string>13°15′W</string>
+		<key>Mozambique</key>
+		<string>30°15′E</string>
+		<key>Myanmar</key>
+		<string>92°15′E</string>
+		<key>Namibia</key>
+		<string>11°45′E</string>
+		<key>Nauru</key>
+		<string>166°53′E</string>
+		<key>Nepal</key>
+		<string>80°03′E</string>
+		<key>Netherlands</key>
+		<string>3°21′E</string>
+		<key>New Zealand</key>
+		<string>165°50′E</string>
+		<key>Nicaragua</key>
+		<string>87°40′W</string>
+		<key>Niger</key>
+		<string>0°07′E</string>
+		<key>Nigeria</key>
+		<string>2°45′E</string>
+		<key>North Korea</key>
+		<string>124°10′E</string>
+		<key>North Macedonia</key>
+		<string>20°30′E</string>
+		<key>Norway</key>
+		<string>4°56′E</string>
+		<key>Oman</key>
+		<string>52°00′E</string>
+		<key>Pakistan</key>
+		<string>61°00′E</string>
+		<key>Palau</key>
+		<string>131°07′26″E</string>
+		<key>Panama</key>
+		<string>83°04′W</string>
+		<key>Papua New Guinea</key>
+		<string>140°55′E</string>
+		<key>Paraguay</key>
+		<string>62°35′W</string>
+		<key>Peru</key>
+		<string>81°19′45″W</string>
+		<key>Philippines</key>
+		<string>114°17′E</string>
+		<key>Poland</key>
+		<string>14°07′E</string>
+		<key>Portugal</key>
+		<string>9°50′W</string>
+		<key>Qatar</key>
+		<string>50°45′E</string>
+		<key>Republic of the Congo</key>
+		<string>11°10′E</string>
+		<key>Romania</key>
+		<string>20°19′E</string>
+		<key>Russia</key>
+		<string>19°38′E</string>
+		<key>Rwanda</key>
+		<string>28°52′E</string>
+		<key>Saint Kitts and Nevis</key>
+		<string>62°51′W</string>
+		<key>Saint Lucia</key>
+		<string>61°04′W</string>
+		<key>Saint Vincent and the Grenadines</key>
+		<string>61°26′W</string>
+		<key>Samoa</key>
+		<string>172°48′W</string>
+		<key>San Marino</key>
+		<string>12°24′30″E</string>
+		<key>São Tomé and Príncipe</key>
+		<string>6°33′E</string>
+		<key>Saudi Arabia</key>
+		<string>34°50′E</string>
+		<key>Senegal</key>
+		<string>17°27′W</string>
+		<key>Serbia</key>
+		<string>18°51′E</string>
+		<key>Seychelles</key>
+		<string>46°29′E</string>
+		<key>Sierra Leone</key>
+		<string>13°18′W</string>
+		<key>Singapore</key>
+		<string>103°36′E</string>
+		<key>Slovakia</key>
+		<string>16°50′E</string>
+		<key>Slovenia</key>
+		<string>13°23′E</string>
+		<key>Solomon Islands</key>
+		<string>155°33′30″E</string>
+		<key>Somalia</key>
+		<string>41°00′E</string>
+		<key>South Africa</key>
+		<string>16°30′E</string>
+		<key>South Korea</key>
+		<string>124°39′E</string>
+		<key>South Sudan</key>
+		<string>23°23′E</string>
+		<key>Spain</key>
+		<string>9°18′W</string>
+		<key>Sri Lanka</key>
+		<string>79°31′E</string>
+		<key>Sudan</key>
+		<string>21°50′E</string>
+		<key>Suriname</key>
+		<string>58°05′W</string>
+		<key>Sweden</key>
+		<string>10°57′27″E</string>
+		<key>Switzerland</key>
+		<string>5°57′22.69″E</string>
+		<key>Syria</key>
+		<string>35°30′E</string>
+		<key>Taiwan</key>
+		<string>118°14′E</string>
+		<key>Tajikistan</key>
+		<string>67°25′E</string>
+		<key>Tanzania</key>
+		<string>29°10′E</string>
+		<key>Thailand</key>
+		<string>97°20′E</string>
+		<key>Timor-Leste</key>
+		<string>124°00′E</string>
+		<key>Togo</key>
+		<string>0°09′W</string>
+		<key>Tonga</key>
+		<string>175°38′W</string>
+		<key>Trinidad and Tobago</key>
+		<string>61°56′W</string>
+		<key>Tunisia</key>
+		<string>7°35′E</string>
+		<key>Turkey</key>
+		<string>26°03′E</string>
+		<key>Turkmenistan</key>
+		<string>52°25′E</string>
+		<key>Tuvalu</key>
+		<string>176°03′E</string>
+		<key>Uganda</key>
+		<string>29°34′E</string>
+		<key>Ukraine</key>
+		<string>22°15′E</string>
+		<key>United Arab Emirates</key>
+		<string>51°33′E</string>
+		<key>United Kingdom</key>
+		<string>08°10′W</string>
+		<key>United States</key>
+		<string>172°26′E</string>
+		<key>Uruguay</key>
+		<string>58°25′W</string>
+		<key>Uzbekistan</key>
+		<string>56°00′E</string>
+		<key>Vanuatu</key>
+		<string>166°33′E</string>
+		<key>Vatican City</key>
+		<string>12°26′44.62″E</string>
+		<key>Venezuela</key>
+		<string>73°20′W</string>
+		<key>Vietnam</key>
+		<string>102°08′E</string>
+		<key>Western Sahara</key>
+		<string>17°03′W</string>
+		<key>Yemen</key>
+		<string>41°49′E</string>
+		<key>Zambia</key>
+		<string>22°00′E</string>
+		<key>Zimbabwe</key>
+		<string>25°20′E</string>
+	</dict>
+	<key>Easternmost</key>
+	<dict>
+		<key>Afghanistan</key>
+		<string>75°00′E</string>
+		<key>Albania</key>
+		<string>21°4′6″E</string>
+		<key>Algeria</key>
+		<string>12°00′E</string>
+		<key>Andorra</key>
+		<string>1°47′E</string>
+		<key>Angola</key>
+		<string>24°00′E</string>
+		<key>Antigua and Barbuda</key>
+		<string>61°40′W</string>
+		<key>Argentina</key>
+		<string>53°41′W</string>
+		<key>Armenia</key>
+		<string>46°37′E</string>
+		<key>Australia</key>
+		<string>153°38′E</string>
+		<key>Austria</key>
+		<string>17°09′E</string>
+		<key>Azerbaijan</key>
+		<string>50°33′E</string>
+		<key>Bahamas</key>
+		<string>72°45′W</string>
+		<key>Bahrain</key>
+		<string>50°43′E</string>
+		<key>Bangladesh</key>
+		<string>92°35′E</string>
+		<key>Barbados</key>
+		<string>59°26′W</string>
+		<key>Belarus</key>
+		<string>32°46′E</string>
+		<key>Belgium</key>
+		<string>6°22′E</string>
+		<key>Belize</key>
+		<string>87°35′W</string>
+		<key>Benin</key>
+		<string>3°50′E</string>
+		<key>Bhutan</key>
+		<string>92°05′E</string>
+		<key>Bolivia</key>
+		<string>57°27′W</string>
+		<key>Bosnia and Herzegovina</key>
+		<string>19°30′E</string>
+		<key>Botswana</key>
+		<string>29°20′E</string>
+		<key>Brazil</key>
+		<string>34°47′W</string>
+		<key>Brunei</key>
+		<string>115°25′E</string>
+		<key>Bulgaria</key>
+		<string>28°36′E</string>
+		<key>Burkina Faso</key>
+		<string>2°25′E</string>
+		<key>Burundi</key>
+		<string>30°50′E</string>
+		<key>Cambodia</key>
+		<string>107°35′E</string>
+		<key>Cameroon</key>
+		<string>16°12′E</string>
+		<key>Canada</key>
+		<string>55°37′W</string>
+		<key>Cape Verde</key>
+		<string>22°40′W</string>
+		<key>Central African Republic</key>
+		<string>27°28′E</string>
+		<key>Chad</key>
+		<string>24°00′E</string>
+		<key>Chile</key>
+		<string>66°58′W</string>
+		<key>China</key>
+		<string>134°46′E</string>
+		<key>Colombia</key>
+		<string>67°00′W</string>
+		<key>Comoros</key>
+		<string>44°32′E</string>
+		<key>Costa Rica</key>
+		<string>82°30′W</string>
+		<key>Côte d'Ivoire</key>
+		<string>2°35′W</string>
+		<key>Croatia</key>
+		<string>19°27′E</string>
+		<key>Cuba</key>
+		<string>74°08′W</string>
+		<key>Cyprus</key>
+		<string>34°36′E</string>
+		<key>Czech Republic</key>
+		<string>18°51′E</string>
+		<key>Democratic Republic of the Congo</key>
+		<string>31°30′E</string>
+		<key>Denmark</key>
+		<string>15°11′E</string>
+		<key>Djibouti</key>
+		<string>43°25′E</string>
+		<key>Dominica</key>
+		<string>61°15′W</string>
+		<key>Dominican Republic</key>
+		<string>68°20′W</string>
+		<key>East Timor</key>
+		<string>127°19′E</string>
+		<key>Ecuador</key>
+		<string>75°15′W</string>
+		<key>Egypt</key>
+		<string>35°45′E</string>
+		<key>El Salvador</key>
+		<string>87°42′W</string>
+		<key>Equatorial Guinea</key>
+		<string>11°20′E</string>
+		<key>Eritrea</key>
+		<string>43°7′E</string>
+		<key>Estonia</key>
+		<string>28°12′E</string>
+		<key>Eswatini (Swaziland)</key>
+		<string>32°08′E</string>
+		<key>Ethiopia</key>
+		<string>48°00′E</string>
+		<key>Faroe Islands</key>
+		<string>6°16′W</string>
+		<key>Federated States of Micronesia</key>
+		<string>163°01′E</string>
+		<key>Fiji</key>
+		<string>178°15′W</string>
+		<key>Finland</key>
+		<string>31°35′E</string>
+		<key>France</key>
+		<string>8°13′E</string>
+		<key>Gabon</key>
+		<string>14°30′E</string>
+		<key>Gambia</key>
+		<string>13°48′W</string>
+		<key>Georgia</key>
+		<string>46°40′E</string>
+		<key>Germany</key>
+		<string>15°2′E</string>
+		<key>Ghana</key>
+		<string>1°10′E</string>
+		<key>Greece</key>
+		<string>26°38′E</string>
+		<key>Grenada</key>
+		<string>61°23′W</string>
+		<key>Guatemala</key>
+		<string>88°15′W</string>
+		<key>Guinea</key>
+		<string>7°45′W</string>
+		<key>Guinea-Bissau</key>
+		<string>13°40′W</string>
+		<key>Guyana</key>
+		<string>56°30′W</string>
+		<key>Haiti</key>
+		<string>71°38′W</string>
+		<key>Honduras</key>
+		<string>83°35′W</string>
+		<key>Hong Kong</key>
+		<string>114°26′E</string>
+		<key>Hungary</key>
+		<string>22°55′E</string>
+		<key>Iceland</key>
+		<string>13°14′W</string>
+		<key>India</key>
+		<string>97°23′E</string>
+		<key>Indonesia</key>
+		<string>141°05′E</string>
+		<key>Iran</key>
+		<string>63°18′E</string>
+		<key>Iraq</key>
+		<string>48°32′E</string>
+		<key>Ireland</key>
+		<string>5°59′W</string>
+		<key>Israel</key>
+		<string>35°40′E</string>
+		<key>Italy</key>
+		<string>18°31′E</string>
+		<key>Jamaica</key>
+		<string>76°12′W</string>
+		<key>Japan</key>
+		<string>145°49′E</string>
+		<key>Jordan</key>
+		<string>39°20′E</string>
+		<key>Kazakhstan</key>
+		<string>87°30′E</string>
+		<key>Kenya</key>
+		<string>41°00′E</string>
+		<key>Kiribati</key>
+		<string>150°13′W</string>
+		<key>Kosovo</key>
+		<string>21°47′E</string>
+		<key>Kuwait</key>
+		<string>48°40′E</string>
+		<key>Kyrgyzstan</key>
+		<string>80°20′E</string>
+		<key>Laos</key>
+		<string>106°40′E</string>
+		<key>Latvia</key>
+		<string>28°15′E</string>
+		<key>Lebanon</key>
+		<string>36°38′E</string>
+		<key>Lesotho</key>
+		<string>29°28′E</string>
+		<key>Liberia</key>
+		<string>7°22′W</string>
+		<key>Libya</key>
+		<string>25°05′E</string>
+		<key>Liechtenstein</key>
+		<string>9°33′E</string>
+		<key>Lithuania</key>
+		<string>26°50′E</string>
+		<key>Luxembourg</key>
+		<string>6°32′E</string>
+		<key>Macau</key>
+		<string>113°33′E</string>
+		<key>Madagascar</key>
+		<string>50°40′E</string>
+		<key>Malawi</key>
+		<string>35°55′E</string>
+		<key>Malaysia</key>
+		<string>119°10′E</string>
+		<key>Maldives</key>
+		<string>73°31′E</string>
+		<key>Mali</key>
+		<string>4°00′E</string>
+		<key>Malta</key>
+		<string>14°34′E</string>
+		<key>Marshall Islands</key>
+		<string>172°09′E</string>
+		<key>Mauritania</key>
+		<string>4°45′W</string>
+		<key>Mauritius</key>
+		<string>63°30′E</string>
+		<key>Mexico</key>
+		<string>86°42′W</string>
+		<key>Moldova</key>
+		<string>30°10′E</string>
+		<key>Monaco</key>
+		<string>7°26′E</string>
+		<key>Mongolia</key>
+		<string>119°56′E</string>
+		<key>Montenegro</key>
+		<string>20°21′E</string>
+		<key>Morocco</key>
+		<string>1°10′W</string>
+		<key>Mozambique</key>
+		<string>40°45′E</string>
+		<key>Myanmar</key>
+		<string>101°10′E</string>
+		<key>Namibia</key>
+		<string>25°15′E</string>
+		<key>Nauru</key>
+		<string>166°57′E</string>
+		<key>Nepal</key>
+		<string>88°15′E</string>
+		<key>Netherlands</key>
+		<string>7°13′E</string>
+		<key>New Zealand</key>
+		<string>178°54′E</string>
+		<key>Nicaragua</key>
+		<string>82°46′W</string>
+		<key>Niger</key>
+		<string>16°00′E</string>
+		<key>Nigeria</key>
+		<string>13°15′E</string>
+		<key>North Korea</key>
+		<string>130°40′E</string>
+		<key>North Macedonia</key>
+		<string>23°00′E</string>
+		<key>Norway</key>
+		<string>31°01′E</string>
+		<key>Oman</key>
+		<string>59°50′E</string>
+		<key>Pakistan</key>
+		<string>77°30′E</string>
+		<key>Palau</key>
+		<string>134°42′E</string>
+		<key>Panama</key>
+		<string>77°09′W</string>
+		<key>Papua New Guinea</key>
+		<string>150°52′E</string>
+		<key>Paraguay</key>
+		<string>54°15′W</string>
+		<key>Peru</key>
+		<string>68°39′W</string>
+		<key>Philippines</key>
+		<string>126°34′E</string>
+		<key>Poland</key>
+		<string>24°09′E</string>
+		<key>Portugal</key>
+		<string>6°11′W</string>
+		<key>Puerto Rico</key>
+		<string>65°15′W</string>
+		<key>Qatar</key>
+		<string>51°39′E</string>
+		<key>Republic of the Congo</key>
+		<string>18°40′E</string>
+		<key>Romania</key>
+		<string>29°40′E</string>
+		<key>Russia</key>
+		<string>169°40′W</string>
+		<key>Rwanda</key>
+		<string>30°53′E</string>
+		<key>Saint Kitts and Nevis</key>
+		<string>62°31′W</string>
+		<key>Saint Lucia</key>
+		<string>60°54′W</string>
+		<key>Saint Vincent and the Grenadines</key>
+		<string>61°08′W</string>
+		<key>Samoa</key>
+		<string>171°20′W</string>
+		<key>San Marino</key>
+		<string>12°31′E</string>
+		<key>São Tomé and Príncipe</key>
+		<string>7°26′E</string>
+		<key>Saudi Arabia</key>
+		<string>55°30′E</string>
+		<key>Senegal</key>
+		<string>11°22′W</string>
+		<key>Serbia</key>
+		<string>23°01′E</string>
+		<key>Seychelles</key>
+		<string>56°16′E</string>
+		<key>Sierra Leone</key>
+		<string>10°17′W</string>
+		<key>Singapore</key>
+		<string>104°24′E</string>
+		<key>Slovakia</key>
+		<string>22°30′E</string>
+		<key>Slovenia</key>
+		<string>16°36′E</string>
+		<key>Solomon Islands</key>
+		<string>170°10′E</string>
+		<key>Somalia</key>
+		<string>51°27′E</string>
+		<key>South Africa</key>
+		<string>32°53′E</string>
+		<key>South Korea</key>
+		<string>130°56′E</string>
+		<key>South Sudan</key>
+		<string>35°48′E</string>
+		<key>Spain</key>
+		<string>3°19′E</string>
+		<key>Sri Lanka</key>
+		<string>81°40′E</string>
+		<key>Sudan</key>
+		<string>38°35′E</string>
+		<key>Suriname</key>
+		<string>54°00′W</string>
+		<key>Sweden</key>
+		<string>24°15′E</string>
+		<key>Switzerland</key>
+		<string>10°29′E</string>
+		<key>Syria</key>
+		<string>42°25′E</string>
+		<key>Taiwan</key>
+		<string>122°06′E</string>
+		<key>Tajikistan</key>
+		<string>75°05′E</string>
+		<key>Tanzania</key>
+		<string>40°29′E</string>
+		<key>Thailand</key>
+		<string>105°40′E</string>
+		<key>Togo</key>
+		<string>1°46′E</string>
+		<key>Tonga</key>
+		<string>173°43′W</string>
+		<key>Trinidad and Tobago</key>
+		<string>60°31′W</string>
+		<key>Tunisia</key>
+		<string>11°35′E</string>
+		<key>Turkey</key>
+		<string>44°49′E</string>
+		<key>Turkmenistan</key>
+		<string>66°40′E</string>
+		<key>Tuvalu</key>
+		<string>179°51′E</string>
+		<key>Uganda</key>
+		<string>35°02′E</string>
+		<key>Ukraine</key>
+		<string>40°15′E</string>
+		<key>United Arab Emirates</key>
+		<string>56°24′E</string>
+		<key>United Kingdom</key>
+		<string>1°46′E</string>
+		<key>United States</key>
+		<string>66°56′W</string>
+		<key>Uruguay</key>
+		<string>53°5′W</string>
+		<key>Uzbekistan</key>
+		<string>73°20′E</string>
+		<key>Vanuatu</key>
+		<string>170°13′E</string>
+		<key>Vatican City</key>
+		<string>12°27′E</string>
+		<key>Venezuela</key>
+		<string>59°45′W</string>
+		<key>Vietnam</key>
+		<string>109°30′E</string>
+		<key>Western Sahara</key>
+		<string>8°40′W</string>
+		<key>Yemen</key>
+		<string>53°10′E</string>
+		<key>Zambia</key>
+		<string>32°50′E</string>
+		<key>Zimbabwe</key>
+		<string>33°00′E</string>
+	</dict>
+</dict>
+</plist>

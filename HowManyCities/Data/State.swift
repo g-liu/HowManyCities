@@ -59,9 +59,9 @@ struct State: Codable {
     }
   }
   
-  var fullName: String {
+  var searchName: String {
     if let childState = states?.first {
-      return childState.fullName + ", \(normalizedCountryName)"
+      return childState.searchName + ", \(normalizedCountryName)"
     }
     
     return name
