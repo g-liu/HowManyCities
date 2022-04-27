@@ -34,6 +34,12 @@ final class GameStatsViewController: UIViewController {
       stackView.addArrangedSubview(label)
     }
     
+    stackView.addArrangedSubview(createLabel(text: "**** BEST COUNTRIES ****"))
+    statsDelegate.citiesByCountry.sorted { $0.value.count > $1.value.count }.forEach {
+      let label = createLabel(text: "\($0.key): \($0.value.count) (pop: \($0.value.totalPopulation.commaSeparated))")
+      stackView.addArrangedSubview(label)
+    }
+    
     view.addSubview(stackView)
     stackView.pin(to: view.safeAreaLayoutGuide)
   }

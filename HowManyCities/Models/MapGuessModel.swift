@@ -85,7 +85,7 @@ extension MapGuessModel: GameStatisticsDelegate {
   }
   
   var largestCitiesGuessed: [City] {
-    citiesGuessedSortedIncreasing.suffix(10)
+    citiesGuessedSortedIncreasing.suffix(10).reversed()
   }
   
   var smallestCitiesGuessed: [City] {
