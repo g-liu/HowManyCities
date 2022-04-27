@@ -33,6 +33,8 @@ final class MapGuessViewModel: NSObject {
     }
   }
   
+  var gameStatsDelegate: GameStatisticsDelegate { model }
+  
   var numCitiesGuessed: Int { model.numCitiesGuessed }
   var populationGuessed: Int { model.populationGuessed }
   var percentageTotalPopulationGuessed: Double { model.percentageTotalPopulationGuessed }

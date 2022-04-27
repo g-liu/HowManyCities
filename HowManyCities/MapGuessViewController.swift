@@ -151,6 +151,15 @@ final class MapGuessViewController: UIViewController {
     view.addSubview(guessStats)
     view.addSubview(guessStackView)
     
+    // TODO: This is a temporary button to show the stats VC
+    // We should aim for a better UX
+    let moreStatsButton = UIButton().autolayoutEnabled
+    moreStatsButton.setTitle("More statistics", for: .normal)
+    moreStatsButton.setTitleColor(.systemBlue, for: .normal)
+    moreStatsButton.titleLabel?.font = .boldSystemFont(ofSize: UIFont.systemFontSize)
+    moreStatsButton.addTarget(self, action: #selector(didTapMoreStats), for: .touchUpInside)
+    view.addSubview(moreStatsButton)
+    
     NSLayoutConstraint.activate([
       mapView.topAnchor.constraint(equalTo: view.topAnchor),
       mapView.bottomAnchor.constraint(equalTo: view.centerYAnchor, constant: -64),
@@ -170,6 +179,9 @@ final class MapGuessViewController: UIViewController {
       guessStackView.topAnchor.constraint(equalTo: guessStats.bottomAnchor, constant: 16),
       guessStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
       guessStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+      
+      moreStatsButton.topAnchor.constraint(equalTo: guessStackView.bottomAnchor, constant: 16),
+      moreStatsButton.centerXAnchor.constraint(equalTo: guessStackView.centerXAnchor),
     ])
     
     cityInputTextField.becomeFirstResponder()
@@ -279,6 +291,12 @@ final class MapGuessViewController: UIViewController {
     confirmFinishController.addAction(.init(title: "Never mind", style: .cancel))
     
     present(confirmFinishController, animated: true)
+  }
+  
+  @objc private func didTapMoreStats() {
+    let vc = GameStatsViewController()
+    vc.statsDelegate = viewModel.gameStatsDelegate
+    present(UINavigationController(rootViewController: vc), animated: true)
   }
 }
 

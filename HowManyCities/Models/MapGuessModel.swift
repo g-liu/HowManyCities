@@ -9,14 +9,32 @@ import Foundation
 import MapKit
 import OrderedCollections
 
-struct MapGuessModel: Codable {
+protocol GameStatisticsDelegate: AnyObject {
+  var numCitiesGuessed: Int { get }
+  var populationGuessed: Int { get }
+  
+  var citiesByCountry: [String: [City]] { get }
+  var citiesByTerritory: [String: [City]] { get }
+  
+  var nationalCapitalsGuessed: [City] { get }
+  
+  var largestCitiesGuessed: [City] { get }
+  var smallestCitiesGuessed: [City] { get }
+  var rarestCitiesGuessed: [City] { get }
+  
+  var percentageTotalPopulationGuessed: Double { get }
+  
+  func citiesExceeding(population: Int) -> [City]
+}
+
+final class MapGuessModel: Codable {
   var guessedCities: OrderedSet<City> = .init()
   var gameConfiguration: GameConfiguration?
   var startTime: Date = .now
   var usedMultiCityInput: Bool = false
   var lastRegion: MKCoordinateRegion = .init(center: .zero, span: .full)
   
-  mutating func resetState() {
+  func resetState() {
     guessedCities = .init()
   }
 }
@@ -24,7 +42,7 @@ struct MapGuessModel: Codable {
 // MARK: - Statistics
 // TODO: Perhaps convert this to a protocol that can be used??
 
-extension MapGuessModel {
+extension MapGuessModel: GameStatisticsDelegate {
   var numCitiesGuessed: Int { guessedCities.count }
   var populationGuessed: Int { guessedCities.reduce(0) { $0 + $1.population } }
   
@@ -66,15 +84,15 @@ extension MapGuessModel {
     guessedCities.filter { $0.nationalCapital }
   }
   
-  var largestGuessed: [City] {
+  var largestCitiesGuessed: [City] {
     citiesGuessedSortedIncreasing.suffix(10)
   }
   
-  var smallestGuessed: [City] {
+  var smallestCitiesGuessed: [City] {
     citiesGuessedSortedIncreasing.prefix(10).asArray
   }
   
-  var rarestGuessed: [City] {
+  var rarestCitiesGuessed: [City] {
     guessedCities.sorted { c1, c2 in
       (c1.percentageOfSessions ?? 0.0) < (c2.percentageOfSessions ?? 0.0)
     }.prefix(10).asArray

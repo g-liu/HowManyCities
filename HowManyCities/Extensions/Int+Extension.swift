@@ -69,10 +69,10 @@ extension Int {
     left.asCGFloat / right
   }
   
-  var commaSeparated: String? {
+  var commaSeparated: String {
     let fmt = NumberFormatter()
     fmt.numberStyle = .decimal
-    return fmt.string(from: asNSNumber)
+    return fmt.string(from: asNSNumber) ?? String(self)
   }
   
   var abbreviated: String {

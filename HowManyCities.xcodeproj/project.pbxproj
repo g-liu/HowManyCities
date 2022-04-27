@@ -22,6 +22,7 @@
 		6C82DBE127F569F80084159F /* MKCoordinateRegion+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C82DBE027F569F80084159F /* MKCoordinateRegion+Extension.swift */; };
 		6C96D17F28111A6A008E9550 /* CGRect+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C96D17E28111A69008E9550 /* CGRect+Extension.swift */; };
 		6C96D18128111AC4008E9550 /* CGSize+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C96D18028111AC4008E9550 /* CGSize+Extension.swift */; };
+		6C9C23E12819C27800376D6D /* GameStatsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9C23E02819C27800376D6D /* GameStatsViewController.swift */; };
 		6C9C42A528121975006529E9 /* MKZoomableCircleRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9C42A428121975006529E9 /* MKZoomableCircleRenderer.swift */; };
 		6C9C42A728121998006529E9 /* MKZoomablePolygonRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9C42A628121998006529E9 /* MKZoomablePolygonRenderer.swift */; };
 		6C9C42A9281219AE006529E9 /* MKZoomScale+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9C42A8281219AE006529E9 /* MKZoomScale+Extension.swift */; };
@@ -97,6 +98,7 @@
 		6C82DBE027F569F80084159F /* MKCoordinateRegion+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MKCoordinateRegion+Extension.swift"; sourceTree = "<group>"; };
 		6C96D17E28111A69008E9550 /* CGRect+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGRect+Extension.swift"; sourceTree = "<group>"; };
 		6C96D18028111AC4008E9550 /* CGSize+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGSize+Extension.swift"; sourceTree = "<group>"; };
+		6C9C23E02819C27800376D6D /* GameStatsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStatsViewController.swift; sourceTree = "<group>"; };
 		6C9C42A428121975006529E9 /* MKZoomableCircleRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MKZoomableCircleRenderer.swift; sourceTree = "<group>"; };
 		6C9C42A628121998006529E9 /* MKZoomablePolygonRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MKZoomablePolygonRenderer.swift; sourceTree = "<group>"; };
 		6C9C42A8281219AE006529E9 /* MKZoomScale+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MKZoomScale+Extension.swift"; sourceTree = "<group>"; };
@@ -241,6 +243,7 @@
 				6CAD7FE727F381DF0057A41E /* AppDelegate.swift */,
 				6CAD7FE927F381DF0057A41E /* SceneDelegate.swift */,
 				6CAD7FEB27F381DF0057A41E /* MapGuessViewController.swift */,
+				6C9C23E02819C27800376D6D /* GameStatsViewController.swift */,
 				6CAD7FF027F381E10057A41E /* Assets.xcassets */,
 				6CAD7FF227F381E10057A41E /* LaunchScreen.storyboard */,
 				6CAD7FF527F381E10057A41E /* Info.plist */,
@@ -635,6 +638,7 @@
 				6CAD802927F3C1140057A41E /* CityAnnotationView.swift in Sources */,
 				6CC3C5802804FB6C00AE5C50 /* NSLayoutConstraint+Extension.swift in Sources */,
 				6CAD7FE827F381DF0057A41E /* AppDelegate.swift in Sources */,
+				6C9C23E12819C27800376D6D /* GameStatsViewController.swift in Sources */,
 				6C9C42B528122999006529E9 /* MKOverlayRenderer+Extension.swift in Sources */,
 				6C82DBE127F569F80084159F /* MKCoordinateRegion+Extension.swift in Sources */,
 				6CAD802B27F3CA930057A41E /* MKMapView+Extension.swift in Sources */,
