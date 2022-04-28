@@ -7,8 +7,9 @@
 
 import UIKit
 
-protocol ItemRenderer {
-  func render(_ item: City) -> UIView?
+protocol ItemRenderer: AnyObject {
+  associatedtype ItemType
+  func render(_ item: ItemType) -> UIView?
 }
 
 final class HeaderAndListCollectionViewCell: UICollectionViewCell {
@@ -54,7 +55,7 @@ final class HeaderAndListCollectionViewCell: UICollectionViewCell {
     ])
   }
 
-  func configure(header: String, items: [City]?, renderer: ItemRenderer) {
+  func configure<I: ItemRenderer>(header: String, items: [I.ItemType]?, renderer: I) {
     headerLabel.text = header
     numberedListView.configure(items: items, renderer: renderer)
   }
@@ -84,7 +85,7 @@ final class NumberedListView: UIView {
     stackView.pin(to: self)
   }
   
-  func configure(items: [City]?, renderer: ItemRenderer) {
+  func configure<I: ItemRenderer>(items: [I.ItemType]?, renderer: I) {
     // SwifterSwift in iOS 12 has a problem so I have to write this manually
     // can't just call stackView.removeArrangedSubviews()
     // Fucking thing SUCKS!
