@@ -11,23 +11,48 @@ final class GameStatsViewController: UIViewController {
   var statsDelegate: GameStatisticsDelegate?
   
   private lazy var collectionView: UICollectionView = {
-    let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0)))
-    item.contentInsets = .init(top: 5, leading: 5, bottom: 5, trailing: 5)
+    let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider = { (sectionIndex, environment) -> NSCollectionLayoutSection? in
+      if sectionIndex == 0 {
+        let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0)))
+        item.contentInsets = .init(top: 5, leading: 5, bottom: 5, trailing: 5)
+        
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(0.8), heightDimension: .fractionalHeight(0.5)), subitems: [item])
+        
+        let section = NSCollectionLayoutSection(group: group)
+        section.interGroupSpacing = 8.0
+        section.orthogonalScrollingBehavior = .groupPaging
+        section.contentInsets = .init(top: 0, leading: 20, bottom: 0, trailing: 20)
+        
+        return section
+      } else if sectionIndex == 1 {
+        let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0)))
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.8)), subitems: [item])
+        
+        let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = .init(top: 0, leading: 20, bottom: 0, trailing: 20)
+        
+        let titleSupplementary = NSCollectionLayoutBoundarySupplementaryItem(
+          layoutSize: .init(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44)),
+          elementKind: "title-element-kind",
+          alignment: .top)
+        section.boundarySupplementaryItems = [titleSupplementary]
+        section.contentInsets = .init(top: 0, leading: 20, bottom: 0, trailing: 20)
+        
+        return section
+      } else {
+        return nil
+      }
+    }
     
-    let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(0.8), heightDimension: .fractionalHeight(0.5)), subitems: [item])
-    
-    let section = NSCollectionLayoutSection(group: group)
-    section.interGroupSpacing = 8.0
-    section.orthogonalScrollingBehavior = .groupPaging
-    section.contentInsets = .init(top: 0, leading: 20, bottom: 0, trailing: 20)
-    
-    let layout = UICollectionViewCompositionalLayout(section: section)
+    let layout = UICollectionViewCompositionalLayout(sectionProvider: sectionProvider)
     
     let cv = UICollectionView(frame: .zero, collectionViewLayout: layout).autolayoutEnabled
     cv.delegate = self
     cv.dataSource = self
-//    cv.contentSize = UICollectionView.automat
     cv.register(HeaderAndListCollectionViewCell.self, forCellWithReuseIdentifier: HeaderAndListCollectionViewCell.identifier)
+    cv.register(ChartCollectionViewCell.self, forCellWithReuseIdentifier: ChartCollectionViewCell.identifier)
+    
+    cv.register(TitleCollectionReusableView.self, forSupplementaryViewOfKind: "title-element-kind", withReuseIdentifier: "TitleCollectionReusableView")
     return cv
   }()
   
@@ -40,32 +65,8 @@ final class GameStatsViewController: UIViewController {
     
     view.backgroundColor = .systemBackground
     
-//    guard let statsDelegate = statsDelegate else {
-//      return
-//    }
-    
     view.addSubview(collectionView)
     collectionView.pin(to: view.safeAreaLayoutGuide)
-    
-//    let stackView = UIStackView().autolayoutEnabled
-//    stackView.axis = .vertical
-//
-//    stackView.addArrangedSubview(createLabel(text: "Cities guessed: \(statsDelegate.numCitiesGuessed)"))
-//
-//    stackView.addArrangedSubview(createLabel(text: "***BIGGEST CITIES***"))
-//    statsDelegate.largestCitiesGuessed.forEach {
-//      let label = createLabel(text: "\($0.fullTitle) - \($0.population.commaSeparated)")
-//      stackView.addArrangedSubview(label)
-//    }
-//
-//    stackView.addArrangedSubview(createLabel(text: "**** BEST COUNTRIES ****"))
-//    statsDelegate.citiesByCountry.sorted { $0.value.count > $1.value.count }.forEach {
-//      let label = createLabel(text: "\($0.key): \($0.value.count) (pop: \($0.value.totalPopulation.commaSeparated))")
-//      stackView.addArrangedSubview(label)
-//    }
-//
-//    view.addSubview(stackView)
-//    stackView.pin(to: view.safeAreaLayoutGuide)
   }
   
   private func createLabel(text: String) -> UILabel {
@@ -74,17 +75,6 @@ final class GameStatsViewController: UIViewController {
     return label
   }
   
-  
-  /*
-   // MARK: - Navigation
-   
-   // In a storyboard-based application, you will often want to do a little preparation before navigation
-   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-   // Get the new view controller using segue.destination.
-   // Pass the selected object to the new view controller.
-   }
-   */
-  
   @objc private func closeIt() {
     dismiss(animated: true)
   }
@@ -92,8 +82,28 @@ final class GameStatsViewController: UIViewController {
 }
 
 extension GameStatsViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+  func numberOfSections(in collectionView: UICollectionView) -> Int {
+    2
+  }
+  
   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    3
+    if section == 0 { return 3 }
+    if section == 1 { return 1 }
+    
+    return 0
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+    if indexPath.section == 1 {
+      guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: "title-element-kind", withReuseIdentifier: "TitleCollectionReusableView", for: indexPath) as? TitleCollectionReusableView else {
+        return .init()
+      }
+      view.text = "Best countries"
+      
+      return view
+    } else {
+      return .init()
+    }
   }
   
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -116,6 +126,12 @@ extension GameStatsViewController: UICollectionViewDelegate, UICollectionViewDat
         cell.configure(header: "Smallest cities", items: statsDelegate?.smallestCitiesGuessed, renderer: cityPopulationRenderer)
       } else if indexPath.row == 2 {
         cell.configure(header: "Rarest guessed", items: statsDelegate?.rarestCitiesGuessed, renderer: cityRarityRenderer)
+      }
+      
+      return cell
+    } else if indexPath.section == 1 {
+      guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ChartCollectionViewCell.identifier, for: indexPath) as? ChartCollectionViewCell else {
+        return UICollectionViewCell()
       }
       
       return cell
