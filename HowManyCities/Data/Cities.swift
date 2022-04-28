@@ -70,6 +70,10 @@ struct City: Codable, Hashable {
     }
   }
   
+  var countryFlag: String {
+    State(name: country).flag
+  }
+  
   var coordinates: CLLocationCoordinate2D {
     .init(latitude: latitude, longitude: longitude)
   }

@@ -65,7 +65,7 @@ final class NumberedListView: UIView {
   private lazy var stackView: UIStackView = {
     let stackView = UIStackView().autolayoutEnabled
     stackView.axis = .vertical
-    stackView.spacing = 4.0
+    stackView.spacing = 8.0
     stackView.alignment = .leading
     
     return stackView
@@ -101,14 +101,15 @@ final class NumberedListView: UIView {
       
       let itemStack = UIStackView().autolayoutEnabled
       itemStack.distribution = .fill
-      itemStack.alignment = .top
+      itemStack.alignment = .lastBaseline
       itemStack.spacing = 12.0
       itemStack.axis = .horizontal
       
       let numberLabel = UILabel().autolayoutEnabled
       numberLabel.numberOfLines = 1
       numberLabel.textAlignment = .left
-      numberLabel.text = "\(counter)"
+      numberLabel.text = "\(counter)."
+      numberLabel.font = numberLabel.font.withSize(UIFont.smallSystemFontSize)
       
       itemStack.addArrangedSubviews([
         numberLabel,

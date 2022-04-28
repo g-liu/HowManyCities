@@ -23,6 +23,12 @@ struct State: Codable {
     case states
   }
   
+  init(name: String) {
+    self.value = name
+    self.name = name
+    self.states = nil
+  }
+  
   init(from decoder: Decoder) throws {
     do {
       // Nested level of states

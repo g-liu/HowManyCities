@@ -144,30 +144,3 @@ extension GameStatsViewController: UICollectionViewDelegate, UICollectionViewDat
   
   
 }
-
-final class CityPopulationRenderer: ItemRenderer {
-  func render(_ item: City) -> UIView? {
-    let label = UILabel().autolayoutEnabled
-    label.numberOfLines = 2
-    label.text = "\(item.name) - \(item.population.abbreviated)"
-    
-    return label
-  }
-}
-
-final class CityRarityRenderer: ItemRenderer {
-  func render(_ item: City) -> UIView? {
-    guard let rarity = item.percentageOfSessions else { return nil }
-    
-    let label = UILabel().autolayoutEnabled
-    label.numberOfLines = 2
-    label.text = "\(item.name) - \(percentage(from: rarity))"
-    
-    return label
-  }
-  
-  private func percentage(from double: Double) -> String {
-    let value = round(double * 100.0) / 100.0
-    return "\(value)%"
-  }
-}

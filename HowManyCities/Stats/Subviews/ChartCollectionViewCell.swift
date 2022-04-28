@@ -17,7 +17,7 @@ final class ChartCollectionViewCell: UICollectionViewCell {
     pieChart.transparentCircleRadiusPercent = 0.45
     pieChart.holeRadiusPercent = 0.33
     pieChart.highlightPerTapEnabled = false
-    
+
     return pieChart
   }()
   
@@ -37,8 +37,22 @@ final class ChartCollectionViewCell: UICollectionViewCell {
   }
   
   func setData(_ data: [String: [City]]) {
-    let entries = data.map { (stateName, cities) -> PieChartDataEntry in
-        .init(value: Double(cities.count), label: stateName)
+    let rawEntries = data.sorted {
+      $0.value.count > $1.value.count
+    }
+//    let rawEntries = data.map { (stateName, cities) -> PieChartDataEntry in
+//        .init(value: Double(cities.count), label: stateName)
+//    }.sorted { $0.value > $1.value }
+//      .enumerated()
+      
+    var entries = [PieChartDataEntry]()
+    rawEntries.enumerated().forEach { index, element in
+      if index < 7 {
+        entries.append(.init(value: Double(element.value.count), label: element.key))
+      } else {
+        entries[entries.count - 1].label = "Others"
+        entries[entries.count - 1].value += Double(element.value.count)
+      }
     }
     let dataSet = PieChartDataSet(entries: entries)
     dataSet.colors = ChartColorTemplates.pastel()
