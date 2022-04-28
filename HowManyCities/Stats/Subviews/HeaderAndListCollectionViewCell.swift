@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol ItemRenderer {
+  func render(_ item: City) -> UIView?
+}
+
 final class HeaderAndListCollectionViewCell: UICollectionViewCell {
   static let identifier = "HeaderAndListCollectionViewCell"
   
@@ -15,6 +19,7 @@ final class HeaderAndListCollectionViewCell: UICollectionViewCell {
     label.numberOfLines = 2
     label.font = .boldSystemFont(ofSize: 24.0) // TODO: Support dynamic font type
     label.textAlignment = .left // TODO: Support RTL
+    label.setContentCompressionResistancePriority(.required, for: .vertical)
 
     return label
   }()
@@ -45,12 +50,13 @@ final class HeaderAndListCollectionViewCell: UICollectionViewCell {
       numberedListView.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 8),
       numberedListView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8.0),
       numberedListView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8.0),
-      numberedListView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8.0),
+      numberedListView.bottomAnchor.constraint(greaterThanOrEqualTo: contentView.bottomAnchor, constant: -8.0),
     ])
   }
 
-  func configure(header: String) {
+  func configure(header: String, items: [City]?, renderer: ItemRenderer) {
     headerLabel.text = header
+    numberedListView.configure(items: items, renderer: renderer)
   }
 }
 
@@ -76,13 +82,40 @@ final class NumberedListView: UIView {
   private func setupView() {
     addSubview(stackView)
     stackView.pin(to: self)
+  }
+  
+  func configure(items: [City]?, renderer: ItemRenderer) {
+    // SwifterSwift in iOS 12 has a problem so I have to write this manually
+    // can't just call stackView.removeArrangedSubviews()
+    // Fucking thing SUCKS!
+    // https://stackoverflow.com/a/52718219/1387572
+    stackView.arrangedSubviews.forEach {
+      stackView.removeArrangedSubview($0)
+      $0.removeFromSuperview()
+    }
     
-    // TODO: Test code remove PLEASE
-    stackView.addArrangedSubviews((0..<10).map {
-      let label = UILabel().autolayoutEnabled
-      label.text = "\($0)"
+    var counter = 1
+    items?.forEach { item in
+      guard let view = renderer.render(item) else { return }
       
-      return label
-    })
+      let itemStack = UIStackView().autolayoutEnabled
+      itemStack.distribution = .fill
+      itemStack.alignment = .top
+      itemStack.spacing = 12.0
+      itemStack.axis = .horizontal
+      
+      let numberLabel = UILabel().autolayoutEnabled
+      numberLabel.numberOfLines = 1
+      numberLabel.textAlignment = .left
+      numberLabel.text = "\(counter)"
+      
+      itemStack.addArrangedSubviews([
+        numberLabel,
+        view,
+      ])
+      
+      stackView.addArrangedSubview(itemStack)
+      counter += 1
+    }
   }
 }

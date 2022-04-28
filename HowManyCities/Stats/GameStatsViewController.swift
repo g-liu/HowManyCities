@@ -97,17 +97,59 @@ extension GameStatsViewController: UICollectionViewDelegate, UICollectionViewDat
   }
   
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HeaderAndListCollectionViewCell.identifier, for: indexPath) as? HeaderAndListCollectionViewCell else {
+    if indexPath.section == 0 {
+      guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HeaderAndListCollectionViewCell.identifier, for: indexPath) as? HeaderAndListCollectionViewCell else {
+        return UICollectionViewCell()
+      }
+      
+      cell.layer.borderWidth = 1.0
+      cell.layer.borderColor = UIColor.systemFill.cgColor
+      cell.layer.cornerRadius = 12.0
+      cell.clipsToBounds = true
+      
+      let cityPopulationRenderer = CityPopulationRenderer()
+      let cityRarityRenderer = CityRarityRenderer()
+      
+      if indexPath.row == 0 {
+        cell.configure(header: "Biggest cities", items: statsDelegate?.largestCitiesGuessed, renderer: cityPopulationRenderer)
+      } else if indexPath.row == 1 {
+        cell.configure(header: "Smallest cities", items: statsDelegate?.smallestCitiesGuessed, renderer: cityPopulationRenderer)
+      } else if indexPath.row == 2 {
+        cell.configure(header: "Rarest guessed", items: statsDelegate?.rarestCitiesGuessed, renderer: cityRarityRenderer)
+      }
+      
+      return cell
+    } else {
       return UICollectionViewCell()
     }
-    
-    cell.configure(header: "Biggest cities")
-    cell.layer.borderWidth = 1.0
-    cell.layer.borderColor = UIColor.systemFill.cgColor
-    cell.layer.cornerRadius = 12.0
-    
-    return cell
   }
   
   
+}
+
+final class CityPopulationRenderer: ItemRenderer {
+  func render(_ item: City) -> UIView? {
+    let label = UILabel().autolayoutEnabled
+    label.numberOfLines = 2
+    label.text = "\(item.name) - \(item.population.abbreviated)"
+    
+    return label
+  }
+}
+
+final class CityRarityRenderer: ItemRenderer {
+  func render(_ item: City) -> UIView? {
+    guard let rarity = item.percentageOfSessions else { return nil }
+    
+    let label = UILabel().autolayoutEnabled
+    label.numberOfLines = 2
+    label.text = "\(item.name) - \(percentage(from: rarity))"
+    
+    return label
+  }
+  
+  private func percentage(from double: Double) -> String {
+    let value = round(double * 100.0) / 100.0
+    return "\(value)%"
+  }
 }
