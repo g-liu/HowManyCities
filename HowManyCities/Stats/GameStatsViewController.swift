@@ -130,10 +130,12 @@ extension GameStatsViewController: UICollectionViewDelegate, UICollectionViewDat
       
       return cell
     } else if indexPath.section == 1 {
-      guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ChartCollectionViewCell.identifier, for: indexPath) as? ChartCollectionViewCell else {
+      guard let statsDelegate = statsDelegate,
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ChartCollectionViewCell.identifier, for: indexPath) as? ChartCollectionViewCell else {
         return UICollectionViewCell()
       }
       
+      cell.setData(statsDelegate.citiesByCountry)
       return cell
     } else {
       return UICollectionViewCell()
