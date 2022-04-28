@@ -11,10 +11,16 @@ final class GameStatsViewController: UIViewController {
   var statsDelegate: GameStatisticsDelegate?
   
   private lazy var collectionView: UICollectionView = {
-    let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(0.5), heightDimension: .fractionalHeight(1.0)))
-    let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.333)), subitems: [item])
+    let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0)))
+    item.contentInsets = .init(top: 5, leading: 5, bottom: 5, trailing: 5)
+    
+    let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(0.8), heightDimension: .fractionalHeight(0.5)), subitems: [item])
+    
     let section = NSCollectionLayoutSection(group: group)
+    section.interGroupSpacing = 8.0
     section.orthogonalScrollingBehavior = .groupPaging
+    section.contentInsets = .init(top: 0, leading: 20, bottom: 0, trailing: 20)
+    
     let layout = UICollectionViewCompositionalLayout(section: section)
     
     let cv = UICollectionView(frame: .zero, collectionViewLayout: layout).autolayoutEnabled
@@ -96,6 +102,9 @@ extension GameStatsViewController: UICollectionViewDelegate, UICollectionViewDat
     }
     
     cell.configure(header: "Biggest cities")
+    cell.layer.borderWidth = 1.0
+    cell.layer.borderColor = UIColor.systemFill.cgColor
+    cell.layer.cornerRadius = 12.0
     
     return cell
   }

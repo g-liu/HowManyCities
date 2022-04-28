@@ -39,13 +39,13 @@ final class HeaderAndListCollectionViewCell: UICollectionViewCell {
     contentView.addSubview(headerLabel)
     contentView.addSubview(numberedListView)
     NSLayoutConstraint.activate([
-      headerLabel.topAnchor.constraint(equalTo: contentView.topAnchor),
-      headerLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-      headerLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+      headerLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8.0),
+      headerLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8.0),
+      headerLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8.0),
       numberedListView.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 8),
-      numberedListView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-      numberedListView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-      numberedListView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+      numberedListView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8.0),
+      numberedListView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8.0),
+      numberedListView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8.0),
     ])
   }
 
