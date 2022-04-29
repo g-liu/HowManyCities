@@ -12,8 +12,14 @@ protocol ItemRenderer: AnyObject {
   func render(_ item: ItemType) -> UIView?
 }
 
+protocol WhateverDelegate: AnyObject {
+  func didToggleList()
+}
+
 final class HeaderAndListCollectionViewCell: UICollectionViewCell {
   static let identifier = "HeaderAndListCollectionViewCell"
+  
+  weak var delegate: WhateverDelegate?
   
   private lazy var headerLabel: UILabel = {
     let label = UILabel().autolayoutEnabled
@@ -85,8 +91,12 @@ final class HeaderAndListCollectionViewCell: UICollectionViewCell {
   }
   
   @objc private func toggleItemsShown() {
-    numberedListView.showAll()
-    showMoreButton.setTitle("Show less", for: .normal)
+    self.numberedListView.showAll()
+    self.showMoreButton.setTitle("Show less", for: .normal)
+    
+    self.numberedListView.setNeedsLayout()
+    
+    delegate?.didToggleList()
   }
 }
 

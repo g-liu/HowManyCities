@@ -15,7 +15,7 @@ final class GameStatsViewController: UIViewController {
       if sectionIndex == 0 {
         let heightDim = NSCollectionLayoutDimension.estimated(10)
         let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1.0), heightDimension: heightDim))
-//        item.edgeSpacing = .init(leading: .flexible(2.0), top: .flexible(2.0), trailing: .flexible(2.0), bottom: .flexible(2.0))
+        //        item.edgeSpacing = .init(leading: .flexible(2.0), top: .flexible(2.0), trailing: .flexible(2.0), bottom: .flexible(2.0))
         
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(0.8), heightDimension: heightDim), subitems: [item])
         
@@ -123,10 +123,11 @@ extension GameStatsViewController: UICollectionViewDelegate, UICollectionViewDat
       if indexPath.row == 0 {
         cell.configure(header: "Biggest cities", items: statsDelegate?.largestCitiesGuessed, renderer: cityPopulationRenderer)
       } else if indexPath.row == 1 {
-        cell.configure(header: "Smallest cities YOU FUCKING AUTOLAYOUT PIECE OF SHIT", items: statsDelegate?.smallestCitiesGuessed, renderer: cityPopulationRenderer)
+        cell.configure(header: "Smallest cities", items: statsDelegate?.smallestCitiesGuessed, renderer: cityPopulationRenderer)
       } else if indexPath.row == 2 {
         cell.configure(header: "Rarest guessed", items: statsDelegate?.rarestCitiesGuessed, renderer: cityRarityRenderer)
       }
+      cell.delegate = self // TODO: TEMP PLZ REMOVE
       
       return cell
     } else if indexPath.section == 1 {
@@ -141,6 +142,11 @@ extension GameStatsViewController: UICollectionViewDelegate, UICollectionViewDat
       return UICollectionViewCell()
     }
   }
-  
-  
+}
+
+// TODO: TEMP PLZ RMV
+extension GameStatsViewController: WhateverDelegate {
+  func didToggleList() {
+    collectionView.collectionViewLayout.invalidateLayout()
+  }
 }
