@@ -28,16 +28,18 @@ final class HeaderAndListCollectionViewCell: UICollectionViewCell {
   private lazy var numberedListView: NumberedListView = {
     let view = NumberedListView().autolayoutEnabled
     view.setContentHuggingPriority(.required, for: .vertical)
-    
+
     return view
   }()
-  
+
   private lazy var showMoreButton: UIButton = {
     let button = UIButton().autolayoutEnabled
     button.setTitle("Show more", for: .normal)
     button.setTitleColor(.systemBlue, for: .normal)
     button.titleLabel?.font = .boldSystemFont(ofSize: UIFont.buttonFontSize)
     button.addTarget(self, action: #selector(toggleItemsShown), for: .touchUpInside)
+
+    button.setContentCompressionResistancePriority(.required, for: .vertical)
     
     return button
   }()
@@ -53,8 +55,9 @@ final class HeaderAndListCollectionViewCell: UICollectionViewCell {
   }
 
   private func setupView() {
-    contentView.translatesAutoresizingMaskIntoConstraints = false
+//    contentView.translatesAutoresizingMaskIntoConstraints = false
     contentView.addSubview(headerLabel)
+//    headerLabel.pin(to: contentView)
     contentView.addSubview(numberedListView)
     contentView.addSubview(showMoreButton)
     NSLayoutConstraint.activate([
@@ -65,12 +68,14 @@ final class HeaderAndListCollectionViewCell: UICollectionViewCell {
       numberedListView.leadingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leadingAnchor, constant: 8.0),
       numberedListView.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor, constant: -8.0),
 //      numberedListView.bottomAnchor.constraint(greaterThanOrEqualTo: contentView.safeAreaLayoutGuide.bottomAnchor, constant: -8.0),
+//      showMoreButton.topAnchor.constraint(equalTo: numberedListView.bottomAnchor, constant: 8.0),
       showMoreButton.topAnchor.constraint(equalTo: numberedListView.bottomAnchor, constant: 8.0),
-      showMoreButton.centerXAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.centerXAnchor),
+      showMoreButton.leadingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leadingAnchor),
+      showMoreButton.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor),
       showMoreButton.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor),
     ])
     
-    contentView.pin(to: self.safeAreaLayoutGuide)
+//    contentView.pin(to: self.safeAreaLayoutGuide)
   }
 
   func configure<I: ItemRenderer>(header: String, items: [I.ItemType]?, renderer: I) {

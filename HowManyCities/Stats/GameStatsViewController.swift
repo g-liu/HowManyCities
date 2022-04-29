@@ -13,7 +13,7 @@ final class GameStatsViewController: UIViewController {
   private lazy var collectionView: UICollectionView = {
     let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider = { (sectionIndex, environment) -> NSCollectionLayoutSection? in
       if sectionIndex == 0 {
-        let heightDim = NSCollectionLayoutDimension.estimated(250)
+        let heightDim = NSCollectionLayoutDimension.estimated(10)
         let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1.0), heightDimension: heightDim))
 //        item.edgeSpacing = .init(leading: .flexible(2.0), top: .flexible(2.0), trailing: .flexible(2.0), bottom: .flexible(2.0))
         
@@ -123,7 +123,7 @@ extension GameStatsViewController: UICollectionViewDelegate, UICollectionViewDat
       if indexPath.row == 0 {
         cell.configure(header: "Biggest cities", items: statsDelegate?.largestCitiesGuessed, renderer: cityPopulationRenderer)
       } else if indexPath.row == 1 {
-        cell.configure(header: "Smallest cities", items: statsDelegate?.smallestCitiesGuessed, renderer: cityPopulationRenderer)
+        cell.configure(header: "Smallest cities YOU FUCKING AUTOLAYOUT PIECE OF SHIT", items: statsDelegate?.smallestCitiesGuessed, renderer: cityPopulationRenderer)
       } else if indexPath.row == 2 {
         cell.configure(header: "Rarest guessed", items: statsDelegate?.rarestCitiesGuessed, renderer: cityRarityRenderer)
       }
