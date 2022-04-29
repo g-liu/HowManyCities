@@ -27,6 +27,7 @@ final class HeaderAndListCollectionViewCell: UICollectionViewCell {
   
   private lazy var numberedListView: NumberedListView = {
     let view = NumberedListView().autolayoutEnabled
+    view.setContentHuggingPriority(.required, for: .vertical)
     
     return view
   }()
