@@ -30,6 +30,16 @@ final class HeaderAndListCollectionViewCell: UICollectionViewCell {
     
     return view
   }()
+  
+  private lazy var showMoreButton: UIButton = {
+    let button = UIButton().autolayoutEnabled
+    button.setTitle("Show more", for: .normal)
+    button.setTitleColor(.systemBlue, for: .normal)
+    button.titleLabel?.font = .boldSystemFont(ofSize: UIFont.buttonFontSize)
+    button.addTarget(self, action: #selector(toggleItemsShown), for: .touchUpInside)
+    
+    return button
+  }()
 
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -42,22 +52,35 @@ final class HeaderAndListCollectionViewCell: UICollectionViewCell {
   }
 
   private func setupView() {
+    contentView.translatesAutoresizingMaskIntoConstraints = false
     contentView.addSubview(headerLabel)
     contentView.addSubview(numberedListView)
+    contentView.addSubview(showMoreButton)
     NSLayoutConstraint.activate([
-      headerLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8.0),
-      headerLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8.0),
-      headerLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8.0),
+      headerLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 8.0),
+      headerLabel.leadingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leadingAnchor, constant: 8.0),
+      headerLabel.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor, constant: -8.0),
       numberedListView.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 8),
-      numberedListView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8.0),
-      numberedListView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8.0),
-      numberedListView.bottomAnchor.constraint(greaterThanOrEqualTo: contentView.bottomAnchor, constant: -8.0),
+      numberedListView.leadingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leadingAnchor, constant: 8.0),
+      numberedListView.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor, constant: -8.0),
+//      numberedListView.bottomAnchor.constraint(greaterThanOrEqualTo: contentView.safeAreaLayoutGuide.bottomAnchor, constant: -8.0),
+      showMoreButton.topAnchor.constraint(equalTo: numberedListView.bottomAnchor, constant: 8.0),
+      showMoreButton.centerXAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.centerXAnchor),
+      showMoreButton.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor),
     ])
+    
+    contentView.pin(to: self.safeAreaLayoutGuide)
   }
 
   func configure<I: ItemRenderer>(header: String, items: [I.ItemType]?, renderer: I) {
     headerLabel.text = header
     numberedListView.configure(items: items, renderer: renderer)
+    numberedListView.setShowing(5)
+  }
+  
+  @objc private func toggleItemsShown() {
+    numberedListView.showAll()
+    showMoreButton.setTitle("Show less", for: .normal)
   }
 }
 
@@ -110,6 +133,8 @@ final class NumberedListView: UIView {
       numberLabel.textAlignment = .left
       numberLabel.text = "\(counter)."
       numberLabel.font = numberLabel.font.withSize(UIFont.smallSystemFontSize)
+      numberLabel.setContentHuggingPriority(.required, for: .horizontal)
+      numberLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
       
       itemStack.addArrangedSubviews([
         numberLabel,
@@ -117,7 +142,22 @@ final class NumberedListView: UIView {
       ])
       
       stackView.addArrangedSubview(itemStack)
+      NSLayoutConstraint.activate([
+        itemStack.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
+        itemStack.trailingAnchor.constraint(equalTo: stackView.trailingAnchor),
+      ])
       counter += 1
     }
+  }
+  
+  func setShowing(_ count: Int) {
+    let normalizedCount = max(min(stackView.arrangedSubviews.count, count), 1)
+    stackView.arrangedSubviews.enumerated().forEach {
+      $1.isHidden = ($0 > normalizedCount)
+    }
+  }
+  
+  func showAll() {
+    stackView.arrangedSubviews.forEach { $0.isHidden = false }
   }
 }

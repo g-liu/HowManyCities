@@ -13,15 +13,15 @@ final class GameStatsViewController: UIViewController {
   private lazy var collectionView: UICollectionView = {
     let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider = { (sectionIndex, environment) -> NSCollectionLayoutSection? in
       if sectionIndex == 0 {
-        let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0)))
-        item.contentInsets = .init(top: 5, leading: 5, bottom: 5, trailing: 5)
+        let heightDim = NSCollectionLayoutDimension.estimated(250)
+        let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1.0), heightDimension: heightDim))
+//        item.edgeSpacing = .init(leading: .flexible(2.0), top: .flexible(2.0), trailing: .flexible(2.0), bottom: .flexible(2.0))
         
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(0.8), heightDimension: .fractionalHeight(0.5)), subitems: [item])
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(0.8), heightDimension: heightDim), subitems: [item])
         
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 8.0
         section.orthogonalScrollingBehavior = .groupPaging
-        section.contentInsets = .init(top: 0, leading: 20, bottom: 0, trailing: 20)
         
         return section
       } else if sectionIndex == 1 {
