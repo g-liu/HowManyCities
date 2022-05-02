@@ -83,6 +83,9 @@ final class GameStatsViewController: UIViewController {
     
     let headerAndListCellRegistration = createHeaderAndListCellRegistration()
     let pieChartCellRegistration = createPieChartCellRegistration()
+    
+    let headerRegistration = createHeaderRegistration()
+    
     dataSource = .init(collectionView: collectionView, cellProvider: { collectionView, indexPath, item in
       guard let section = Section(rawValue: indexPath.section) else {
         fatalError("WTF?")
@@ -93,6 +96,9 @@ final class GameStatsViewController: UIViewController {
         case .citiesByCountry:
           return collectionView.dequeueConfiguredReusableCell(using: pieChartCellRegistration, for: indexPath, item: item)
       }
+    })
+    dataSource.supplementaryViewProvider = .some({ collectionView, elementKind, indexPath in
+      self.collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
     })
     collectionView.dataSource = dataSource
     
@@ -117,6 +123,12 @@ final class GameStatsViewController: UIViewController {
 
 // MARK: - Cell registrations
 extension GameStatsViewController {
+  func createHeaderRegistration() -> UICollectionView.SupplementaryRegistration<TitleCollectionReusableView> {
+    .init(elementKind: "title-element-kind") { supplementaryView, elementKind, indexPath in
+      supplementaryView.text = "IDK???"
+    }
+  }
+  
   func createHeaderAndListCellRegistration() -> UICollectionView.CellRegistration<HeaderAndListCollectionViewCell, Item /* TODO: IDK???? */> {
     .init { cell, indexPath, item in
       cell.layer.borderWidth = 1.0
@@ -145,68 +157,9 @@ extension GameStatsViewController {
   }
 }
 
-// MARK: - Delegate/Datasource (OLD)
-extension GameStatsViewController: UICollectionViewDelegate, UICollectionViewDataSource {
-  func numberOfSections(in collectionView: UICollectionView) -> Int {
-    2
-  }
+// MARK: - Delegate
+extension GameStatsViewController: UICollectionViewDelegate {
   
-  func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    if section == 0 { return 3 }
-    if section == 1 { return 1 }
-    
-    return 0
-  }
-  
-  func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-    if indexPath.section == 1 {
-      guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: "title-element-kind", withReuseIdentifier: "TitleCollectionReusableView", for: indexPath) as? TitleCollectionReusableView else {
-        return .init()
-      }
-      view.text = "Best countries"
-      
-      return view
-    } else {
-      return .init()
-    }
-  }
-  
-  func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    if indexPath.section == 0 {
-      guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HeaderAndListCollectionViewCell.identifier, for: indexPath) as? HeaderAndListCollectionViewCell else {
-        return UICollectionViewCell()
-      }
-      
-      cell.layer.borderWidth = 1.0
-      cell.layer.borderColor = UIColor.systemFill.cgColor
-      cell.layer.cornerRadius = 12.0
-      cell.clipsToBounds = true
-      
-      let cityPopulationRenderer = CityPopulationRenderer()
-      let cityRarityRenderer = CityRarityRenderer()
-      
-      if indexPath.row == 0 {
-        cell.configure(header: "Biggest cities", items: statsDelegate?.largestCitiesGuessed, renderer: cityPopulationRenderer)
-      } else if indexPath.row == 1 {
-        cell.configure(header: "Smallest cities", items: statsDelegate?.smallestCitiesGuessed, renderer: cityPopulationRenderer)
-      } else if indexPath.row == 2 {
-        cell.configure(header: "Rarest guessed", items: statsDelegate?.rarestCitiesGuessed, renderer: cityRarityRenderer)
-      }
-      cell.delegate = self // TODO: TEMP PLZ REMOVE
-      
-      return cell
-    } else if indexPath.section == 1 {
-      guard let statsDelegate = statsDelegate,
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ChartCollectionViewCell.identifier, for: indexPath) as? ChartCollectionViewCell else {
-        return UICollectionViewCell()
-      }
-      
-      cell.setData(statsDelegate.citiesByCountry)
-      return cell
-    } else {
-      return UICollectionViewCell()
-    }
-  }
 }
 
 // TODO: TEMP PLZ RMV
