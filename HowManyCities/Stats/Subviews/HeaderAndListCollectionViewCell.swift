@@ -38,6 +38,7 @@ final class HeaderAndListCollectionViewCell: UICollectionViewCell {
     return view
   }()
 
+  // TODO: This button should hook up directly to the data source to change the items displayed, I think.
   private lazy var showMoreButton: UIButton = {
     let button = UIButton().autolayoutEnabled
     button.setTitle("Show more", for: .normal)
