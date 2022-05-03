@@ -45,16 +45,11 @@ final class NewGameStatsViewController: UIViewController {
     
     var title: String {
       switch self {
-        case .largest:
-          return "Largest cities"
-        case .smallest:
-          return "Smallest cities"
-        case .rarest:
-          return "Rarest guessed"
-        case .mostCommon:
-          return "Commonly guessed"
-        case .recent:
-          return "Your cities"
+        case .largest: return "Largest cities"
+        case .smallest: return "Smallest cities"
+        case .rarest: return "Rarest guessed"
+        case .mostCommon: return "Commonly guessed"
+        case .recent: return "Your cities"
       }
     }
     
@@ -168,14 +163,6 @@ final class NewGameStatsViewController: UIViewController {
       collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
     }
     
-    // Initial data
-    // TODO: APPLY THIS
-//    var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
-//    snapshot.appendSections([.cityList])
-//    cities().enumerated().forEach {
-//      snapshot.appendItems([.ordinal($0+1), $1])
-//    }
-//    dataSource.apply(snapshot)
     didChange(segmentIndex: 0)
     
     collectionView.dataSource = dataSource
@@ -209,20 +196,8 @@ extension NewGameStatsViewController: UICollectionViewDelegate {
 extension NewGameStatsViewController: SegmentChangeDelegate {
   func didChange(segmentIndex: Int) {
     let newSegment = CitySegment.init(rawValue: segmentIndex) ?? .recent
-    
-//    // TODO: We need this logic to determine whether to apply or do a hard reload of the collection view section
-//    // It's really stupid but I'm sure there's a better way
-//    let segmentsUsingPopulationRenderer = Set<CitySegment>([.recent, .largest, .smallest])
-//    let segmentsUsingRarityRenderer = Set<CitySegment>([.rarest, .mostCommon])
-//
-//    let needsHardReload: Bool
-//    if segmentsUsingRarityRenderer.contains(newSegment) && segmentsUsingRarityRenderer.contains(selectedSegment) || segmentsUsingPopulationRenderer.contains(newSegment) && segmentsUsingPopulationRenderer.contains(selectedSegment) {
-//      needsHardReload = false
-//    } else {
-//      needsHardReload = true
-//    }
-    
     self.selectedSegment = newSegment
+    
     // TODO: Big code changes will have to happen here to support multiple sections...
     var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
     snapshot.appendSections([.cityList(newSegment)])
@@ -230,12 +205,6 @@ extension NewGameStatsViewController: SegmentChangeDelegate {
       snapshot.appendItems([.ordinal($0+1), $1])
     }
     
-//    if needsHardReload {
-//      // this is sad... wish there was a way to just "fade"...
-//      dataSource.applySnapshotUsingReloadData(snapshot)
-//    } else {
-//      dataSource.apply(snapshot)
-//    }
     dataSource.apply(snapshot, animatingDifferences: true)
   }
   
