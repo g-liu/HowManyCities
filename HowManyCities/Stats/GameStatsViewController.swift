@@ -19,7 +19,7 @@ final class GameStatsViewController: UIViewController {
     let items: [City]? // TODO: Genericize... maybe?????
   }
   
-  var statsDelegate: GameStatisticsDelegate?
+  var statsDelegate: GameStatisticsProvider?
   
   var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
   
@@ -97,6 +97,7 @@ final class GameStatsViewController: UIViewController {
           return collectionView.dequeueConfiguredReusableCell(using: pieChartCellRegistration, for: indexPath, item: item)
       }
     })
+    
     dataSource.supplementaryViewProvider = .some({ collectionView, elementKind, indexPath in
       self.collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
     })

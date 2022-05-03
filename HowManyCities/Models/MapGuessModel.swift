@@ -9,7 +9,7 @@ import Foundation
 import MapKit
 import OrderedCollections
 
-protocol GameStatisticsDelegate: AnyObject {
+protocol GameStatisticsProvider: AnyObject {
   var numCitiesGuessed: Int { get }
   var populationGuessed: Int { get }
   
@@ -42,7 +42,7 @@ final class MapGuessModel: Codable {
 // MARK: - Statistics
 // TODO: Perhaps convert this to a protocol that can be used??
 
-extension MapGuessModel: GameStatisticsDelegate {
+extension MapGuessModel: GameStatisticsProvider {
   var numCitiesGuessed: Int { guessedCities.count }
   var populationGuessed: Int { guessedCities.reduce(0) { $0 + $1.population } }
   
@@ -85,17 +85,17 @@ extension MapGuessModel: GameStatisticsDelegate {
   }
   
   var largestCitiesGuessed: [City] {
-    citiesGuessedSortedIncreasing.suffix(10).reversed()
+    citiesGuessedSortedIncreasing.reversed()
   }
   
   var smallestCitiesGuessed: [City] {
-    citiesGuessedSortedIncreasing.prefix(10).asArray
+    citiesGuessedSortedIncreasing
   }
   
   var rarestCitiesGuessed: [City] {
     guessedCities.sorted { c1, c2 in
       (c1.percentageOfSessions ?? 0.0) < (c2.percentageOfSessions ?? 0.0)
-    }.prefix(10).asArray
+    }
   }
   
   var percentageTotalPopulationGuessed: Double {
