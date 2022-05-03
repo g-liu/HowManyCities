@@ -207,15 +207,13 @@ extension NewGameStatsViewController: UICollectionViewDelegate {
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     // If it's a city, open the city page
     if indexPath.section == 0 {
-      if indexPath.row.isOdd {
-        // open page
-        let cityVC = CityInfoViewController()
-        if case let .city(city) = cities[(indexPath.row - 1) / 2] {
-          cityVC.city = city
-        }
-        
-        navigationController?.pushViewController(cityVC)
+      // open page
+      let cityVC = CityInfoViewController()
+      if case let .city(city) = cities[(indexPath.row - indexPath.row%2) / 2] {
+        cityVC.city = city
       }
+      
+      navigationController?.pushViewController(cityVC)
     }
   }
 }
