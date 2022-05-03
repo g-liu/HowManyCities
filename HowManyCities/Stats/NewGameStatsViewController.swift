@@ -19,7 +19,9 @@ final class NewGameStatsViewController: UIViewController {
   }
   
   enum Item: Hashable {
-    case city(Int, City)
+    case ordinal(Int)
+    case city(City)
+    
     case citiesByState([String: [City]])
     case formattedStat(Int, Int, String)
   }
@@ -31,11 +33,16 @@ final class NewGameStatsViewController: UIViewController {
   private lazy var collectionView: UICollectionView = {
     let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider = { (sectionIndex, environment) -> NSCollectionLayoutSection? in
       // TODO: This is the first section only; need per-section layout eventually...
-      let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(1.0))
-      let item = NSCollectionLayoutItem(layoutSize: itemSize)
+      
+      // TODO: How to make these two sizes be like.. [as-little-as-possible, remaining-width]?
+      let ordinalItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.12), heightDimension: .estimated(1.0))
+      let textItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.88), heightDimension: .estimated(1.0))
+      
+      let ordinalItem = NSCollectionLayoutItem(layoutSize: ordinalItemSize)
+      let textItem = NSCollectionLayoutItem(layoutSize: textItemSize)
       
       let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(1.0))
-      let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
+      let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [ordinalItem, textItem])
       
       let section = NSCollectionLayoutSection(group: group)
       
@@ -72,8 +79,17 @@ final class NewGameStatsViewController: UIViewController {
   }
   
   private func configureDataSource() {
+    let ordinalCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Int> { cell, indexPath, itemIdentifier in
+      var configuration = UIListContentConfiguration.cell()
+      configuration.text = "\(itemIdentifier)."
+      configuration.textProperties.font = UIFont.monospacedDigitSystemFont(ofSize: UIFont.smallSystemFontSize, weight: .regular)
+      configuration.textProperties.color = .systemGray
+      
+      cell.contentConfiguration = configuration
+    }
+    
     let cellRegistration = UICollectionView.CellRegistration<NumberedListCollectionViewCell, City> { cell, indexPath, itemIdentifier in
-      cell.configure(order: indexPath.row, item: itemIdentifier, renderer: CityPopulationRenderer())
+      cell.configure(item: itemIdentifier, renderer: CityPopulationRenderer())
     }
     
     let headerRegistration = UICollectionView.SupplementaryRegistration<TitleCollectionReusableView>(elementKind: ElementKind.header) { supplementaryView, elementKind, indexPath in
@@ -84,7 +100,9 @@ final class NewGameStatsViewController: UIViewController {
     }
     
     dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
-      if case let .city(index, city) = itemIdentifier {
+      if case let .ordinal(index) = itemIdentifier {
+        return collectionView.dequeueConfiguredReusableCell(using: ordinalCellRegistration, for: indexPath, item: index)
+      } else if case let .city(city) = itemIdentifier {
         return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: city)
       } else {
         return UICollectionViewCell()
@@ -95,9 +113,12 @@ final class NewGameStatsViewController: UIViewController {
     }
     
     // Initial data
+    // TODO: APPLY THIS
     var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
     snapshot.appendSections([.cityList])
-    snapshot.appendItems(cities())
+    cities().enumerated().forEach {
+      snapshot.appendItems([.ordinal($0), $1])
+    }
     dataSource.apply(snapshot)
     
     collectionView.dataSource = dataSource
@@ -119,7 +140,9 @@ extension NewGameStatsViewController: SegmentChangeDelegate {
     // TODO: Big code changes will have to happen here to support multiple sections...
     var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
     snapshot.appendSections([.cityList])
-    snapshot.appendItems(cities(for: segmentIndex))
+    cities(for: segmentIndex).enumerated().forEach {
+      snapshot.appendItems([.ordinal($0), $1])
+    }
     dataSource.apply(snapshot)
   }
   
@@ -127,15 +150,15 @@ extension NewGameStatsViewController: SegmentChangeDelegate {
     let cityList: [Item]
     switch segmentIndex {
       case 1:
-        cityList = statsProvider?.smallestCitiesGuessed.enumerated().map(Item.city) ?? []
+        cityList = statsProvider?.smallestCitiesGuessed.map(Item.city) ?? []
       case 2:
-        cityList = statsProvider?.rarestCitiesGuessed.enumerated().map(Item.city) ?? []
+        cityList = statsProvider?.rarestCitiesGuessed.map(Item.city) ?? []
       case 3:
-        cityList = statsProvider?.recentCitiesGuessed.enumerated().map(Item.city) ?? []
+        cityList = statsProvider?.recentCitiesGuessed.map(Item.city) ?? []
       case 0:
         fallthrough
       default:
-        cityList = statsProvider?.largestCitiesGuessed.enumerated().map(Item.city) ?? []
+        cityList = statsProvider?.largestCitiesGuessed.map(Item.city) ?? []
     }
     
     return cityList.prefix(10).asArray
