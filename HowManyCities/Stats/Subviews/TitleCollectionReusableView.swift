@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TitleCollectionReusableView: UICollectionReusableView {
+final class TitleCollectionReusableView: UICollectionReusableView {
   override var reuseIdentifier: String? { "TitleCollectionReusableView" }
   var text: String? {
     get { label.text }
@@ -18,6 +18,13 @@ class TitleCollectionReusableView: UICollectionReusableView {
     let label = UILabel().autolayoutEnabled
     label.font = .boldSystemFont(ofSize: 24.0)
     return label
+  }()
+  
+  private lazy var control: UISegmentedControl = {
+    let control = UISegmentedControl().autolayoutEnabled
+    control.isHidden = true
+    
+    return control
   }()
   
   override init(frame: CGRect) {
@@ -32,6 +39,28 @@ class TitleCollectionReusableView: UICollectionReusableView {
   
   private func setupView() {
     addSubview(label)
-    label.pin(to: self)
+    addSubview(control)
+    NSLayoutConstraint.activate([
+      label.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
+      label.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+      label.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
+      
+      control.topAnchor.constraint(equalTo: label.bottomAnchor),
+      control.leadingAnchor.constraint(equalTo: label.leadingAnchor),
+      control.trailingAnchor.constraint(equalTo: label.trailingAnchor),
+      control.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
+    ])
+  }
+  
+  func configure(segmentTitles: [String]?) {
+    guard let segmentTitles = segmentTitles,
+          !segmentTitles.isEmpty else {
+      control.isHidden = true
+      return
+    }
+
+    control.isHidden = false
+    control.segmentTitles = segmentTitles
+    control.selectedSegmentIndex = 0
   }
 }

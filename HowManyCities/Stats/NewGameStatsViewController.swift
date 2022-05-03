@@ -10,6 +10,7 @@ import UIKit
 final class NewGameStatsViewController: UIViewController {
   struct ElementKind {
     static let header = "element-kind-header"
+    static let segmentedControl = "element-kind-segmented-control"
   }
   
   enum Section: Int {
@@ -77,6 +78,7 @@ final class NewGameStatsViewController: UIViewController {
     
     let headerRegistration = UICollectionView.SupplementaryRegistration<TitleCollectionReusableView>(elementKind: ElementKind.header) { supplementaryView, elementKind, indexPath in
       supplementaryView.text = "Top cities"
+      supplementaryView.configure(segmentTitles: ["Biggest", "Smallest", "Rarest", "Recent"])
     }
     
     dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
