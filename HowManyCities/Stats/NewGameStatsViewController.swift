@@ -26,6 +26,8 @@ final class NewGameStatsViewController: UIViewController {
     case formattedStat(Int, Int, String)
   }
   
+  var selectedSegment: Int = 0
+  
   var statsProvider: GameStatisticsProvider?
   
   var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
@@ -97,10 +99,12 @@ final class NewGameStatsViewController: UIViewController {
     }
     
     let cellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, City> { cell, indexPath, itemIdentifier in
-      // TODO: THE RENDERER MUST DEPEND ON THE SELECTED SEGMENT!!!!!!!!
-//      cell.configure(item: itemIdentifier, renderer: CityPopulationRenderer())
       var configuration = UIListContentConfiguration.cell()
-      configuration.attributedText = CityPopulationRenderer().string(itemIdentifier)
+      if self.selectedSegment == 2 {
+        configuration.attributedText = CityRarityRenderer().string(itemIdentifier)
+      } else {
+        configuration.attributedText = CityPopulationRenderer().string(itemIdentifier)
+      }
       configuration.directionalLayoutMargins = .zero
       
       cell.contentConfiguration = configuration
@@ -110,7 +114,7 @@ final class NewGameStatsViewController: UIViewController {
     let headerRegistration = UICollectionView.SupplementaryRegistration<TitleCollectionReusableView>(elementKind: ElementKind.header) { supplementaryView, elementKind, indexPath in
       supplementaryView.text = "Top cities"
       // TODO: Persist selection
-      supplementaryView.configure(segmentTitles: ["Biggest", "Smallest", "Rarest", "Recent"])
+      supplementaryView.configure(selectedSegmentIndex: self.selectedSegment, segmentTitles: ["Biggest", "Smallest", "Rarest", "Recent"])
       supplementaryView.segmentChangeDelegate = self
     }
     
@@ -147,24 +151,38 @@ final class NewGameStatsViewController: UIViewController {
 
 
 extension NewGameStatsViewController: UICollectionViewDelegate {
-  
+  func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    // If it's a city, open the city page
+    if indexPath.section == 0 {
+      if indexPath.row.isOdd {
+        // open page
+        let cityVC = CityInfoViewController()
+        if case let .city(city) = cities[(indexPath.row - 1) / 2] {
+          cityVC.city = city
+        }
+        
+        navigationController?.pushViewController(cityVC)
+      }
+    }
+  }
 }
 
 
 extension NewGameStatsViewController: SegmentChangeDelegate {
   func didChange(segmentIndex: Int) {
+    self.selectedSegment = segmentIndex
     // TODO: Big code changes will have to happen here to support multiple sections...
     var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
     snapshot.appendSections([.cityList])
-    cities(for: segmentIndex).enumerated().forEach {
+    cities.enumerated().forEach {
       snapshot.appendItems([.ordinal($0+1), $1])
     }
     dataSource.apply(snapshot)
   }
   
-  private func cities(for segmentIndex: Int = 0) -> [Item] {
+  private var cities: [Item] {
     let cityList: [Item]
-    switch segmentIndex {
+    switch selectedSegment {
       case 1:
         cityList = statsProvider?.smallestCitiesGuessed.map(Item.city) ?? []
       case 2:

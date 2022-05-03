@@ -9,17 +9,21 @@ import UIKit
 
 final class CityRarityRenderer: ItemRenderer {
   func render(_ item: City) -> UIView? {
-    guard let rarity = item.percentageOfSessions else { return nil }
-    
     let label = UILabel().autolayoutEnabled
     label.numberOfLines = 2
+    label.attributedText = string(item)
+    
+    return label
+  }
+  
+  func string(_ item: City) -> NSAttributedString {
+    let rarity = item.percentageOfSessions ?? 0.0
+    
     let mas = NSMutableAttributedString(string: "\(item.countryFlag)\(item.name)  ")
     mas.append(.init(string: percentage(from: rarity), attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
                                                                        .foregroundColor: UIColor.systemGray]))
     
-    label.attributedText = mas
-    
-    return label
+    return .init(attributedString: mas)
   }
   
   

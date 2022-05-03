@@ -10,6 +10,7 @@ import UIKit
 protocol ItemRenderer: AnyObject {
   associatedtype ItemType
   func render(_ item: ItemType) -> UIView?
+  func string(_ item: ItemType) -> NSAttributedString // TODO: TEMP!!!
 }
 
 protocol WhateverDelegate: AnyObject {

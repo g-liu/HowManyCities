@@ -59,7 +59,7 @@ final class TitleCollectionReusableView: UICollectionReusableView {
     ])
   }
   
-  func configure(segmentTitles: [String]?) {
+  func configure(selectedSegmentIndex: Int, segmentTitles: [String]?) {
     guard let segmentTitles = segmentTitles,
           !segmentTitles.isEmpty else {
       control.isHidden = true
@@ -69,9 +69,7 @@ final class TitleCollectionReusableView: UICollectionReusableView {
     control.isHidden = false
     control.segmentTitles = segmentTitles
     
-    if control.selectedSegmentIndex == -1 {
-      control.selectedSegmentIndex = 0
-    }
+    control.selectedSegmentIndex = selectedSegmentIndex
   }
   
   @objc private func didChangeSegmentIndex() {
