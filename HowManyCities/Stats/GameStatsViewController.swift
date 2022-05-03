@@ -165,6 +165,7 @@ extension GameStatsViewController: UICollectionViewDelegate {
 // TODO: TEMP PLZ RMV
 extension GameStatsViewController: WhateverDelegate {
   func didToggleList() {
-    collectionView.collectionViewLayout.invalidateLayout()
+//    collectionView.collectionViewLayout.invalidateLayout()
+    // TODO: WHAT PUT HERE
   }
 }

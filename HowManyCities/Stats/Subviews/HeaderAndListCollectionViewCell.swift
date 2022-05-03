@@ -88,11 +88,11 @@ final class HeaderAndListCollectionViewCell: UICollectionViewCell {
   func configure<I: ItemRenderer>(header: String, items: [I.ItemType]?, renderer: I) {
     headerLabel.text = header
     numberedListView.configure(items: items, renderer: renderer)
-    numberedListView.setShowing(5)
+//    numberedListView.setShowing(5)
   }
   
   @objc private func toggleItemsShown() {
-    self.numberedListView.showAll()
+//    self.numberedListView.showAll()
     self.showMoreButton.setTitle("Show less", for: .normal)
     
     self.numberedListView.setNeedsLayout()
@@ -167,14 +167,14 @@ final class NumberedListView: UIView {
     }
   }
   
-  func setShowing(_ count: Int) {
-    let normalizedCount = max(min(stackView.arrangedSubviews.count, count), 1)
-    stackView.arrangedSubviews.enumerated().forEach {
-      $1.isHidden = ($0 > normalizedCount)
-    }
-  }
-  
-  func showAll() {
-    stackView.arrangedSubviews.forEach { $0.isHidden = false }
-  }
+//  func setShowing(_ count: Int) {
+//    let normalizedCount = max(min(stackView.arrangedSubviews.count, count), 1)
+//    stackView.arrangedSubviews.enumerated().forEach {
+//      $1.isHidden = ($0 > normalizedCount)
+//    }
+//  }
+//
+//  func showAll() {
+//    stackView.arrangedSubviews.forEach { $0.isHidden = false }
+//  }
 }
