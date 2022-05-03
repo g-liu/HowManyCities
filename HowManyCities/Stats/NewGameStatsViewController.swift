@@ -10,6 +10,7 @@ import UIKit
 final class NewGameStatsViewController: UIViewController {
   struct ElementKind {
     static let header = "element-kind-header"
+    static let footer = "element-kind-footer"
     static let segmentedControl = "element-kind-segmented-control"
   }
   
@@ -60,6 +61,8 @@ final class NewGameStatsViewController: UIViewController {
   
   var selectedSegment: CitySegment = .largest
   
+  var showUpTo: Int = 10
+  
   var statsProvider: GameStatisticsProvider?
   
   var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
@@ -84,11 +87,17 @@ final class NewGameStatsViewController: UIViewController {
       
       let section = NSCollectionLayoutSection(group: group)
       
-      let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
-      let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerSize, elementKind: ElementKind.header, alignment: .top)
+      let boundaryItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
+      let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
       sectionHeader.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
-      section.boundarySupplementaryItems = [sectionHeader]
+      
+      let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.footer, alignment: .bottom)
+      sectionFooter.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
+      
+      section.boundarySupplementaryItems = [sectionHeader, sectionFooter]
       section.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
+      
+      
       
       return section
     }
@@ -150,6 +159,10 @@ final class NewGameStatsViewController: UIViewController {
       supplementaryView.segmentChangeDelegate = self
     }
     
+    let footerRegistration = UICollectionView.SupplementaryRegistration<FooterButtonCollectionReusableView>(elementKind: ElementKind.footer) { supplementaryView, elementKind, indexPath in
+      supplementaryView.delegate = self
+    }
+    
     dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
       if case let .ordinal(index) = itemIdentifier {
         return collectionView.dequeueConfiguredReusableCell(using: ordinalCellRegistration, for: indexPath, item: index)
@@ -160,7 +173,11 @@ final class NewGameStatsViewController: UIViewController {
       }
     })
     dataSource.supplementaryViewProvider = { collectionView, elementKind, indexPath in
-      collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
+      if elementKind == ElementKind.header {
+        return collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
+      } else {
+        return collectionView.dequeueConfiguredReusableSupplementary(using: footerRegistration, for: indexPath)
+      }
     }
     
     didChange(segmentIndex: 0)
@@ -170,6 +187,17 @@ final class NewGameStatsViewController: UIViewController {
   
   @objc private func closeIt() {
     dismiss(animated: true)
+  }
+  
+  private func applySnapshot() {
+    // TODO: Big code changes will have to happen here to support multiple sections...
+    var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+    snapshot.appendSections([.cityList(self.selectedSegment)])
+    cities.enumerated().forEach {
+      snapshot.appendItems([.ordinal($0+1), $1])
+    }
+    
+    dataSource.apply(snapshot, animatingDifferences: true)
   }
 }
 
@@ -198,14 +226,7 @@ extension NewGameStatsViewController: SegmentChangeDelegate {
     let newSegment = CitySegment.init(rawValue: segmentIndex) ?? .recent
     self.selectedSegment = newSegment
     
-    // TODO: Big code changes will have to happen here to support multiple sections...
-    var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
-    snapshot.appendSections([.cityList(newSegment)])
-    cities.enumerated().forEach {
-      snapshot.appendItems([.ordinal($0+1), $1])
-    }
-    
-    dataSource.apply(snapshot, animatingDifferences: true)
+    applySnapshot()
   }
   
   private var cities: [Item] {
@@ -225,6 +246,14 @@ extension NewGameStatsViewController: SegmentChangeDelegate {
         cityList = statsProvider?.largestCitiesGuessed.map(Item.city) ?? []
     }
     
-    return cityList.prefix(10).asArray
+    return cityList.prefix(showUpTo).asArray
+  }
+}
+
+extension NewGameStatsViewController: ToggleShowAllDelegate {
+  func didToggle(_ showUpTo: Int) {
+    self.showUpTo = showUpTo
+    
+    applySnapshot()
   }
 }
