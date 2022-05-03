@@ -88,8 +88,13 @@ final class NewGameStatsViewController: UIViewController {
       cell.contentConfiguration = configuration
     }
     
-    let cellRegistration = UICollectionView.CellRegistration<NumberedListCollectionViewCell, City> { cell, indexPath, itemIdentifier in
-      cell.configure(item: itemIdentifier, renderer: CityPopulationRenderer())
+    let cellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, City> { cell, indexPath, itemIdentifier in
+      // TODO: THE RENDERER MUST DEPEND ON THE SELECTED SEGMENT!!!!!!!!
+//      cell.configure(item: itemIdentifier, renderer: CityPopulationRenderer())
+      var configuration = UIListContentConfiguration.cell()
+      configuration.attributedText = CityPopulationRenderer().string(itemIdentifier)
+      
+      cell.contentConfiguration = configuration
     }
     
     let headerRegistration = UICollectionView.SupplementaryRegistration<TitleCollectionReusableView>(elementKind: ElementKind.header) { supplementaryView, elementKind, indexPath in
