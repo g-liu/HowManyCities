@@ -26,7 +26,29 @@ final class NewGameStatsViewController: UIViewController {
     case formattedStat(Int, Int, String)
   }
   
-  var selectedSegment: Int = 0
+  enum CitySegment: Int, CaseIterable {
+    case largest
+    case smallest
+    case rarest
+    case mostCommon
+    case recent
+    
+    var name: String {
+      switch self {
+        case .largest: return "Largest"
+        case .smallest: return "Smallest"
+        case .rarest: return "Rarest"
+        case .mostCommon: return "Common"
+        case .recent: return "Recent"
+      }
+    }
+    
+    static var asNames: [String] {
+      allCases.map { $0.name }
+    }
+  }
+  
+  var selectedSegment: CitySegment = .largest
   
   var statsProvider: GameStatisticsProvider?
   
@@ -100,7 +122,7 @@ final class NewGameStatsViewController: UIViewController {
     
     let cellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, City> { cell, indexPath, itemIdentifier in
       var configuration = UIListContentConfiguration.cell()
-      if self.selectedSegment == 2 {
+      if self.selectedSegment == .rarest || self.selectedSegment == .mostCommon {
         configuration.attributedText = CityRarityRenderer().string(itemIdentifier)
       } else {
         configuration.attributedText = CityPopulationRenderer().string(itemIdentifier)
@@ -114,7 +136,7 @@ final class NewGameStatsViewController: UIViewController {
     let headerRegistration = UICollectionView.SupplementaryRegistration<TitleCollectionReusableView>(elementKind: ElementKind.header) { supplementaryView, elementKind, indexPath in
       supplementaryView.text = "Top cities"
       // TODO: Persist selection
-      supplementaryView.configure(selectedSegmentIndex: self.selectedSegment, segmentTitles: ["Biggest", "Smallest", "Rarest", "Recent"])
+      supplementaryView.configure(selectedSegmentIndex: self.selectedSegment.rawValue, segmentTitles: CitySegment.asNames)
       supplementaryView.segmentChangeDelegate = self
     }
     
@@ -171,7 +193,7 @@ extension NewGameStatsViewController: UICollectionViewDelegate {
 
 extension NewGameStatsViewController: SegmentChangeDelegate {
   func didChange(segmentIndex: Int) {
-    self.selectedSegment = segmentIndex
+    self.selectedSegment = .init(rawValue: segmentIndex) ?? .recent // TODO: CHECK LOGIC
     // TODO: Big code changes will have to happen here to support multiple sections...
     var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
     snapshot.appendSections([.cityList])
@@ -184,13 +206,15 @@ extension NewGameStatsViewController: SegmentChangeDelegate {
   private var cities: [Item] {
     let cityList: [Item]
     switch selectedSegment {
-      case 1:
+      case .smallest:
         cityList = statsProvider?.smallestCitiesGuessed.map(Item.city) ?? []
-      case 2:
+      case .rarest:
         cityList = statsProvider?.rarestCitiesGuessed.map(Item.city) ?? []
-      case 3:
+      case .mostCommon:
+        cityList = statsProvider?.commonCitiesGuessed.map(Item.city) ?? []
+      case .recent:
         cityList = statsProvider?.recentCitiesGuessed.map(Item.city) ?? []
-      case 0:
+      case .largest:
         fallthrough
       default:
         cityList = statsProvider?.largestCitiesGuessed.map(Item.city) ?? []
