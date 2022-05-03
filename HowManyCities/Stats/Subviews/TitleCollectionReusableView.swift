@@ -68,7 +68,10 @@ final class TitleCollectionReusableView: UICollectionReusableView {
 
     control.isHidden = false
     control.segmentTitles = segmentTitles
-    control.selectedSegmentIndex = 0
+    
+    if control.selectedSegmentIndex == -1 {
+      control.selectedSegmentIndex = 0
+    }
   }
   
   @objc private func didChangeSegmentIndex() {

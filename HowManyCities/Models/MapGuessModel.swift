@@ -21,6 +21,7 @@ protocol GameStatisticsProvider: AnyObject {
   var largestCitiesGuessed: [City] { get }
   var smallestCitiesGuessed: [City] { get }
   var rarestCitiesGuessed: [City] { get }
+  var recentCitiesGuessed: [City] { get }
   
   var percentageTotalPopulationGuessed: Double { get }
   
@@ -96,6 +97,10 @@ extension MapGuessModel: GameStatisticsProvider {
     guessedCities.sorted { c1, c2 in
       (c1.percentageOfSessions ?? 0.0) < (c2.percentageOfSessions ?? 0.0)
     }
+  }
+  
+  var recentCitiesGuessed: [City] {
+    guessedCities.reversed()
   }
   
   var percentageTotalPopulationGuessed: Double {

@@ -78,6 +78,7 @@ final class NewGameStatsViewController: UIViewController {
     
     let headerRegistration = UICollectionView.SupplementaryRegistration<TitleCollectionReusableView>(elementKind: ElementKind.header) { supplementaryView, elementKind, indexPath in
       supplementaryView.text = "Top cities"
+      // TODO: Persist selection
       supplementaryView.configure(segmentTitles: ["Biggest", "Smallest", "Rarest", "Recent"])
       supplementaryView.segmentChangeDelegate = self
     }
@@ -96,7 +97,7 @@ final class NewGameStatsViewController: UIViewController {
     // Initial data
     var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
     snapshot.appendSections([.cityList])
-    snapshot.appendItems(statsProvider?.largestCitiesGuessed.map(Item.city) ?? [])
+    snapshot.appendItems(cities())
     dataSource.apply(snapshot)
     
     collectionView.dataSource = dataSource
@@ -115,32 +116,28 @@ extension NewGameStatsViewController: UICollectionViewDelegate {
 
 extension NewGameStatsViewController: SegmentChangeDelegate {
   func didChange(segmentIndex: Int) {
+    // TODO: Big code changes will have to happen here to support multiple sections...
+    var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+    snapshot.appendSections([.cityList])
+    snapshot.appendItems(cities(for: segmentIndex))
+    dataSource.apply(snapshot)
+  }
+  
+  private func cities(for segmentIndex: Int = 0) -> [Item] {
+    let cityList: [Item]
     switch segmentIndex {
-        // TODO: Big code changes will have to happen here to support multiple sections...
-      case 0:
-        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
-        snapshot.appendSections([.cityList])
-        snapshot.appendItems(statsProvider?.largestCitiesGuessed.map(Item.city) ?? [])
-        dataSource.apply(snapshot)
       case 1:
-        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
-        snapshot.appendSections([.cityList])
-        snapshot.appendItems(statsProvider?.smallestCitiesGuessed.map(Item.city) ?? [])
-        dataSource.apply(snapshot)
+        cityList = statsProvider?.smallestCitiesGuessed.map(Item.city) ?? []
       case 2:
-        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
-        snapshot.appendSections([.cityList])
-        snapshot.appendItems(statsProvider?.rarestCitiesGuessed.map(Item.city) ?? [])
-        dataSource.apply(snapshot)
+        cityList = statsProvider?.rarestCitiesGuessed.map(Item.city) ?? []
       case 3:
-        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
-        snapshot.appendSections([.cityList])
-        // TODO: FUCK YOU
-//        snapshot.appendItems(statsProvider?.guessedCities.map(Item.city) ?? [])
-        dataSource.apply(snapshot)
+        cityList = statsProvider?.recentCitiesGuessed.map(Item.city) ?? []
+      case 0:
+        fallthrough
       default:
-        // WTF were you thinking LOL
-        break
+        cityList = statsProvider?.largestCitiesGuessed.map(Item.city) ?? []
     }
+    
+    return cityList.prefix(10).asArray
   }
 }
