@@ -19,7 +19,7 @@ final class NewGameStatsViewController: UIViewController {
   }
   
   enum Item: Hashable {
-    case city(City)
+    case city(Int, City)
     case citiesByState([String: [City]])
     case formattedStat(Int, Int, String)
   }
@@ -84,7 +84,7 @@ final class NewGameStatsViewController: UIViewController {
     }
     
     dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
-      if case let .city(city) = itemIdentifier {
+      if case let .city(index, city) = itemIdentifier {
         return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: city)
       } else {
         return UICollectionViewCell()
@@ -127,15 +127,15 @@ extension NewGameStatsViewController: SegmentChangeDelegate {
     let cityList: [Item]
     switch segmentIndex {
       case 1:
-        cityList = statsProvider?.smallestCitiesGuessed.map(Item.city) ?? []
+        cityList = statsProvider?.smallestCitiesGuessed.enumerated().map(Item.city) ?? []
       case 2:
-        cityList = statsProvider?.rarestCitiesGuessed.map(Item.city) ?? []
+        cityList = statsProvider?.rarestCitiesGuessed.enumerated().map(Item.city) ?? []
       case 3:
-        cityList = statsProvider?.recentCitiesGuessed.map(Item.city) ?? []
+        cityList = statsProvider?.recentCitiesGuessed.enumerated().map(Item.city) ?? []
       case 0:
         fallthrough
       default:
-        cityList = statsProvider?.largestCitiesGuessed.map(Item.city) ?? []
+        cityList = statsProvider?.largestCitiesGuessed.enumerated().map(Item.city) ?? []
     }
     
     return cityList.prefix(10).asArray
