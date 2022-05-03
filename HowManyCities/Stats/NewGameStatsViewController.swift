@@ -30,10 +30,10 @@ final class NewGameStatsViewController: UIViewController {
   private lazy var collectionView: UICollectionView = {
     let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider = { (sectionIndex, environment) -> NSCollectionLayoutSection? in
       // TODO: This is the first section only; need per-section layout eventually...
-      let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
+      let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(1.0))
       let item = NSCollectionLayoutItem(layoutSize: itemSize)
       
-      let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
+      let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(1.0))
       let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
       
       let section = NSCollectionLayoutSection(group: group)
@@ -71,12 +71,8 @@ final class NewGameStatsViewController: UIViewController {
   }
   
   private func configureDataSource() {
-    let cellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, City> { cell, indexPath, itemIdentifier in
-      // TODO: Create custom cell
-      var config = UIListContentConfiguration.cell()
-      config.text = "\(indexPath.row): \(itemIdentifier.fullTitle)"
-      
-      cell.contentConfiguration = config
+    let cellRegistration = UICollectionView.CellRegistration<NumberedListCollectionViewCell, City> { cell, indexPath, itemIdentifier in
+      cell.configure(order: indexPath.row, item: itemIdentifier, renderer: CityPopulationRenderer())
     }
     
     let headerRegistration = UICollectionView.SupplementaryRegistration<TitleCollectionReusableView>(elementKind: ElementKind.header) { supplementaryView, elementKind, indexPath in

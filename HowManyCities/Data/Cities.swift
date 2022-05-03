@@ -60,13 +60,16 @@ struct City: Codable, Hashable {
   }
   
   var fullTitle: String {
-    let fullName = [name, state, territory, country].filter { !$0.isEmpty }.joined(separator: ", ")
-    if stateCapital {
-      return "★ \(fullName)"
-    } else if nationalCapital {
-      return "✪ \(fullName)"
+    [name, state, territory, country].filter { !$0.isEmpty }.joined(separator: ", ")
+  }
+  
+  var capitalDesignation: String {
+    if nationalCapital {
+      return "✪"
+    } else if stateCapital {
+      return "★"
     } else {
-      return fullName
+      return ""
     }
   }
   
