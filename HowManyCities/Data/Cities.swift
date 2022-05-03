@@ -63,6 +63,14 @@ struct City: Codable, Hashable {
     [name, state, territory, country].filter { !$0.isEmpty }.joined(separator: ", ")
   }
   
+  var nameWithStateAbbr: String {
+    if !state.isEmpty, let stateAbbreviation = Global.STATE_ABBREVIATIONS[state] {
+      return "\(name), \(stateAbbreviation)"
+    }
+    
+    return name
+  }
+  
   var capitalDesignation: String {
     if nationalCapital {
       return "✪"
