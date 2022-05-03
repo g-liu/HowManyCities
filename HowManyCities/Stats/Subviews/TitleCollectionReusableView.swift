@@ -52,7 +52,7 @@ final class TitleCollectionReusableView: UICollectionReusableView {
       label.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
       label.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
       
-      control.topAnchor.constraint(equalTo: label.bottomAnchor),
+      control.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 8),
       control.leadingAnchor.constraint(equalTo: label.leadingAnchor),
       control.trailingAnchor.constraint(equalTo: label.trailingAnchor),
       control.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),

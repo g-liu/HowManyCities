@@ -41,14 +41,20 @@ final class NewGameStatsViewController: UIViewController {
       let ordinalItem = NSCollectionLayoutItem(layoutSize: ordinalItemSize)
       let textItem = NSCollectionLayoutItem(layoutSize: textItemSize)
       
+      ordinalItem.contentInsets = .zero
+      textItem.contentInsets = .zero
+      
       let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(1.0))
       let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [ordinalItem, textItem])
+      group.contentInsets = .zero
       
       let section = NSCollectionLayoutSection(group: group)
       
       let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
       let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerSize, elementKind: ElementKind.header, alignment: .top)
+      sectionHeader.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
       section.boundarySupplementaryItems = [sectionHeader]
+      section.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
       
       return section
     }
@@ -84,8 +90,10 @@ final class NewGameStatsViewController: UIViewController {
       configuration.text = "\(itemIdentifier)."
       configuration.textProperties.font = UIFont.monospacedDigitSystemFont(ofSize: UIFont.smallSystemFontSize, weight: .regular)
       configuration.textProperties.color = .systemGray
+      configuration.directionalLayoutMargins = .zero
       
       cell.contentConfiguration = configuration
+      cell.contentView.layoutMargins = .zero
     }
     
     let cellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, City> { cell, indexPath, itemIdentifier in
@@ -93,8 +101,10 @@ final class NewGameStatsViewController: UIViewController {
 //      cell.configure(item: itemIdentifier, renderer: CityPopulationRenderer())
       var configuration = UIListContentConfiguration.cell()
       configuration.attributedText = CityPopulationRenderer().string(itemIdentifier)
+      configuration.directionalLayoutMargins = .zero
       
       cell.contentConfiguration = configuration
+      cell.contentView.layoutMargins = .zero
     }
     
     let headerRegistration = UICollectionView.SupplementaryRegistration<TitleCollectionReusableView>(elementKind: ElementKind.header) { supplementaryView, elementKind, indexPath in
@@ -119,12 +129,13 @@ final class NewGameStatsViewController: UIViewController {
     
     // Initial data
     // TODO: APPLY THIS
-    var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
-    snapshot.appendSections([.cityList])
-    cities().enumerated().forEach {
-      snapshot.appendItems([.ordinal($0), $1])
-    }
-    dataSource.apply(snapshot)
+//    var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+//    snapshot.appendSections([.cityList])
+//    cities().enumerated().forEach {
+//      snapshot.appendItems([.ordinal($0+1), $1])
+//    }
+//    dataSource.apply(snapshot)
+    didChange(segmentIndex: 0)
     
     collectionView.dataSource = dataSource
   }
@@ -146,7 +157,7 @@ extension NewGameStatsViewController: SegmentChangeDelegate {
     var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
     snapshot.appendSections([.cityList])
     cities(for: segmentIndex).enumerated().forEach {
-      snapshot.appendItems([.ordinal($0), $1])
+      snapshot.appendItems([.ordinal($0+1), $1])
     }
     dataSource.apply(snapshot)
   }
