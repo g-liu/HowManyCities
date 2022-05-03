@@ -7,12 +7,18 @@
 
 import UIKit
 
+protocol SegmentChangeDelegate: AnyObject {
+  func didChange(segmentIndex: Int)
+}
+
 final class TitleCollectionReusableView: UICollectionReusableView {
   override var reuseIdentifier: String? { "TitleCollectionReusableView" }
   var text: String? {
     get { label.text }
     set { label.text = newValue }
   }
+  
+  weak var segmentChangeDelegate: SegmentChangeDelegate? = nil
   
   private lazy var label: UILabel = {
     let label = UILabel().autolayoutEnabled
@@ -23,6 +29,7 @@ final class TitleCollectionReusableView: UICollectionReusableView {
   private lazy var control: UISegmentedControl = {
     let control = UISegmentedControl().autolayoutEnabled
     control.isHidden = true
+    control.addTarget(self, action: #selector(didChangeSegmentIndex), for: .valueChanged)
     
     return control
   }()
@@ -62,5 +69,10 @@ final class TitleCollectionReusableView: UICollectionReusableView {
     control.isHidden = false
     control.segmentTitles = segmentTitles
     control.selectedSegmentIndex = 0
+  }
+  
+  @objc private func didChangeSegmentIndex() {
+    let index = control.selectedSegmentIndex
+    segmentChangeDelegate?.didChange(segmentIndex: index)
   }
 }

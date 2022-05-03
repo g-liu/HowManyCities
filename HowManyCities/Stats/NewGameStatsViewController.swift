@@ -79,6 +79,7 @@ final class NewGameStatsViewController: UIViewController {
     let headerRegistration = UICollectionView.SupplementaryRegistration<TitleCollectionReusableView>(elementKind: ElementKind.header) { supplementaryView, elementKind, indexPath in
       supplementaryView.text = "Top cities"
       supplementaryView.configure(segmentTitles: ["Biggest", "Smallest", "Rarest", "Recent"])
+      supplementaryView.segmentChangeDelegate = self
     }
     
     dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
@@ -109,4 +110,37 @@ final class NewGameStatsViewController: UIViewController {
 
 extension NewGameStatsViewController: UICollectionViewDelegate {
   
+}
+
+
+extension NewGameStatsViewController: SegmentChangeDelegate {
+  func didChange(segmentIndex: Int) {
+    switch segmentIndex {
+        // TODO: Big code changes will have to happen here to support multiple sections...
+      case 0:
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+        snapshot.appendSections([.cityList])
+        snapshot.appendItems(statsProvider?.largestCitiesGuessed.map(Item.city) ?? [])
+        dataSource.apply(snapshot)
+      case 1:
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+        snapshot.appendSections([.cityList])
+        snapshot.appendItems(statsProvider?.smallestCitiesGuessed.map(Item.city) ?? [])
+        dataSource.apply(snapshot)
+      case 2:
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+        snapshot.appendSections([.cityList])
+        snapshot.appendItems(statsProvider?.rarestCitiesGuessed.map(Item.city) ?? [])
+        dataSource.apply(snapshot)
+      case 3:
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+        snapshot.appendSections([.cityList])
+        // TODO: FUCK YOU
+//        snapshot.appendItems(statsProvider?.guessedCities.map(Item.city) ?? [])
+        dataSource.apply(snapshot)
+      default:
+        // WTF were you thinking LOL
+        break
+    }
+  }
 }
