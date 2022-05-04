@@ -157,6 +157,8 @@ class CityInfoViewController: UIViewController {
     
     if !nearbyCities.isEmpty {
       let nearbyTitle = UILabel(text: "Nearby guessed cities:", style: .title2).autolayoutEnabled
+      nearbyTitle.isUserInteractionEnabled = true
+      nearbyTitle.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapShowAllNearbyCities)))
       infoStack.addArrangedSubview(nearbyTitle)
       
       nearbyCities.enumerated().forEach {
@@ -194,6 +196,20 @@ class CityInfoViewController: UIViewController {
     isShowingFullTitle = !isShowingFullTitle
   }
   
+  @objc private func didTapShowAllNearbyCities(_ sender: Any) {
+    guard let city = city, !nearbyCities.isEmpty else { return }
+    
+    mapView.removeAnnotations(mapView.annotations.filter { $0.coordinate != city.coordinates })
+    mapView.removeOverlays(mapView.overlays)
+    
+    nearbyCities.forEach {
+      addNearbyCityAnnotation($0)
+    }
+    
+//    mapView.zoom(to: [city.coordinates] + nearbyCities.map { $0.coordinates }, meter: 1500000, edgePadding: .init(inset: 25.0), animated: false)
+    mapView.showAnnotations(mapView.annotations, animated: true)
+  }
+  
   @objc private func didTapNearbyCity(_ sender: Any) {
     guard let label = (sender as? UIGestureRecognizer)?.view as? UILabel else { return }
     let tag = label.tag
@@ -204,13 +220,18 @@ class CityInfoViewController: UIViewController {
     mapView.removeOverlays(mapView.overlays)
     
     let nearbyCity = nearbyCities[tag]
-//    mapView.addAnnotation(city.asAnnotation)
+    addNearbyCityAnnotation(nearbyCity)
+    
+//    mapView.zoom(to: [city.coordinates, nearbyCity.coordinates], meter: 1500000, edgePadding: .init(inset: 75.0), animated: false)
+    mapView.showAnnotations(mapView.annotations, animated: true)
+  }
+  
+  private func addNearbyCityAnnotation(_ nearbyCity: City) {
+    guard let city = city else { return }
     mapView.addAnnotation(nearbyCity.asAnnotation)
     
     let line = MKPolyline(coordinates: [city.coordinates, nearbyCity.coordinates])
     mapView.addOverlay(line)
-    
-    mapView.zoom(to: [city.coordinates, nearbyCity.coordinates], meter: 1500000, edgePadding: .init(inset: 75.0), animated: false)
   }
   
 }
@@ -223,6 +244,7 @@ extension CityInfoViewController: MKMapViewDelegate {
     } else {
       annotationView.markerTintColor = .systemRed
     }
+    annotationView.displayPriority = .required
     return annotationView
   }
   
@@ -230,7 +252,7 @@ extension CityInfoViewController: MKMapViewDelegate {
     if let polyline = overlay as? MKPolyline {
       let polylineRenderer = MKPolylineRenderer(overlay: polyline)
       polylineRenderer.strokeColor = .systemFill
-      polylineRenderer.lineWidth = 2
+      polylineRenderer.lineWidth = 1
       polylineRenderer.lineDashPattern = [2, 4]
       return polylineRenderer
     }
