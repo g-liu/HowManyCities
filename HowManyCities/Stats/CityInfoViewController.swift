@@ -39,7 +39,7 @@ class CityInfoViewController: UIViewController {
   
   private lazy var mapView: MKMapView = {
     let map = MKMapView().autolayoutEnabled
-    map.mapType = .mutedStandard
+    map.mapType = .satellite
     map.isPitchEnabled = false
     map.isScrollEnabled = false
     map.isMultipleTouchEnabled = false
@@ -85,10 +85,12 @@ class CityInfoViewController: UIViewController {
     return label
   }()
   
+  private let nearbyThreshold: Double = 500_000 // in meters
+  
   var city: City? {
     didSet {
       if let city = city, let statsProvider = statsProvider {
-        nearbyCities = statsProvider.guessedCities(near: city).prefix(10).asArray
+        nearbyCities = statsProvider.guessedCities(near: city).prefix(10).filter { city.distance(to: $0) < nearbyThreshold }
       } else {
         nearbyCities = []
       }
@@ -177,8 +179,8 @@ class CityInfoViewController: UIViewController {
           cityTitle = $1.name
         }
         let mas = NSMutableAttributedString(string: "\(cityTitle) ")
-        mas.append(.init(string: "\(distanceInKm.commaSeparated)km ", attributes: [.foregroundColor: UIColor.systemGray]))
-        mas.append(.init(string: "\(bearing.asArrow)", attributes: [.font: UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)]))
+        mas.append(.init(string: "\(distanceInKm.commaSeparated)km \(bearing.asArrow)", attributes: [.foregroundColor: UIColor.systemGray]))
+//        mas.append(.init(string: "\(bearing.asArrow)", attributes: [.font: UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)]))
         nearbyCityLabel.attributedText = mas
         
         nearbyCityLabel.tag = $0
@@ -189,6 +191,9 @@ class CityInfoViewController: UIViewController {
         infoStack.addArrangedSubview(nearbyCityLabel)
         infoStack.setCustomSpacing(4.0, after: nearbyCityLabel)
       }
+    } else {
+      let nearbyTitle = UILabel(text: "No nearby guessed cities", style: .title2).autolayoutEnabled
+      infoStack.addArrangedSubview(nearbyTitle)
     }
   }
   

@@ -129,7 +129,7 @@ extension MapGuessModel: GameStatisticsProvider {
     guessedCities.sorted {
       $0.coordinates.asLocation.distance(from: city.coordinates.asLocation) <
         $1.coordinates.asLocation.distance(from: city.coordinates.asLocation)
-    }
+    }.dropFirst().asArray
   }
 }
 
