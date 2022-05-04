@@ -132,6 +132,10 @@ struct City: Codable, Hashable {
     
     return .init(points: coordinates, count: coordinates.count)
   }
+  
+  func distance(to otherCity: City) -> CLLocationDistance {
+    coordinates.asLocation.distance(from: otherCity.coordinates.asLocation)
+  }
 }
 
 extension City {

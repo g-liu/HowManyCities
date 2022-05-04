@@ -209,6 +209,7 @@ extension NewGameStatsViewController: UICollectionViewDelegate {
     if indexPath.section == 0 {
       // open page
       let cityVC = CityInfoViewController()
+      cityVC.statsProvider = statsProvider
       if case let .city(city) = cities[(indexPath.row - indexPath.row%2) / 2] {
         cityVC.city = city
       }

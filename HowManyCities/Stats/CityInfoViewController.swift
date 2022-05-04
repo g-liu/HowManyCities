@@ -9,6 +9,7 @@ import UIKit
 import MapKit
 
 class CityInfoViewController: UIViewController {
+  weak var statsProvider: GameStatisticsProvider?
    
   private lazy var mapView: MKMapView = {
     let map = MKMapView().autolayoutEnabled
@@ -19,7 +20,6 @@ class CityInfoViewController: UIViewController {
     map.isZoomEnabled = false
     map.isRotateEnabled = false
     map.pointOfInterestFilter = .excludingAll
-    map.setRegion(.full, animated: true)
     
     return map
   }()
@@ -48,6 +48,13 @@ class CityInfoViewController: UIViewController {
     return label
   }()
   
+  private lazy var tempLabel: UILabel = {
+    let label = UILabel(text: "", style: UIFont.TextStyle.body)
+    label.numberOfLines = 0
+    
+    return label
+  }()
+  
   var city: City? {
     didSet {
       configure(with: city)
@@ -61,6 +68,7 @@ class CityInfoViewController: UIViewController {
     
     infoStack.addArrangedSubview(cityLabel)
     infoStack.addArrangedSubview(populationLabel)
+    infoStack.addArrangedSubview(tempLabel)
     
     view.addSubview(mapView)
     view.addSubview(infoStack)
@@ -96,6 +104,16 @@ class CityInfoViewController: UIViewController {
     
     populationLabel.text = "Population: \(city.population.commaSeparated)"
     
+    
+    if let statsProvider = statsProvider {
+      tempLabel.text = "GUESSED CITIES NEARBY\n"
+      statsProvider.guessedCities(near: city).prefix(10).forEach {
+        if $0 == city { return }
+        
+        let distanceInKm = Int(round(city.distance(to: $0) / 1000.0))
+        tempLabel.text! += "\($0.fullTitle) - \(distanceInKm.commaSeparated)km\n"
+      }
+    }
 //    tempLabel.text = """
 //Name: \(city.name) \(city.capitalDesignation)
 //State: \(city.state)

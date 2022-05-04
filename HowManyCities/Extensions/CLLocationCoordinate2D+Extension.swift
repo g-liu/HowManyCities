@@ -24,6 +24,12 @@ extension CLLocationCoordinate2D {
   }
 }
 
+extension CLLocationCoordinate2D {
+  var asLocation: CLLocation {
+    .init(self)
+  }
+}
+
 extension CLLocationCoordinate2D: Codable {
   public func encode(to encoder: Encoder) throws {
     var container = encoder.unkeyedContainer()
