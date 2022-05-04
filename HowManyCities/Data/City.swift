@@ -1,5 +1,5 @@
 //
-//  Cities.swift
+//  City.swift
 //  HowManyCities
 //
 //  Created by Geoffrey Liu on 3/29/22.
@@ -63,6 +63,18 @@ struct City: Codable, Hashable {
     [name, state, territory, country].filter { !$0.isEmpty }.joined(separator: ", ")
   }
   
+  var upperDivisionTitle: String {
+    [state, territory, country].filter { !$0.isEmpty }.joined(separator: ", ")
+  }
+  
+  var upperDivisionTitleWithAbbr: String {
+    if let stateAbbr = Global.STATE_ABBREVIATIONS[state] {
+      return [stateAbbr, territory, country].filter { !$0.isEmpty }.joined(separator: ", ")
+    } else {
+      return upperDivisionTitle
+    }
+  }
+  
   var nameWithStateAbbr: String {
     if !state.isEmpty, let stateAbbreviation = Global.STATE_ABBREVIATIONS[state] {
       return "\(name), \(stateAbbreviation)"
@@ -71,14 +83,14 @@ struct City: Codable, Hashable {
     return name
   }
   
-  var capitalDesignation: String {
+  var capitalDesignation: String? {
     if nationalCapital {
       return "✪"
     } else if stateCapital {
       return "★"
-    } else {
-      return ""
     }
+    
+    return nil
   }
   
   var countryFlag: String {

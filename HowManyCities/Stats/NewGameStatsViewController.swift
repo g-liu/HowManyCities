@@ -204,6 +204,7 @@ final class NewGameStatsViewController: UIViewController {
 
 extension NewGameStatsViewController: UICollectionViewDelegate {
   // TODO: WHY THE FUCK IS THIS NOT GETTING CALLED ON CERTAIN CELLS? WTF?????
+  // OK IS IT JuST THE SIMULATOR PROBLEM
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     // If it's a city, open the city page
     if indexPath.section == 0 {

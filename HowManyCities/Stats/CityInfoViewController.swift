@@ -41,7 +41,7 @@ class CityInfoViewController: UIViewController {
   
   private lazy var cityLabel: UILabel = {
     let label = UILabel(text: "", style: UIFont.TextStyle.largeTitle).autolayoutEnabled
-    label.numberOfLines = 1
+    label.numberOfLines = 2
     label.font = UIFont.boldSystemFont(ofSize: label.font.pointSize)
     
     return label
@@ -112,7 +112,17 @@ class CityInfoViewController: UIViewController {
     title = "\(city.countryFlag) \(city.nameWithStateAbbr)"
     navigationItem.title = "\(city.countryFlag) \(city.nameWithStateAbbr)"
     
-    cityLabel.text = city.name
+    
+    
+    let mas = NSMutableAttributedString(string: "\(city.name) ")
+    if let capitalDesignation = city.capitalDesignation {
+      mas.append(.init(string: capitalDesignation, attributes: [.font: UIFont.systemFont(ofSize: UIFont.systemFontSize),
+                                                                .foregroundColor: UIColor.systemYellow]))
+    }
+    mas.append(.init(string: "\(city.upperDivisionTitleWithAbbr)\(city.countryFlag)", attributes: [.font: UIFont.systemFont(ofSize: UIFont.systemFontSize),
+                                                                   .foregroundColor: UIColor.systemGray]))
+
+    cityLabel.attributedText = mas
     
     let annotation = MKPointAnnotation()
     annotation.coordinate = city.coordinates
