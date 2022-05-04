@@ -18,11 +18,15 @@ struct City: Codable, Hashable {
   let state: String
   let territory: String
   let country: String
+  
   let latitude: Double
   let longitude: Double
+  
   let population: Int
+  
   let stateCapital: Bool
   let nationalCapital: Bool
+  
   let pk: Int
   let quiz: String
   let archived: Bool
@@ -111,6 +115,12 @@ struct City: Codable, Hashable {
     // cities closer to the poles will appear to have larger circles
     // See https://en.wikipedia.org/wiki/Mercator_projection#Scale_factor for details.
     absoluteSize * __cospi(latitude/180.0)
+  }
+  
+  var asAnnotation: MKAnnotation {
+    let annotation = MKPointAnnotation()
+    annotation.coordinate = coordinates
+    return annotation
   }
   
   var asShape: MKOverlay {
