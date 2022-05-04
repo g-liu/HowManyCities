@@ -24,8 +24,8 @@ class CityInfoViewController: UIViewController {
                                                                   .foregroundColor: UIColor.systemYellow]))
       }
       mas.append(.init(string: "\(upperDivisionText)\(city.countryFlag)", attributes: [.font: UIFont.systemFont(ofSize: UIFont.systemFontSize),
-                                                                     .foregroundColor: UIColor.systemGray]))
-
+                                                                                       .foregroundColor: UIColor.systemGray]))
+      
       cityLabel.attributedText = mas
       cityLabel.numberOfLines = numberOfLines
     }
@@ -36,7 +36,7 @@ class CityInfoViewController: UIViewController {
     
     return scrollView
   }()
-   
+  
   private lazy var mapView: MKMapView = {
     let map = MKMapView().autolayoutEnabled
     map.mapType = .mutedStandard
@@ -46,6 +46,8 @@ class CityInfoViewController: UIViewController {
     map.isZoomEnabled = false
     map.isRotateEnabled = false
     map.pointOfInterestFilter = .excludingAll
+    
+    map.delegate = self
     
     return map
   }()
@@ -120,7 +122,7 @@ class CityInfoViewController: UIViewController {
       infoStack.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 8.0),
       infoStack.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -8.0),
       infoStack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-      ])
+    ])
     
     view.addSubview(scrollView)
     
@@ -153,7 +155,7 @@ class CityInfoViewController: UIViewController {
       percentGuessedLabel.isHidden = true
     }
     
-    if let statsProvider = statsProvider {
+    if !nearbyCities.isEmpty {
       let nearbyTitle = UILabel(text: "Nearby guessed cities:", style: .title2).autolayoutEnabled
       infoStack.addArrangedSubview(nearbyTitle)
       
@@ -186,15 +188,6 @@ class CityInfoViewController: UIViewController {
         infoStack.setCustomSpacing(4.0, after: nearbyCityLabel)
       }
     }
-//    tempLabel.text = """
-//Name: \(city.name) \(city.capitalDesignation)
-//State: \(city.state)
-//Territory: \(city.territory)
-//Country: \(city.country)
-//Population: \(city.population)
-//Coordinates: \(city.coordinates)
-//Percent of people that guess this city: \(city.percentageOfSessions ?? 0.0)
-//"""
   }
   
   @objc private func didTapCityLabel() {
@@ -207,10 +200,40 @@ class CityInfoViewController: UIViewController {
     guard let city = city, tag >= 0, tag < nearbyCities.count else { return }
     
     // put this on the map
-    mapView.removeAnnotations(mapView.annotations)
+    mapView.removeAnnotations(mapView.annotations.filter { $0.coordinate != city.coordinates })
+    mapView.removeOverlays(mapView.overlays)
     
-    mapView.addAnnotation(city.asAnnotation)
-    mapView.addAnnotation(nearbyCities[tag].asAnnotation)
+    let nearbyCity = nearbyCities[tag]
+//    mapView.addAnnotation(city.asAnnotation)
+    mapView.addAnnotation(nearbyCity.asAnnotation)
+    
+    let line = MKPolyline(coordinates: [city.coordinates, nearbyCity.coordinates])
+    mapView.addOverlay(line)
+    
+    mapView.zoom(to: [city.coordinates, nearbyCity.coordinates], meter: 1500000, edgePadding: .init(inset: 75.0), animated: false)
   }
   
+}
+
+extension CityInfoViewController: MKMapViewDelegate {
+  func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+    let annotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "something")
+    if annotation.coordinate == city?.coordinates {
+      annotationView.markerTintColor = .systemPurple
+    } else {
+      annotationView.markerTintColor = .systemRed
+    }
+    return annotationView
+  }
+  
+  func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+    if let polyline = overlay as? MKPolyline {
+      let polylineRenderer = MKPolylineRenderer(overlay: polyline)
+      polylineRenderer.strokeColor = .systemFill
+      polylineRenderer.lineWidth = 2
+      polylineRenderer.lineDashPattern = [2, 4]
+      return polylineRenderer
+    }
+    return MKOverlayRenderer(overlay: overlay)
+  }
 }
