@@ -136,6 +136,11 @@ struct City: Codable, Hashable {
   func distance(to otherCity: City) -> CLLocationDistance {
     coordinates.asLocation.distance(from: otherCity.coordinates.asLocation)
   }
+  
+  func bearing(to otherCity: City) -> Bearing {
+    let degrees = coordinates.bearing(to: otherCity.coordinates)
+    return .init(rawValue: degrees)
+  }
 }
 
 extension City {

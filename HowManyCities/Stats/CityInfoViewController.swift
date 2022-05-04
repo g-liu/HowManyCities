@@ -88,7 +88,7 @@ class CityInfoViewController: UIViewController {
       
       infoStack.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 8.0),
       infoStack.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 8.0),
-      infoStack.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: 8.0),
+      infoStack.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -8.0),
       infoStack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
       ])
     
@@ -129,7 +129,8 @@ class CityInfoViewController: UIViewController {
         if $0 == city { return }
         
         let distanceInKm = Int(round(city.distance(to: $0) / 1000.0))
-        tempLabel.text! += "\($0.fullTitle) - \(distanceInKm.commaSeparated)km\n"
+        let bearing = city.bearing(to: $0)
+        tempLabel.text! += "\($0.fullTitle) - \(distanceInKm.commaSeparated)km \(bearing.asArrow)\n"
       }
     }
 //    tempLabel.text = """
