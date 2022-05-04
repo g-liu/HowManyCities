@@ -10,6 +10,12 @@ import MapKit
 
 class CityInfoViewController: UIViewController {
   weak var statsProvider: GameStatisticsProvider?
+  
+  private lazy var scrollView: UIScrollView = {
+    let scrollView = UIScrollView().autolayoutEnabled
+    
+    return scrollView
+  }()
    
   private lazy var mapView: MKMapView = {
     let map = MKMapView().autolayoutEnabled
@@ -70,20 +76,32 @@ class CityInfoViewController: UIViewController {
     infoStack.addArrangedSubview(populationLabel)
     infoStack.addArrangedSubview(tempLabel)
     
-    view.addSubview(mapView)
-    view.addSubview(infoStack)
+    scrollView.addSubview(mapView)
+    scrollView.addSubview(infoStack)
     
     NSLayoutConstraint.activate([
-      mapView.topAnchor.constraint(equalTo: view.topAnchor),
-      mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-      mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+      mapView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+      mapView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+      mapView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+      mapView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
       mapView.heightAnchor.constraint(equalToConstant: 200),
       
       infoStack.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 8.0),
-      infoStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8.0),
-      infoStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 8.0),
-      infoStack.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor),
+      infoStack.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 8.0),
+      infoStack.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: 8.0),
+      infoStack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
       ])
+    
+    view.addSubview(scrollView)
+    
+    scrollView.pin(to: view.safeAreaLayoutGuide)
+    
+//    NSLayoutConstraint.activate([
+//      scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+//      scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+//      scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+//      scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+//    ])
   }
   
   private func configure(with city: City?) {
