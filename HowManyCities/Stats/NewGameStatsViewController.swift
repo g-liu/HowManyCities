@@ -105,10 +105,10 @@ final class NewGameStatsViewController: UIViewController {
         
         return section
       } else if sectionIndex == 1 {
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.8))
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.8), heightDimension: .fractionalHeight(0.8))
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize, subitems: [item])
         
         let section = NSCollectionLayoutSection(group: group)

@@ -33,7 +33,9 @@ final class ChartCollectionViewCell: UICollectionViewCell {
     pieChart.transparentCircleRadiusPercent = 0.45
     pieChart.holeRadiusPercent = 0.33
     pieChart.highlightPerTapEnabled = false
-
+    pieChart.setContentCompressionResistancePriority(.required, for: .horizontal)
+    pieChart.setContentCompressionResistancePriority(.required, for: .vertical)
+    
     return pieChart
   }()
   
@@ -52,6 +54,9 @@ final class ChartCollectionViewCell: UICollectionViewCell {
     
     stackView.addArrangedSubviews([headerLabel, pieChartView])
     pieChartView.pinSides(to: stackView)
+    headerLabel.pinSides(to: stackView)
+    
+    pieChartView.heightAnchor.constraint(equalTo: pieChartView.widthAnchor).isActive = true
     
     contentView.addSubview(stackView)
     
@@ -91,6 +96,6 @@ final class ChartCollectionViewCell: UICollectionViewCell {
     data.setValueFormatter(DefaultValueFormatter(formatter: fmt))
     
     pieChartView.data = data
-    pieChartView.setNeedsDisplay()
+//    pieChartView.setNeedsDisplay()
   }
 }
