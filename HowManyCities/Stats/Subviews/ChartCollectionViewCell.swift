@@ -36,6 +36,13 @@ final class ChartCollectionViewCell: UICollectionViewCell {
     pieChart.setContentCompressionResistancePriority(.required, for: .horizontal)
     pieChart.setContentCompressionResistancePriority(.required, for: .vertical)
     
+    pieChart.legend.entries = []
+//    pieChart.legend.horizontalAlignment = .left
+//    pieChart.legend.verticalAlignment = .top
+//    pieChart.legend.orientation = .vertical
+    
+    pieChart.entryLabelFont = .boldSystemFont(ofSize: UIFont.systemFontSize)
+    
     return pieChart
   }()
   
@@ -85,13 +92,16 @@ final class ChartCollectionViewCell: UICollectionViewCell {
     }
     let dataSet = PieChartDataSet(entries: entries)
     dataSet.colors = ChartColorTemplates.pastel()
+    dataSet.entryLabelFont = .boldSystemFont(ofSize: UIFont.systemFontSize)
     
     let data = PieChartData(dataSet: dataSet)
+    data.setValueFont(.systemFont(ofSize: UIFont.systemFontSize))
     
     let fmt = NumberFormatter()
     fmt.generatesDecimalNumbers = false
     fmt.numberStyle = .none
     fmt.maximumFractionDigits = 0
+    fmt.multiplier = 1
     fmt.alwaysShowsDecimalSeparator = false
     data.setValueFormatter(DefaultValueFormatter(formatter: fmt))
     
