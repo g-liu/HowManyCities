@@ -15,10 +15,24 @@ class CityInfoViewController: UIViewController {
     didSet {
       guard let city = city else { return }
       
-      let upperDivisionText = isShowingFullTitle ? city.upperDivisionTitle : city.upperDivisionTitleWithAbbr
+      let cityName: String
+      let upperDivisionText: String
       let numberOfLines = isShowingFullTitle ? 0 : 2
       
-      let mas = NSMutableAttributedString(string: "\(city.name) ")
+      // TODO: Use Regex matching here
+      // TODO: Apply to navigation bar title too...
+      let cityComponents = city.name.split(separator: "(")
+      if cityComponents.count > 1 {
+        cityName = cityComponents[0].trimmingCharacters(in: .whitespaces)
+        let upperDivisionPrefix = cityComponents[1].split(separator: ")", maxSplits: 2)[0]
+        let upperDivisionSuffix = isShowingFullTitle ? city.upperDivisionTitle : city.upperDivisionTitleWithAbbr
+        upperDivisionText = [String(upperDivisionPrefix), upperDivisionSuffix].joined(separator: ", ")
+      } else {
+        cityName = city.name
+        upperDivisionText = isShowingFullTitle ? city.upperDivisionTitle : city.upperDivisionTitleWithAbbr
+      }
+      
+      let mas = NSMutableAttributedString(string: "\(cityName) ")
       if let capitalDesignation = city.capitalDesignation {
         mas.append(.init(string: capitalDesignation, attributes: [.font: UIFont.systemFont(ofSize: UIFont.systemFontSize),
                                                                   .foregroundColor: UIColor.systemYellow]))
