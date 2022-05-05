@@ -17,7 +17,7 @@ final class CityPopulationRenderer: ItemRenderer {
   }
   
   func string(_ item: City) -> NSAttributedString {
-    let mas = NSMutableAttributedString(string: "\(item.countryFlag) \(item.name) ")
+    let mas = NSMutableAttributedString(string: "\(item.countryFlag) \(item.nameWithStateAbbr) ")
     if let capitalDesignation = item.capitalDesignation {
       mas.append(.init(string: capitalDesignation, attributes: [.foregroundColor: UIColor.systemYellow]))
     }

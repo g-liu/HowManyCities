@@ -19,16 +19,20 @@ class CityInfoViewController: UIViewController {
       let upperDivisionText: String
       let numberOfLines = isShowingFullTitle ? 0 : 2
       
-      // TODO: Apply to navigation bar title too...
       let upperDivisionSuffix = isShowingFullTitle ? city.upperDivisionTitle : city.upperDivisionTitleWithAbbr
-      if let disambiguationRange = city.name.range(of: #"\(.+\)"#, options: .regularExpression) {
-        let parentheticalText = String(city.name[disambiguationRange])
+      let regex = try! NSRegularExpression(pattern: #"\s+\((.+)\)"#)
+      let matches = regex.matches(in: city.name, range: city.name.entireRange)
+      if let match = matches.first?.range(at: 1),
+         let substringRange = Range(match, in: city.name) {
+        let upperDivisionPrefix = String(city.name[substringRange])
+        upperDivisionText = [upperDivisionPrefix, upperDivisionSuffix].joined(separator: ", ")
         cityName = city.name.replacingOccurrences(of: #"\s+\(.+\)"#, with: "", options: .regularExpression)
-        upperDivisionText = [parentheticalText, upperDivisionSuffix].joined(separator: ", ")
       } else {
         cityName = city.name
         upperDivisionText = upperDivisionSuffix
       }
+      
+      title = "\(city.countryFlag) \(cityName)"
       
       let mas = NSMutableAttributedString(string: "\(cityName) ")
       if let capitalDesignation = city.capitalDesignation {
@@ -147,9 +151,6 @@ class CityInfoViewController: UIViewController {
     guard let city = city else {
       return
     }
-    
-    title = "\(city.countryFlag) \(city.nameWithStateAbbr)"
-    navigationItem.title = "\(city.countryFlag) \(city.nameWithStateAbbr)"
     
     defer {
       isShowingFullTitle = false
