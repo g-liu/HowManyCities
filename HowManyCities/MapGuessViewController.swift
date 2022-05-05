@@ -210,7 +210,7 @@ final class MapGuessViewController: UIViewController {
   
   @discardableResult
   private func updateMap(_ cities: OrderedSet<City>) -> [MKAnnotation] {
-    let annotations = cities.map { $0.asAnnotation }
+    let annotations = cities.map(CityAnnotation.init)
     mapView.addOverlays(cities.map { $0.asShape }, level: .aboveLabels)
     mapView.addAnnotations(annotations)
     

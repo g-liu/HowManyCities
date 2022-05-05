@@ -117,7 +117,7 @@ struct City: Codable, Hashable {
     absoluteSize * __cospi(latitude/180.0)
   }
   
-  var asAnnotation: MKAnnotation {
+  var asAnnotation: MKPointAnnotation {
     let annotation = MKPointAnnotation()
     annotation.coordinate = coordinates
     return annotation
