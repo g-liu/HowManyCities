@@ -8,16 +8,13 @@
 import UIKit
 
 protocol ToggleShowAllDelegate: AnyObject {
-  func didToggle(_ showUpTo: Int)
+  func didToggle(_ isShowingAll: Bool)
 }
 
 final class FooterButtonCollectionReusableView: UICollectionReusableView {
   private lazy var button: UIButton = {
     let button = UIButton(configuration: .borderless()).autolayoutEnabled
     button.titleLabel?.textAlignment = .center
-    
-    button.setTitle("Show all", for: .normal) // TODO: Make configurable
-    
     button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
     
     return button
@@ -25,7 +22,15 @@ final class FooterButtonCollectionReusableView: UICollectionReusableView {
   
   weak var delegate: ToggleShowAllDelegate?
   
-  private var showUpTo = 10 // TODO: Don't store state here, rely on your delegate??
+  var isShowingAll: Bool = false {
+    didSet {
+      if isShowingAll {
+        button.setTitle("Show less", for: .normal)
+      } else {
+        button.setTitle("Show all", for: .normal)
+      }
+    }
+  }
   
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -43,13 +48,7 @@ final class FooterButtonCollectionReusableView: UICollectionReusableView {
   }
   
   @objc private func didTapButton() {
-    if showUpTo == 10 {
-      showUpTo = Int.max
-      button.setTitle("Show less", for: .normal)
-    } else {
-      showUpTo = 10
-      button.setTitle("Show all", for: .normal)
-    }
-    delegate?.didToggle(showUpTo)
+    isShowingAll = !isShowingAll
+    delegate?.didToggle(isShowingAll)
   }
 }

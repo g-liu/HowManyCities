@@ -264,7 +264,13 @@ final class NewGameStatsViewController: UIViewController {
     }
     
     let buttonFooterRegistration = UICollectionView.SupplementaryRegistration<FooterButtonCollectionReusableView>(elementKind: ElementKind.buttonFooter) { supplementaryView, elementKind, indexPath in
+      guard self.selectedSegment == .recent else {
+        supplementaryView.isHidden = true
+        return
+      }
+      supplementaryView.isHidden = false
       supplementaryView.delegate = self
+      supplementaryView.isShowingAll = self.showUpTo == Int.max ? true : false
       supplementaryView.backgroundColor = .systemBackground
     }
     
@@ -302,7 +308,7 @@ final class NewGameStatsViewController: UIViewController {
       } else if elementKind == ElementKind.pagingFooter {
         return collectionView.dequeueConfiguredReusableSupplementary(using: pagingFooterRegistration, for: indexPath)
       } else {
-        fatalError("WTF!")
+        return nil
       }
     }
     
@@ -374,6 +380,7 @@ extension NewGameStatsViewController: SegmentChangeDelegate {
   func didChange(segmentIndex: Int) {
     let newSegment = CitySegment.init(rawValue: segmentIndex) ?? .recent
     self.selectedSegment = newSegment
+    showUpTo = 10
     
     applySnapshot()
   }
@@ -382,26 +389,26 @@ extension NewGameStatsViewController: SegmentChangeDelegate {
     let cityList: [Item]
     switch selectedSegment {
       case .smallest:
-        cityList = statsProvider?.smallestCitiesGuessed.map(Item.city) ?? []
+        cityList = statsProvider?.smallestCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
       case .rarest:
-        cityList = statsProvider?.rarestCitiesGuessed.map(Item.city) ?? []
+        cityList = statsProvider?.rarestCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
       case .mostCommon:
-        cityList = statsProvider?.commonCitiesGuessed.map(Item.city) ?? []
+        cityList = statsProvider?.commonCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
       case .recent:
-        cityList = statsProvider?.recentCitiesGuessed.map(Item.city) ?? []
+        cityList = statsProvider?.recentCitiesGuessed.map(Item.city).prefix(showUpTo).asArray ?? []
       case .largest:
         fallthrough
       default:
-        cityList = statsProvider?.largestCitiesGuessed.map(Item.city) ?? []
+        cityList = statsProvider?.largestCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
     }
     
-    return cityList.prefix(showUpTo).asArray
+    return cityList
   }
 }
 
 extension NewGameStatsViewController: ToggleShowAllDelegate {
-  func didToggle(_ showUpTo: Int) {
-    self.showUpTo = showUpTo
+  func didToggle(_ isShowingAll: Bool) {
+    self.showUpTo = isShowingAll ? Int.max : 10
     
     applySnapshot()
   }
