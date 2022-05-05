@@ -89,10 +89,12 @@ final class NewGameStatsViewController: UIViewController {
         
         let boundaryItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
         let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
-        sectionHeader.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
+        sectionHeader.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
+        sectionHeader.pinToVisibleBounds = true
         
         let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.buttonFooter, alignment: .bottom)
-        sectionFooter.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
+        sectionFooter.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
+        sectionFooter.pinToVisibleBounds = true
         
         section.boundarySupplementaryItems = [sectionHeader, sectionFooter]
         
@@ -108,10 +110,11 @@ final class NewGameStatsViewController: UIViewController {
         
         let boundaryItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
         let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
-        sectionHeader.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
+        sectionHeader.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
+        sectionHeader.pinToVisibleBounds = true
         
         let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.textFooter, alignment: .bottom)
-        sectionFooter.contentInsets = .init(top: 0, leading: 8, bottom: 16, trailing: 8)
+        sectionFooter.contentInsets = .init(top: 8, leading: 8, bottom: 16, trailing: 8)
         
         section.boundarySupplementaryItems = [sectionHeader, sectionFooter]
         section.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
@@ -194,14 +197,18 @@ final class NewGameStatsViewController: UIViewController {
       } else {
         supplementaryView.text = "Other stats"
       }
+      
+      supplementaryView.backgroundColor = .systemBackground
     }
     
     let buttonFooterRegistration = UICollectionView.SupplementaryRegistration<FooterButtonCollectionReusableView>(elementKind: ElementKind.buttonFooter) { supplementaryView, elementKind, indexPath in
       supplementaryView.delegate = self
+      supplementaryView.backgroundColor = .systemBackground
     }
     
     let textFooterRegistration = UICollectionView.SupplementaryRegistration<FooterTextCollectionReusableView>(elementKind: ElementKind.textFooter) { supplementaryView, elementKind, indexPath in
       supplementaryView.configure(text: "Save your results to see what you missed.")
+      supplementaryView.backgroundColor = .systemBackground
     }
     
     dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
