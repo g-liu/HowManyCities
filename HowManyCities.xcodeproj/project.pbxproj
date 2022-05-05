@@ -67,6 +67,7 @@
 		6CBBD5DC282309DF002D9FC2 /* Bearing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CBBD5DB282309DF002D9FC2 /* Bearing.swift */; };
 		6CBBD5DE28230A1B002D9FC2 /* BearingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CBBD5DD28230A1B002D9FC2 /* BearingTests.swift */; };
 		6CBBD5E028238B50002D9FC2 /* FooterTextCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CBBD5DF28238B50002D9FC2 /* FooterTextCollectionReusableView.swift */; };
+		6CBBD5E22823A8CD002D9FC2 /* PagingFooterCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CBBD5E12823A8CD002D9FC2 /* PagingFooterCollectionReusableView.swift */; };
 		6CC3C57C2804AB7C00AE5C50 /* Array+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CC3C57B2804AB7C00AE5C50 /* Array+Extension.swift */; };
 		6CC3C57E2804E41300AE5C50 /* StatePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CC3C57D2804E41300AE5C50 /* StatePickerViewController.swift */; };
 		6CC3C5802804FB6C00AE5C50 /* NSLayoutConstraint+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CC3C57F2804FB6C00AE5C50 /* NSLayoutConstraint+Extension.swift */; };
@@ -160,6 +161,7 @@
 		6CBBD5DB282309DF002D9FC2 /* Bearing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bearing.swift; sourceTree = "<group>"; };
 		6CBBD5DD28230A1B002D9FC2 /* BearingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BearingTests.swift; sourceTree = "<group>"; };
 		6CBBD5DF28238B50002D9FC2 /* FooterTextCollectionReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FooterTextCollectionReusableView.swift; sourceTree = "<group>"; };
+		6CBBD5E12823A8CD002D9FC2 /* PagingFooterCollectionReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PagingFooterCollectionReusableView.swift; sourceTree = "<group>"; };
 		6CC3C57B2804AB7C00AE5C50 /* Array+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extension.swift"; sourceTree = "<group>"; };
 		6CC3C57D2804E41300AE5C50 /* StatePickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatePickerViewController.swift; sourceTree = "<group>"; };
 		6CC3C57F2804FB6C00AE5C50 /* NSLayoutConstraint+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSLayoutConstraint+Extension.swift"; sourceTree = "<group>"; };
@@ -239,6 +241,7 @@
 				6CBBD5D72821EE69002D9FC2 /* FooterButtonCollectionReusableView.swift */,
 				6CBBD5DF28238B50002D9FC2 /* FooterTextCollectionReusableView.swift */,
 				6C9C23F22821AFF500376D6D /* NumberedListCollectionViewCell.swift */,
+				6CBBD5E12823A8CD002D9FC2 /* PagingFooterCollectionReusableView.swift */,
 			);
 			path = Subviews;
 			sourceTree = "<group>";
@@ -707,6 +710,7 @@
 				6CC3C57C2804AB7C00AE5C50 /* Array+Extension.swift in Sources */,
 				6CBBD5DC282309DF002D9FC2 /* Bearing.swift in Sources */,
 				6C9C42A728121998006529E9 /* MKZoomablePolygonRenderer.swift in Sources */,
+				6CBBD5E22823A8CD002D9FC2 /* PagingFooterCollectionReusableView.swift in Sources */,
 				6CAD802927F3C1140057A41E /* CityAnnotationView.swift in Sources */,
 				6CC3C5802804FB6C00AE5C50 /* NSLayoutConstraint+Extension.swift in Sources */,
 				6CAD7FE827F381DF0057A41E /* AppDelegate.swift in Sources */,

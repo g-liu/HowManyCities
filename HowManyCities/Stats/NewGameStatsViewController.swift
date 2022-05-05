@@ -7,12 +7,14 @@
 
 import UIKit
 import Charts
+import Combine
 
 final class NewGameStatsViewController: UIViewController {
   struct ElementKind {
     static let header = "element-kind-header"
     static let buttonFooter = "element-kind-buttonFooter"
     static let textFooter = "element-kind-textFooter"
+    static let pagingFooter = "element-kind-pagingFooter"
   }
   
   enum Section: Hashable {
@@ -25,7 +27,7 @@ final class NewGameStatsViewController: UIViewController {
     case ordinal(Int)
     case city(City)
     
-    case citiesByState([String: [City]])
+    case citiesByState(String, [String: [City]])
     case formattedStat(Ratio, String)
   }
   
@@ -60,6 +62,8 @@ final class NewGameStatsViewController: UIViewController {
       allCases.map { $0.name }
     }
   }
+  
+  private let pagingInfoSubject = PassthroughSubject<PagingInfo, Never>()
   
   var selectedSegment: CitySegment = .largest
   
@@ -114,7 +118,11 @@ final class NewGameStatsViewController: UIViewController {
         sectionHeader.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
         sectionHeader.pinToVisibleBounds = true
         
-        section.boundarySupplementaryItems = [sectionHeader]
+        // will be the paging view
+        let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.pagingFooter, alignment: .bottom)
+        sectionFooter.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
+        
+        section.boundarySupplementaryItems = [sectionHeader, sectionFooter]
         section.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
         section.orthogonalScrollingBehavior = .paging
         
@@ -123,6 +131,12 @@ final class NewGameStatsViewController: UIViewController {
           print(visibleItems)
           print(offset)
           print(environment)
+          
+          // TODO: This only works if all pages are exactly the width of the cv
+          let page = Int(round(offset.x / self.view.bounds.width))
+          
+          self.pagingInfoSubject.send(.init(currentPage: page))
+
         }
         
         // HOW THE FUCK DO I DO THIS
@@ -228,9 +242,9 @@ final class NewGameStatsViewController: UIViewController {
     }
     
     let chartCellRegistration = UICollectionView.CellRegistration<ChartCollectionViewCell, Item> { cell, IndexPath, itemIdentifier in
-      guard case let .citiesByState(statesToCities) = itemIdentifier else { return }
-      
-      cell.setData(statesToCities)
+      if case let .citiesByState(_, statesToCities) = itemIdentifier {
+        cell.setData(statesToCities)
+      }
     }
     
     let headerRegistration = UICollectionView.SupplementaryRegistration<CollectionViewHeaderReusableView>(elementKind: ElementKind.header) { supplementaryView, elementKind, indexPath in
@@ -259,17 +273,23 @@ final class NewGameStatsViewController: UIViewController {
       supplementaryView.backgroundColor = .systemBackground
     }
     
+    let pagingFooterRegistration = UICollectionView.SupplementaryRegistration<PagingFooterCollectionReusableView>(elementKind: ElementKind.pagingFooter) { supplementaryView, elementKind, indexPath in
+      let itemCount = self.dataSource.snapshot().numberOfItems(inSection: .charts)
+      supplementaryView.configure(with: itemCount)
+
+      supplementaryView.subscribeTo(subject: self.pagingInfoSubject, for: indexPath.section)
+    }
+    
     dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
-      if case let .ordinal(index) = itemIdentifier {
-        return collectionView.dequeueConfiguredReusableCell(using: ordinalCellRegistration, for: indexPath, item: index)
-      } else if case let .city(city) = itemIdentifier {
-        return collectionView.dequeueConfiguredReusableCell(using: cityCellRegistration, for: indexPath, item: city)
-      } else if case .citiesByState(_) = itemIdentifier {
-        return collectionView.dequeueConfiguredReusableCell(using: chartCellRegistration, for: indexPath, item: itemIdentifier)
-      } else if case .formattedStat(_, _) = itemIdentifier {
-        return collectionView.dequeueConfiguredReusableCell(using: ratioStatCellRegistration, for: indexPath, item: itemIdentifier)
-      } else {
-        return UICollectionViewCell()
+      switch itemIdentifier {
+        case .ordinal(let index):
+          return collectionView.dequeueConfiguredReusableCell(using: ordinalCellRegistration, for: indexPath, item: index)
+        case .city(let city):
+          return collectionView.dequeueConfiguredReusableCell(using: cityCellRegistration, for: indexPath, item: city)
+        case .citiesByState(_, _):
+          return collectionView.dequeueConfiguredReusableCell(using: chartCellRegistration, for: indexPath, item: itemIdentifier)
+        case .formattedStat(_, _):
+          return collectionView.dequeueConfiguredReusableCell(using: ratioStatCellRegistration, for: indexPath, item: itemIdentifier)
       }
     })
     dataSource.supplementaryViewProvider = { collectionView, elementKind, indexPath in
@@ -279,6 +299,8 @@ final class NewGameStatsViewController: UIViewController {
         return collectionView.dequeueConfiguredReusableSupplementary(using: buttonFooterRegistration, for: indexPath)
       } else if elementKind == ElementKind.textFooter {
         return collectionView.dequeueConfiguredReusableSupplementary(using: textFooterRegistration, for: indexPath)
+      } else if elementKind == ElementKind.pagingFooter {
+        return collectionView.dequeueConfiguredReusableSupplementary(using: pagingFooterRegistration, for: indexPath)
       } else {
         fatalError("WTF!")
       }
@@ -294,7 +316,7 @@ final class NewGameStatsViewController: UIViewController {
   }
   
   private func applySnapshot() {
-    // TODO: Big code changes will have to happen here to support multiple sections...
+    // TODO: Very heavy-handed, wonder if we could update in a more graceful manner?
     var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
     snapshot.appendSections([.cityList(self.selectedSegment)])
     cities.enumerated().forEach {
@@ -303,8 +325,10 @@ final class NewGameStatsViewController: UIViewController {
     
     if let statsProvider = statsProvider {
       snapshot.appendSections([.charts])
-      snapshot.appendItems([.citiesByState(statsProvider.citiesByCountry),
-                            .citiesByState(statsProvider.citiesByTerritory)])
+      
+      
+      snapshot.appendItems([.citiesByState("Countries", statsProvider.citiesByCountry),
+                            .citiesByState("Territories", statsProvider.citiesByTerritory)])
       
       snapshot.appendSections([.otherStats])
       snapshot.appendItems(
