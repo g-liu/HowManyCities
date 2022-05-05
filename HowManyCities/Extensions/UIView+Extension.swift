@@ -30,5 +30,19 @@ extension UIView {
       trailingAnchor.constraint(equalTo: layoutGuide.trailingAnchor, constant: -margins.right),
     ])
   }
+  
+  func pinSides(to otherView: UIView, margins: UIEdgeInsets = .zero) {
+    NSLayoutConstraint.activate([
+      leadingAnchor.constraint(equalTo: otherView.leadingAnchor, constant: margins.left),
+      trailingAnchor.constraint(equalTo: otherView.trailingAnchor, constant: -margins.right),
+    ])
+  }
+  
+  func pinSides(to layoutGuide: UILayoutGuide, margins: UIEdgeInsets = .zero) {
+    NSLayoutConstraint.activate([
+      leadingAnchor.constraint(equalTo: layoutGuide.leadingAnchor, constant: margins.left),
+      trailingAnchor.constraint(equalTo: layoutGuide.trailingAnchor, constant: -margins.right),
+    ])
+  }
 }
 

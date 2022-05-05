@@ -114,15 +114,15 @@ final class NewGameStatsViewController: UIViewController {
         let section = NSCollectionLayoutSection(group: group)
         
         let boundaryItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
-        let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
-        sectionHeader.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
-        sectionHeader.pinToVisibleBounds = true
+//        let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
+//        sectionHeader.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
+//        sectionHeader.pinToVisibleBounds = true
         
         // will be the paging view
         let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.pagingFooter, alignment: .bottom)
         sectionFooter.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
         
-        section.boundarySupplementaryItems = [sectionHeader, sectionFooter]
+        section.boundarySupplementaryItems = [sectionFooter]
         section.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
         section.orthogonalScrollingBehavior = .paging
         
@@ -241,9 +241,10 @@ final class NewGameStatsViewController: UIViewController {
       cell.contentConfiguration = configuration
     }
     
-    let chartCellRegistration = UICollectionView.CellRegistration<ChartCollectionViewCell, Item> { cell, IndexPath, itemIdentifier in
+    let chartCellRegistration = UICollectionView.CellRegistration<ChartCollectionViewCell, Item> { cell, indexPath, itemIdentifier in
       if case let .citiesByState(_, statesToCities) = itemIdentifier {
-        cell.setData(statesToCities)
+        let title = indexPath.row == 0 ? "Top countries" : "Top territories"
+        cell.configure(title: title, data: statesToCities, threshold: 7)
       }
     }
     
@@ -253,10 +254,7 @@ final class NewGameStatsViewController: UIViewController {
         // TODO: Persist selection
         supplementaryView.configure(selectedSegmentIndex: self.selectedSegment.rawValue, segmentTitles: CitySegment.asNames)
         supplementaryView.segmentChangeDelegate = self
-      } else if indexPath.section == 1 {
-        // TODO: RENAME
-        supplementaryView.text = "Top countries"
-      } else {
+      } else if indexPath.section == 2 {
         supplementaryView.text = "Other stats"
       }
       

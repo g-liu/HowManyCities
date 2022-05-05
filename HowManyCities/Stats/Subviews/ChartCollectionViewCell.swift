@@ -11,7 +11,23 @@ import Charts
 final class ChartCollectionViewCell: UICollectionViewCell {
   static let identifier = "ChartCollectionViewCell"
   
-  private lazy var pieChart: PieChartView = {
+  private lazy var stackView: UIStackView = {
+    let stackView = UIStackView().autolayoutEnabled
+    stackView.spacing = 16.0
+    stackView.axis = .vertical
+    stackView.alignment = .leading
+    
+    return stackView
+  }()
+  
+  private lazy var headerLabel: UILabel = {
+    let label = UILabel(text: "", style: UIFont.TextStyle.largeTitle).autolayoutEnabled
+    label.font = UIFont.boldSystemFont(ofSize: label.font.pointSize)
+    
+    return label
+  }()
+  
+  private lazy var pieChartView: PieChartView = {
     let pieChart = PieChartView().autolayoutEnabled
     pieChart.rotationEnabled = false
     pieChart.transparentCircleRadiusPercent = 0.45
@@ -32,12 +48,18 @@ final class ChartCollectionViewCell: UICollectionViewCell {
   }
   
   private func setupView() {
-    contentView.addSubview(pieChart)
-    pieChart.holeColor = .systemBackground
-    pieChart.pin(to: contentView.safeAreaLayoutGuide)
+    pieChartView.holeColor = .systemBackground
+    
+    stackView.addArrangedSubviews([headerLabel, pieChartView])
+    pieChartView.pinSides(to: stackView)
+    
+    contentView.addSubview(stackView)
+    
+    stackView.pin(to: contentView.safeAreaLayoutGuide)
   }
   
-  func setData(_ data: [String: [City]], threshold: Int = 7) {
+  func configure(title: String, data: [String: [City]], threshold: Int = 7) {
+    headerLabel.text = title
     let rawEntries = data.sorted {
       $0.value.count > $1.value.count
     }
@@ -68,7 +90,7 @@ final class ChartCollectionViewCell: UICollectionViewCell {
     fmt.alwaysShowsDecimalSeparator = false
     data.setValueFormatter(DefaultValueFormatter(formatter: fmt))
     
-    pieChart.data = data
-    pieChart.setNeedsDisplay()
+    pieChartView.data = data
+    pieChartView.setNeedsDisplay()
   }
 }
