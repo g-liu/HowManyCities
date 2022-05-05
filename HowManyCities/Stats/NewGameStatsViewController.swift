@@ -127,16 +127,10 @@ final class NewGameStatsViewController: UIViewController {
         section.orthogonalScrollingBehavior = .paging
         
         section.visibleItemsInvalidationHandler = { visibleItems, offset, environment in
-          print("????")
-          print(visibleItems)
-          print(offset)
-          print(environment)
-          
           // TODO: This only works if all pages are exactly the width of the cv
           let page = Int(round(offset.x / self.view.bounds.width))
           
           self.pagingInfoSubject.send(.init(currentPage: page))
-
         }
         
         // HOW THE FUCK DO I DO THIS

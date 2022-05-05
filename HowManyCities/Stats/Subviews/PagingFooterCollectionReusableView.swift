@@ -20,7 +20,7 @@ final class PagingFooterCollectionReusableView: UICollectionReusableView {
   private lazy var pageControl: UIPageControl = {
     let control = UIPageControl().autolayoutEnabled
     control.isUserInteractionEnabled = false // because it's a one way binding now...
-    control.currentPageIndicatorTintColor = .systemFill
+    control.currentPageIndicatorTintColor = .systemBlue
     control.pageIndicatorTintColor = .systemGray5
     return control
   }()
