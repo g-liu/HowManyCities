@@ -303,26 +303,37 @@ final class MapGuessViewController: UIViewController {
 // TODO: Move this into separate file or vc???
 extension MapGuessViewController {
   func showToast(_ message: String, toastType: ToastType) {
-    let populationToast = MapToast(message, toastType: toastType).autolayoutEnabled
-    populationToast.layer.opacity = 0
-    populationToast.transform = .init(translationX: 0, y: 24)
-    mapView.addSubview(populationToast)
-    mapView.bringSubviewToFront(populationToast)
+    let mapToast = MapToast(message, toastType: toastType).autolayoutEnabled
+    mapToast.layer.opacity = 0
+    mapToast.transform = .init(translationX: 0, y: 24)
+    mapView.addSubview(mapToast)
+    mapView.bringSubviewToFront(mapToast)
     NSLayoutConstraint.activate([
-      populationToast.centerXAnchor.constraint(equalTo: mapView.centerXAnchor),
-      populationToast.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -8),
-      populationToast.widthAnchor.constraint(lessThanOrEqualTo: mapView.widthAnchor, multiplier: 0.66),
+      mapToast.centerXAnchor.constraint(equalTo: mapView.centerXAnchor),
+      mapToast.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -8),
+      mapToast.widthAnchor.constraint(lessThanOrEqualTo: mapView.widthAnchor, multiplier: 0.66),
     ])
     
+    switch toastType {
+      case .population:
+        break
+      case .error:
+        Vibration.error.vibrate()
+      case .general:
+        break
+      case .warning:
+        Vibration.warning.vibrate()
+    }
+    
     UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut) {
-      populationToast.layer.opacity = 1
-      populationToast.transform = .init(translationX: 0, y: 0)
+      mapToast.layer.opacity = 1
+      mapToast.transform = .init(translationX: 0, y: 0)
     } completion: { _ in
       UIView.animate(withDuration: 0.2, delay: 1.8, options: .curveEaseOut) {
-        populationToast.layer.opacity = 0
-        populationToast.transform = .init(translationX: 0, y: -24)
+        mapToast.layer.opacity = 0
+        mapToast.transform = .init(translationX: 0, y: -24)
       } completion: { _ in
-        populationToast.removeFromSuperview()
+        mapToast.removeFromSuperview()
       }
     }
     
@@ -406,7 +417,7 @@ extension MapGuessViewController: MapGuessDelegate {
     // TODO: handle error
     DispatchQueue.main.async {
       self.cityInputTextField.shake()
-      self.showToast(error.message, toastType: .error)
+      self.showToast(error.message, toastType: error.toastType)
     }
   }
   

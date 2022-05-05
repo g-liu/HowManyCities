@@ -186,4 +186,15 @@ enum CityGuessError: Error {
         return "We're having technical issues, please try again"
     }
   }
+  
+  var toastType: ToastType {
+    switch self {
+      case .noneFound(_),
+          .emptyGuess,
+          .serverError:
+        return .error
+      case .alreadyGuessed:
+        return .warning
+    }
+  }
 }
