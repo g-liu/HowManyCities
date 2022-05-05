@@ -37,7 +37,7 @@ final class ChartCollectionViewCell: UICollectionViewCell {
     pieChart.pin(to: contentView.safeAreaLayoutGuide)
   }
   
-  func setData(_ data: [String: [City]]) {
+  func setData(_ data: [String: [City]], threshold: Int = 7) {
     let rawEntries = data.sorted {
       $0.value.count > $1.value.count
     }
@@ -48,7 +48,7 @@ final class ChartCollectionViewCell: UICollectionViewCell {
       
     var entries = [PieChartDataEntry]()
     rawEntries.enumerated().forEach { index, element in
-      if index < 7 {
+      if index < threshold {
         entries.append(.init(value: Double(element.value.count), label: element.key))
       } else {
         entries[entries.count - 1].label = "Others"

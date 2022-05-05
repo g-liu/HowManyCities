@@ -116,7 +116,26 @@ final class NewGameStatsViewController: UIViewController {
         
         section.boundarySupplementaryItems = [sectionHeader]
         section.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
-        section.orthogonalScrollingBehavior = .groupPaging
+        section.orthogonalScrollingBehavior = .paging
+        
+        section.visibleItemsInvalidationHandler = { visibleItems, offset, environment in
+          print("????")
+          print(visibleItems)
+          print(offset)
+          print(environment)
+        }
+        
+        // HOW THE FUCK DO I DO THIS
+//        section.visibleItemsInvalidationHandler = { [weak self] visibleItems, offset, environment in
+//          if let self = self, let lastVisibleItem = visibleItems.last {
+//            var snapshot = self.dataSource.snapshot()
+//            snapshot.reloadSections([.charts])
+//              // TODO: How the fuck does this shit work, I want to change the fucking title ffs
+//            DispatchQueue.main.async {
+//              self.dataSource.apply(snapshot)
+//            }
+//          }
+//        }
         
         return section
       } else {
@@ -284,7 +303,8 @@ final class NewGameStatsViewController: UIViewController {
     
     if let statsProvider = statsProvider {
       snapshot.appendSections([.charts])
-      snapshot.appendItems([.citiesByState(statsProvider.citiesByCountry)])
+      snapshot.appendItems([.citiesByState(statsProvider.citiesByCountry),
+                            .citiesByState(statsProvider.citiesByTerritory)])
       
       snapshot.appendSections([.otherStats])
       snapshot.appendItems(
