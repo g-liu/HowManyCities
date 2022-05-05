@@ -208,16 +208,17 @@ final class MapGuessViewController: UIViewController {
     //    addCustomTileOverlay()
   }
   
-  private func updateMap(_ cities: OrderedSet<City>) {
-    cities.forEach { city in
-      mapView.addOverlay(city.asShape, level: .aboveLabels)
-      
-      mapView.addAnnotation(CityAnnotation(city: city))
-    }
+  @discardableResult
+  private func updateMap(_ cities: OrderedSet<City>) -> [MKAnnotation] {
+    let annotations = cities.map { $0.asAnnotation }
+    mapView.addOverlays(cities.map { $0.asShape }, level: .aboveLabels)
+    mapView.addAnnotations(annotations)
     
     guessStats.updatePopulationGuessed(viewModel.populationGuessed)
     guessStats.updateNumCitiesGuessed(viewModel.numCitiesGuessed)
     guessStats.updatePercentageTotalPopulation(viewModel.percentageTotalPopulationGuessed)
+    
+    return annotations
   }
   
   private func addCustomTileOverlay() {
@@ -387,11 +388,13 @@ extension MapGuessViewController: MapGuessDelegate {
       guard let self = self else { return }
       
       self.cityInputTextField.text = ""
-      self.updateMap(.init(cities))
+      let annotations = self.updateMap(.init(cities))
       
-      if let lastCity = cities.last {
-         self.mapView.setCenter(lastCity.coordinates, animated: true)
-       }
+      if cities.count > 1 {
+        self.mapView.showAnnotations(annotations, animated: true)
+      } else if let lastCity = cities.last {
+        self.mapView.setCenter(lastCity.coordinates, animated: true)
+      }
       
       if !cities.isEmpty {
         self.showToast("+\(cities.totalPopulation.abbreviated)", toastType: .population)
