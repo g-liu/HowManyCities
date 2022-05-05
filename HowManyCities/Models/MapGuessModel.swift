@@ -42,7 +42,7 @@ protocol GameStatisticsProvider: AnyObject {
   
   // key: population bracket
   // value: number of cities guessed vs. total cities in bracket
-  var totalGuessedByBracket: [Int: Ratio] { get }
+  var totalGuessedByBracket: [(Int, Ratio)] { get }
 }
 
 final class MapGuessModel: Codable {
@@ -158,12 +158,12 @@ extension MapGuessModel: GameStatisticsProvider {
     .init(numerator: citiesByTerritory.count, denominator: gameConfiguration?.totalTerritories ?? 0)
   }
   
-  var totalGuessedByBracket: [Int : Ratio] {
-    guard let gameConfig = gameConfiguration else { return [:] }
+  var totalGuessedByBracket: [(Int, Ratio)] {
+    guard let gameConfig = gameConfiguration else { return [] }
     
-    return Dictionary(uniqueKeysWithValues: gameConfig.brackets.enumerated().map {
+    return gameConfig.brackets.enumerated().map {
       ($1, .init(numerator: citiesExceeding(population: $1).count, denominator: gameConfig.totalCitiesByBracket[$0]))
-    })
+    }
   }
 }
 

@@ -19,7 +19,7 @@ final class CityRarityRenderer: ItemRenderer {
   func string(_ item: City) -> NSAttributedString {
     let rarity = item.percentageOfSessions ?? 0.0
     
-    let mas = NSMutableAttributedString(string: "\(item.countryFlag)\(item.name)  ")
+    let mas = NSMutableAttributedString(string: "\(item.countryFlag) \(item.name)  ")
     mas.append(.init(string: rarity.asPercentString, attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
                                                                        .foregroundColor: UIColor.systemGray]))
     

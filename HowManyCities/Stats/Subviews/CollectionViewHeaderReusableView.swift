@@ -59,16 +59,6 @@ final class CollectionViewHeaderReusableView: UICollectionReusableView {
     
     addSubview(stackView)
     stackView.pin(to: safeAreaLayoutGuide)
-//    NSLayoutConstraint.activate([
-//      label.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
-//      label.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
-//      label.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
-//      label.bottomAnchor.constraint(equalTo: control.topAnchor, constant: -8),
-////      control.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 8),
-//      control.leadingAnchor.constraint(equalTo: label.leadingAnchor),
-//      control.trailingAnchor.constraint(equalTo: label.trailingAnchor),
-//      control.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
-//    ])
   }
   
   func configure(selectedSegmentIndex: Int, segmentTitles: [String]?) {

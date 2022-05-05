@@ -10,8 +10,8 @@ import UIKit
 final class NewGameStatsViewController: UIViewController {
   struct ElementKind {
     static let header = "element-kind-header"
-//    static let header2 = "element-kind-header2"
-    static let footer = "element-kind-footer"
+    static let buttonFooter = "element-kind-buttonFooter"
+    static let textFooter = "element-kind-textFooter"
   }
   
   enum Section: Hashable {
@@ -91,11 +91,10 @@ final class NewGameStatsViewController: UIViewController {
         let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
         sectionHeader.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
         
-        let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.footer, alignment: .bottom)
+        let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.buttonFooter, alignment: .bottom)
         sectionFooter.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
         
         section.boundarySupplementaryItems = [sectionHeader, sectionFooter]
-        section.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
         
         return section
       } else {
@@ -111,7 +110,10 @@ final class NewGameStatsViewController: UIViewController {
         let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
         sectionHeader.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
         
-        section.boundarySupplementaryItems = [sectionHeader]
+        let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.textFooter, alignment: .bottom)
+        sectionFooter.contentInsets = .init(top: 0, leading: 8, bottom: 16, trailing: 8)
+        
+        section.boundarySupplementaryItems = [sectionHeader, sectionFooter]
         section.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
         
         return section
@@ -194,8 +196,12 @@ final class NewGameStatsViewController: UIViewController {
       }
     }
     
-    let footerRegistration = UICollectionView.SupplementaryRegistration<FooterButtonCollectionReusableView>(elementKind: ElementKind.footer) { supplementaryView, elementKind, indexPath in
+    let buttonFooterRegistration = UICollectionView.SupplementaryRegistration<FooterButtonCollectionReusableView>(elementKind: ElementKind.buttonFooter) { supplementaryView, elementKind, indexPath in
       supplementaryView.delegate = self
+    }
+    
+    let textFooterRegistration = UICollectionView.SupplementaryRegistration<FooterTextCollectionReusableView>(elementKind: ElementKind.textFooter) { supplementaryView, elementKind, indexPath in
+      supplementaryView.configure(text: "Save your results to see what you missed.")
     }
     
     dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
@@ -212,10 +218,12 @@ final class NewGameStatsViewController: UIViewController {
     dataSource.supplementaryViewProvider = { collectionView, elementKind, indexPath in
       if elementKind == ElementKind.header /*|| elementKind == ElementKind.header2*/ {
         return collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
-      } else if elementKind == ElementKind.footer {
-        return collectionView.dequeueConfiguredReusableSupplementary(using: footerRegistration, for: indexPath)
+      } else if elementKind == ElementKind.buttonFooter {
+        return collectionView.dequeueConfiguredReusableSupplementary(using: buttonFooterRegistration, for: indexPath)
+      } else if elementKind == ElementKind.textFooter {
+        return collectionView.dequeueConfiguredReusableSupplementary(using: textFooterRegistration, for: indexPath)
       } else {
-        fatalError("WTF")
+        fatalError("WTF!")
       }
     }
     
@@ -257,6 +265,10 @@ final class NewGameStatsViewController: UIViewController {
 extension NewGameStatsViewController: UICollectionViewDelegate {
   // TODO: WHY THE FUCK IS THIS NOT GETTING CALLED ON CERTAIN CELLS? WTF?????
   // OK IS IT JuST THE SIMULATOR PROBLEM
+  // TODO: WHY IN THE FUCK IS THIS BEING CALLED WHEN TAPPING ON THE HEADER????
+  // THAT DOESN'T EVEN MAKE SENSE AND IT'S ONLY HAPPENING ON SIM
+  // TODO: OK FUCK YOU IPAD TOUCH!!!!!
+  // WHY DO YOU HAVE TO BE SUCH A FUCKING PIECE OF SHIT
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     // If it's a city, open the city page
     if indexPath.section == 0 {
