@@ -183,14 +183,7 @@ class CityInfoViewController: UIViewController {
         let bearing = city.bearing(to: $1)
         
         let nearbyCityLabel = UILabel(text: "", style: .body).autolayoutEnabled
-        let cityTitle: String
-        if city.country != $1.country {
-          cityTitle = $1.fullTitle
-        } else if city.state != $1.state {
-          cityTitle = $1.nameWithStateAbbr
-        } else {
-          cityTitle = $1.name
-        }
+        let cityTitle = name(for: $1, comparedTo: city)
         let mas = NSMutableAttributedString(string: "\(cityTitle) ")
         mas.append(.init(string: "\(distanceInKm.commaSeparated)km \(bearing.asArrow)", attributes: [.foregroundColor: UIColor.systemGray]))
 //        mas.append(.init(string: "\(bearing.asArrow)", attributes: [.font: UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)]))
@@ -207,7 +200,36 @@ class CityInfoViewController: UIViewController {
     } else {
       let nearbyTitle = UILabel(text: "No nearby guessed cities", style: .title2).autolayoutEnabled
       infoStack.addArrangedSubview(nearbyTitle)
+      if let closestCity = statsProvider?.nearestCity(to: city) {
+        let cityName = name(for: closestCity, comparedTo: city)
+        let distance = Int(round(city.distance(to: closestCity) / 1000.0))
+        let bearing = city.bearing(to: closestCity)
+        let nearbyCityLabel = UILabel().autolayoutEnabled
+        nearbyCityLabel.numberOfLines = 0
+        let mas = NSMutableAttributedString(string: "The closest city you guessed is ")
+        mas.append(.init(string: cityName, attributes: [.font: UIFont.boldSystemFont(ofSize: UIFont.labelFontSize)]))
+        mas.append(.init(", which is "))
+        mas.append(.init(string: "\(distance.commaSeparated)km \(bearing.asArrow)", attributes: [.foregroundColor: UIColor.systemGray]))
+        mas.append(.init(string: " away."))
+        
+        let tapGestureRecognizer = UIParameterizedTapGestureRecognizer(target: self, action: #selector(showNearestCity))
+        tapGestureRecognizer.data = closestCity
+        nearbyCityLabel.addGestureRecognizer(tapGestureRecognizer)
+        nearbyCityLabel.isUserInteractionEnabled = true
+        nearbyCityLabel.attributedText = mas
+                                                        
+        infoStack.addArrangedSubview(nearbyCityLabel)
+      }
     }
+  }
+  
+  private func name(for otherCity: City, comparedTo city: City) -> String {
+    if city.country != otherCity.country {
+      return otherCity.fullTitle
+    } else if city.state != otherCity.state {
+      return otherCity.nameWithStateAbbr
+    }
+    return otherCity.name
   }
   
   @objc private func didTapCityLabel() {
@@ -241,6 +263,18 @@ class CityInfoViewController: UIViewController {
     addNearbyCityAnnotation(nearbyCity)
     
 //    mapView.zoom(to: [city.coordinates, nearbyCity.coordinates], meter: 1500000, edgePadding: .init(inset: 75.0), animated: false)
+    mapView.showAnnotations(mapView.annotations, animated: true)
+  }
+  
+  @objc private func showNearestCity(_ sender: Any) {
+    guard let city = city,
+          let nearestCity = (sender as? UIParameterizedTapGestureRecognizer)?.data as? City else { return }
+    
+    mapView.removeAnnotations(mapView.annotations.filter { $0.coordinate != city.coordinates })
+    mapView.removeOverlays(mapView.overlays)
+    
+    addNearbyCityAnnotation(nearestCity)
+    
     mapView.showAnnotations(mapView.annotations, animated: true)
   }
   

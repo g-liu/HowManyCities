@@ -31,6 +31,7 @@ protocol GameStatisticsProvider: AnyObject {
   var recentCitiesGuessed: [City] { get }
   
   func guessedCities(near city: City) -> [City]
+  func nearestCity(to city: City) -> City?
   
   var percentageTotalPopulationGuessed: Double { get }
   
@@ -144,6 +145,14 @@ extension MapGuessModel: GameStatisticsProvider {
       $0.coordinates.asLocation.distance(from: city.coordinates.asLocation) <
         $1.coordinates.asLocation.distance(from: city.coordinates.asLocation)
     }.dropFirst().asArray
+  }
+  
+  func nearestCity(to city: City) -> City? {
+    guessedCities.max {
+      let distance0 = $0.distance(to: city)
+      let distance1 = $1.distance(to: city)
+      return distance0 > distance1 && $0 != city && $1 != city
+    }
   }
   
   var totalCapitalsGuessed: Ratio {

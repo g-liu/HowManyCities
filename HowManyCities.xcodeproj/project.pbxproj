@@ -39,6 +39,7 @@
 		6C9C42B3281222B6006529E9 /* MKMapPoint+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9C42B2281222B6006529E9 /* MKMapPoint+Extension.swift */; };
 		6C9C42B528122999006529E9 /* MKOverlayRenderer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9C42B428122999006529E9 /* MKOverlayRenderer+Extension.swift */; };
 		6CA6CFE62824476700280348 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CA6CFE52824476700280348 /* String+Extension.swift */; };
+		6CA6CFE928244FA500280348 /* UIParameterizedTapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CA6CFE828244FA500280348 /* UIParameterizedTapGestureRecognizer.swift */; };
 		6CAD7FE827F381DF0057A41E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAD7FE727F381DF0057A41E /* AppDelegate.swift */; };
 		6CAD7FEA27F381DF0057A41E /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAD7FE927F381DF0057A41E /* SceneDelegate.swift */; };
 		6CAD7FEC27F381DF0057A41E /* MapGuessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAD7FEB27F381DF0057A41E /* MapGuessViewController.swift */; };
@@ -131,6 +132,7 @@
 		6C9C42B2281222B6006529E9 /* MKMapPoint+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MKMapPoint+Extension.swift"; sourceTree = "<group>"; };
 		6C9C42B428122999006529E9 /* MKOverlayRenderer+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MKOverlayRenderer+Extension.swift"; sourceTree = "<group>"; };
 		6CA6CFE52824476700280348 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
+		6CA6CFE828244FA500280348 /* UIParameterizedTapGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIParameterizedTapGestureRecognizer.swift; sourceTree = "<group>"; };
 		6CAD7FE427F381DF0057A41E /* HowManyCities.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HowManyCities.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6CAD7FE727F381DF0057A41E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6CAD7FE927F381DF0057A41E /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -276,6 +278,14 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		6CA6CFE728244F8F00280348 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				6CA6CFE828244FA500280348 /* UIParameterizedTapGestureRecognizer.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
 		6CAD7FDB27F381DF0057A41E = {
 			isa = PBXGroup;
 			children = (
@@ -302,6 +312,7 @@
 			isa = PBXGroup;
 			children = (
 				6CBE67EF282884C100558820 /* UserData */,
+				6CA6CFE728244F8F00280348 /* UI */,
 				6CAD802727F3C1090057A41E /* Views */,
 				6CAD802427F3AA690057A41E /* Models */,
 				6CAD801D27F38D940057A41E /* Data */,
@@ -686,6 +697,7 @@
 				6C82DBD727F5380D0084159F /* CLLocationCoordinate2D+Extension.swift in Sources */,
 				6CAD803327F41C1A0057A41E /* GameFinishResponse.swift in Sources */,
 				6CAD802F27F3D2C20057A41E /* MapGuessStatsBar.swift in Sources */,
+				6CA6CFE928244FA500280348 /* UIParameterizedTapGestureRecognizer.swift in Sources */,
 				6CAD801F27F38DA70057A41E /* City.swift in Sources */,
 				6C9C42AC281219D0006529E9 /* MapToast.swift in Sources */,
 				6CBBD5E52823BAE7002D9FC2 /* Vibration.swift in Sources */,
