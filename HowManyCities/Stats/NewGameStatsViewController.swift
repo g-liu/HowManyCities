@@ -10,13 +10,14 @@ import UIKit
 final class NewGameStatsViewController: UIViewController {
   struct ElementKind {
     static let header = "element-kind-header"
+//    static let header2 = "element-kind-header2"
     static let footer = "element-kind-footer"
-    static let segmentedControl = "element-kind-segmented-control"
   }
   
   enum Section: Hashable {
     case cityList(CitySegment)
     case citiesByCountry
+    case otherStats
   }
   
   enum Item: Hashable {
@@ -24,7 +25,7 @@ final class NewGameStatsViewController: UIViewController {
     case city(City)
     
     case citiesByState([String: [City]])
-    case formattedStat(Int, Int, String)
+    case formattedStat(Ratio, String)
   }
   
   enum CitySegment: Int, CaseIterable {
@@ -69,37 +70,52 @@ final class NewGameStatsViewController: UIViewController {
   
   private lazy var collectionView: UICollectionView = {
     let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider = { (sectionIndex, environment) -> NSCollectionLayoutSection? in
-      // TODO: This is the first section only; need per-section layout eventually...
-      
-      // TODO: How to make these two sizes be like.. [as-little-as-possible, remaining-width]?
-      let ordinalItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.12), heightDimension: .estimated(1.0))
-      let textItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.88), heightDimension: .estimated(1.0))
-      
-      let ordinalItem = NSCollectionLayoutItem(layoutSize: ordinalItemSize)
-      let textItem = NSCollectionLayoutItem(layoutSize: textItemSize)
-      
-      ordinalItem.contentInsets = .zero
-      textItem.contentInsets = .zero
-      
-      let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(1.0))
-      let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [ordinalItem, textItem])
-      group.contentInsets = .zero
-      
-      let section = NSCollectionLayoutSection(group: group)
-      
-      let boundaryItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
-      let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
-      sectionHeader.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
-      
-      let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.footer, alignment: .bottom)
-      sectionFooter.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
-      
-      section.boundarySupplementaryItems = [sectionHeader, sectionFooter]
-      section.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
-      
-      
-      
-      return section
+      if sectionIndex == 0 {
+        // TODO: How to make these two sizes be like.. [as-little-as-possible, remaining-width]?
+        let ordinalItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.12), heightDimension: .estimated(1.0))
+        let textItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.88), heightDimension: .estimated(1.0))
+        
+        let ordinalItem = NSCollectionLayoutItem(layoutSize: ordinalItemSize)
+        let textItem = NSCollectionLayoutItem(layoutSize: textItemSize)
+        
+        ordinalItem.contentInsets = .zero
+        textItem.contentInsets = .zero
+        
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(1.0))
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [ordinalItem, textItem])
+        group.contentInsets = .zero
+        
+        let section = NSCollectionLayoutSection(group: group)
+        
+        let boundaryItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
+        let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
+        sectionHeader.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
+        
+        let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.footer, alignment: .bottom)
+        sectionFooter.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
+        
+        section.boundarySupplementaryItems = [sectionHeader, sectionFooter]
+        section.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
+        
+        return section
+      } else {
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(1.0))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(1.0))
+        let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
+        
+        let section = NSCollectionLayoutSection(group: group)
+        
+        let boundaryItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
+        let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
+        sectionHeader.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
+        
+        section.boundarySupplementaryItems = [sectionHeader]
+        section.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
+        
+        return section
+      }
     }
     
     let layout = UICollectionViewCompositionalLayout(sectionProvider: sectionProvider)
@@ -139,7 +155,7 @@ final class NewGameStatsViewController: UIViewController {
       cell.contentView.layoutMargins = .zero
     }
     
-    let cellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, City> { cell, indexPath, itemIdentifier in
+    let cityCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, City> { cell, indexPath, itemIdentifier in
       var configuration = UIListContentConfiguration.cell()
       if self.selectedSegment == .rarest || self.selectedSegment == .mostCommon {
         configuration.attributedText = CityRarityRenderer().string(itemIdentifier)
@@ -152,11 +168,30 @@ final class NewGameStatsViewController: UIViewController {
       cell.contentView.layoutMargins = .zero
     }
     
-    let headerRegistration = UICollectionView.SupplementaryRegistration<TitleCollectionReusableView>(elementKind: ElementKind.header) { supplementaryView, elementKind, indexPath in
-      supplementaryView.text = self.selectedSegment.title
-      // TODO: Persist selection
-      supplementaryView.configure(selectedSegmentIndex: self.selectedSegment.rawValue, segmentTitles: CitySegment.asNames)
-      supplementaryView.segmentChangeDelegate = self
+    let ratioStatCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Item> { cell, indexPath, itemIdentifier in
+      guard case let .formattedStat(ratio, description) = itemIdentifier else { return }
+      var configuration = UIListContentConfiguration.cell()
+      
+      // TODO: Localize
+      let mas = NSMutableAttributedString(string: "\(ratio.numerator)", attributes: [.font: UIFont.boldSystemFont(ofSize: UIFont.labelFontSize)])
+      mas.append(.init(string: " of "))
+      mas.append(.init(string: "\(ratio.denominator)", attributes: [.font: UIFont.boldSystemFont(ofSize: UIFont.labelFontSize)]))
+      mas.append(.init(string: " \(description)"))
+      
+      configuration.attributedText = mas
+      
+      cell.contentConfiguration = configuration
+    }
+    
+    let headerRegistration = UICollectionView.SupplementaryRegistration<CollectionViewHeaderReusableView>(elementKind: ElementKind.header) { supplementaryView, elementKind, indexPath in
+      if indexPath.section == 0 {
+        supplementaryView.text = self.selectedSegment.title
+        // TODO: Persist selection
+        supplementaryView.configure(selectedSegmentIndex: self.selectedSegment.rawValue, segmentTitles: CitySegment.asNames)
+        supplementaryView.segmentChangeDelegate = self
+      } else {
+        supplementaryView.text = "Other stats"
+      }
     }
     
     let footerRegistration = UICollectionView.SupplementaryRegistration<FooterButtonCollectionReusableView>(elementKind: ElementKind.footer) { supplementaryView, elementKind, indexPath in
@@ -167,16 +202,20 @@ final class NewGameStatsViewController: UIViewController {
       if case let .ordinal(index) = itemIdentifier {
         return collectionView.dequeueConfiguredReusableCell(using: ordinalCellRegistration, for: indexPath, item: index)
       } else if case let .city(city) = itemIdentifier {
-        return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: city)
+        return collectionView.dequeueConfiguredReusableCell(using: cityCellRegistration, for: indexPath, item: city)
+      } else if case .formattedStat(_, _) = itemIdentifier {
+        return collectionView.dequeueConfiguredReusableCell(using: ratioStatCellRegistration, for: indexPath, item: itemIdentifier)
       } else {
         return UICollectionViewCell()
       }
     })
     dataSource.supplementaryViewProvider = { collectionView, elementKind, indexPath in
-      if elementKind == ElementKind.header {
+      if elementKind == ElementKind.header /*|| elementKind == ElementKind.header2*/ {
         return collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
-      } else {
+      } else if elementKind == ElementKind.footer {
         return collectionView.dequeueConfiguredReusableSupplementary(using: footerRegistration, for: indexPath)
+      } else {
+        fatalError("WTF")
       }
     }
     
@@ -195,6 +234,19 @@ final class NewGameStatsViewController: UIViewController {
     snapshot.appendSections([.cityList(self.selectedSegment)])
     cities.enumerated().forEach {
       snapshot.appendItems([.ordinal($0+1), $1])
+    }
+    
+    if let statsProvider = statsProvider {
+      snapshot.appendSections([.otherStats])
+      snapshot.appendItems(
+        statsProvider.totalGuessedByBracket.map {
+          Item.formattedStat($1, "cities over \($0.abbreviated)")
+        } + [
+          .formattedStat(statsProvider.totalStatesGuessed, "countries"),
+          .formattedStat(statsProvider.totalCapitalsGuessed, "capitals"),
+          .formattedStat(statsProvider.totalTerritoriesGuessed, "territories"),
+        ]
+      )
     }
     
     dataSource.apply(snapshot, animatingDifferences: true)
@@ -257,3 +309,4 @@ extension NewGameStatsViewController: ToggleShowAllDelegate {
     applySnapshot()
   }
 }
+

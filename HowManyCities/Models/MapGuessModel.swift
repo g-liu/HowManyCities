@@ -9,6 +9,12 @@ import Foundation
 import MapKit
 import OrderedCollections
 
+//typealias Ratio = (numerator: Int, denominator: Int)
+struct Ratio: Hashable {
+  let numerator: Int
+  let denominator: Int
+}
+
 protocol GameStatisticsProvider: AnyObject {
   var numCitiesGuessed: Int { get }
   var populationGuessed: Int { get }
@@ -29,6 +35,14 @@ protocol GameStatisticsProvider: AnyObject {
   var percentageTotalPopulationGuessed: Double { get }
   
   func citiesExceeding(population: Int) -> [City]
+  
+  var totalCapitalsGuessed: Ratio { get }
+  var totalStatesGuessed: Ratio { get }
+  var totalTerritoriesGuessed: Ratio { get }
+  
+  // key: population bracket
+  // value: number of cities guessed vs. total cities in bracket
+  var totalGuessedByBracket: [Int: Ratio] { get }
 }
 
 final class MapGuessModel: Codable {
@@ -130,6 +144,26 @@ extension MapGuessModel: GameStatisticsProvider {
       $0.coordinates.asLocation.distance(from: city.coordinates.asLocation) <
         $1.coordinates.asLocation.distance(from: city.coordinates.asLocation)
     }.dropFirst().asArray
+  }
+  
+  var totalCapitalsGuessed: Ratio {
+    .init(numerator: guessedCities.filter { $0.nationalCapital }.count, denominator: gameConfiguration?.totalCapitals ?? 0)
+  }
+  
+  var totalStatesGuessed: Ratio {
+    .init(numerator: citiesByCountry.count, denominator: gameConfiguration?.totalStates ?? 0)
+  }
+  
+  var totalTerritoriesGuessed: Ratio {
+    .init(numerator: citiesByTerritory.count, denominator: gameConfiguration?.totalTerritories ?? 0)
+  }
+  
+  var totalGuessedByBracket: [Int : Ratio] {
+    guard let gameConfig = gameConfiguration else { return [:] }
+    
+    return Dictionary(uniqueKeysWithValues: gameConfig.brackets.enumerated().map {
+      ($1, .init(numerator: citiesExceeding(population: $1).count, denominator: gameConfig.totalCitiesByBracket[$0]))
+    })
   }
 }
 

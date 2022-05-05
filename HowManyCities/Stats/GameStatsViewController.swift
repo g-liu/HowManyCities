@@ -65,7 +65,7 @@ final class GameStatsViewController: UIViewController {
     cv.register(HeaderAndListCollectionViewCell.self, forCellWithReuseIdentifier: HeaderAndListCollectionViewCell.identifier)
     cv.register(ChartCollectionViewCell.self, forCellWithReuseIdentifier: ChartCollectionViewCell.identifier)
     
-    cv.register(TitleCollectionReusableView.self, forSupplementaryViewOfKind: "title-element-kind", withReuseIdentifier: "TitleCollectionReusableView")
+    cv.register(CollectionViewHeaderReusableView.self, forSupplementaryViewOfKind: "title-element-kind", withReuseIdentifier: "CollectionViewHeaderReusableView")
     return cv
   }()
   
@@ -123,7 +123,7 @@ final class GameStatsViewController: UIViewController {
 
 // MARK: - Cell registrations
 extension GameStatsViewController {
-  func createHeaderRegistration() -> UICollectionView.SupplementaryRegistration<TitleCollectionReusableView> {
+  func createHeaderRegistration() -> UICollectionView.SupplementaryRegistration<CollectionViewHeaderReusableView> {
     .init(elementKind: "title-element-kind") { supplementaryView, elementKind, indexPath in
       supplementaryView.text = "IDK???"
     }

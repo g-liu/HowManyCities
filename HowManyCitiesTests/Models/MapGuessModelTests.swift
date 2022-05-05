@@ -33,7 +33,7 @@ final class MapGuessModelTests: XCTestCase {
   }
   
   func testMapGuessModelPopulationRatio() {
-    var model = MapGuessModel()
+    let model = MapGuessModel()
     model.gameConfiguration = .init(totalPopulation: 37000)
     model.guessedCities.append(.init(name: "Geoville", population: 29500))
     
