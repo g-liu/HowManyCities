@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Charts
 
 final class NewGameStatsViewController: UIViewController {
   struct ElementKind {
@@ -16,7 +17,7 @@ final class NewGameStatsViewController: UIViewController {
   
   enum Section: Hashable {
     case cityList(CitySegment)
-    case citiesByCountry
+    case charts
     case otherStats
   }
   
@@ -97,6 +98,25 @@ final class NewGameStatsViewController: UIViewController {
         sectionFooter.pinToVisibleBounds = true
         
         section.boundarySupplementaryItems = [sectionHeader, sectionFooter]
+        
+        return section
+      } else if sectionIndex == 1 {
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.8))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.8), heightDimension: .fractionalHeight(0.8))
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize, subitems: [item])
+        
+        let section = NSCollectionLayoutSection(group: group)
+        
+        let boundaryItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
+        let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
+        sectionHeader.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
+        sectionHeader.pinToVisibleBounds = true
+        
+        section.boundarySupplementaryItems = [sectionHeader]
+        section.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
+        section.orthogonalScrollingBehavior = .groupPaging
         
         return section
       } else {
@@ -188,12 +208,21 @@ final class NewGameStatsViewController: UIViewController {
       cell.contentConfiguration = configuration
     }
     
+    let chartCellRegistration = UICollectionView.CellRegistration<ChartCollectionViewCell, Item> { cell, IndexPath, itemIdentifier in
+      guard case let .citiesByState(statesToCities) = itemIdentifier else { return }
+      
+      cell.setData(statesToCities)
+    }
+    
     let headerRegistration = UICollectionView.SupplementaryRegistration<CollectionViewHeaderReusableView>(elementKind: ElementKind.header) { supplementaryView, elementKind, indexPath in
       if indexPath.section == 0 {
         supplementaryView.text = self.selectedSegment.title
         // TODO: Persist selection
         supplementaryView.configure(selectedSegmentIndex: self.selectedSegment.rawValue, segmentTitles: CitySegment.asNames)
         supplementaryView.segmentChangeDelegate = self
+      } else if indexPath.section == 1 {
+        // TODO: RENAME
+        supplementaryView.text = "Top countries"
       } else {
         supplementaryView.text = "Other stats"
       }
@@ -216,6 +245,8 @@ final class NewGameStatsViewController: UIViewController {
         return collectionView.dequeueConfiguredReusableCell(using: ordinalCellRegistration, for: indexPath, item: index)
       } else if case let .city(city) = itemIdentifier {
         return collectionView.dequeueConfiguredReusableCell(using: cityCellRegistration, for: indexPath, item: city)
+      } else if case .citiesByState(_) = itemIdentifier {
+        return collectionView.dequeueConfiguredReusableCell(using: chartCellRegistration, for: indexPath, item: itemIdentifier)
       } else if case .formattedStat(_, _) = itemIdentifier {
         return collectionView.dequeueConfiguredReusableCell(using: ratioStatCellRegistration, for: indexPath, item: itemIdentifier)
       } else {
@@ -252,6 +283,9 @@ final class NewGameStatsViewController: UIViewController {
     }
     
     if let statsProvider = statsProvider {
+      snapshot.appendSections([.charts])
+      snapshot.appendItems([.citiesByState(statsProvider.citiesByCountry)])
+      
       snapshot.appendSections([.otherStats])
       snapshot.appendItems(
         statsProvider.totalGuessedByBracket.map {

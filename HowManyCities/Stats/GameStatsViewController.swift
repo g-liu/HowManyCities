@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Charts
 
 final class GameStatsViewController: UIViewController {
   enum Section: Int {
@@ -81,7 +82,7 @@ final class GameStatsViewController: UIViewController {
     collectionView.pin(to: view.safeAreaLayoutGuide)
     
     let headerAndListCellRegistration = createHeaderAndListCellRegistration()
-    let pieChartCellRegistration = createPieChartCellRegistration()
+    let pieChartCellRegistration = createPieChartCellRegistration().self
     
     let headerRegistration = createHeaderRegistration()
     

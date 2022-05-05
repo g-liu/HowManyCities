@@ -33,6 +33,7 @@ final class ChartCollectionViewCell: UICollectionViewCell {
   
   private func setupView() {
     contentView.addSubview(pieChart)
+    pieChart.holeColor = .systemBackground
     pieChart.pin(to: contentView.safeAreaLayoutGuide)
   }
   
