@@ -47,12 +47,13 @@ final class ChartCollectionViewCell: UICollectionViewCell {
 //      .enumerated()
       
     var entries = [PieChartDataEntry]()
-    rawEntries.enumerated().forEach { index, element in
+    for (index, element) in rawEntries.enumerated() {
       if index < threshold {
-        entries.append(.init(value: Double(element.value.count), label: element.key))
+        entries.append(.init(value: floor(Double(element.value.count)), label: element.key))
       } else {
-        entries[entries.count - 1].label = "Others"
-        entries[entries.count - 1].value += Double(element.value.count)
+        break
+//        entries[entries.count - 1].label = "Others"
+//        entries[entries.count - 1].value += Double(element.value.count)
       }
     }
     let dataSet = PieChartDataSet(entries: entries)
