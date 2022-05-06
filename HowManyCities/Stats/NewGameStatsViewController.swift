@@ -19,15 +19,17 @@ final class NewGameStatsViewController: UIViewController {
   
   enum Section: Hashable {
     case cityList(CitySegment)
-    case charts
+    case stateList
     case otherStats
   }
   
   enum Item: Hashable {
     case ordinal(Int)
+    case ordinal2(Int)
     case city(City)
+    case state(String /* state name */, [City])
     
-    case citiesByState(String, [String: [City]])
+//    case citiesByState(String, [String: [City]])
     case formattedStat(Ratio, String)
   }
   
@@ -75,7 +77,7 @@ final class NewGameStatsViewController: UIViewController {
   
   private lazy var collectionView: UICollectionView = {
     let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider = { (sectionIndex, environment) -> NSCollectionLayoutSection? in
-      if sectionIndex == 0 {
+      if sectionIndex == 0 || sectionIndex == 1 {
         // TODO: How to make these two sizes be like.. [as-little-as-possible, remaining-width]?
         let ordinalItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.12), heightDimension: .estimated(1.0))
         let textItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.88), heightDimension: .estimated(1.0))
@@ -103,7 +105,7 @@ final class NewGameStatsViewController: UIViewController {
         section.boundarySupplementaryItems = [sectionHeader, sectionFooter]
         
         return section
-      } else if sectionIndex == 1 {
+      } /*else if sectionIndex == 1 {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
@@ -145,7 +147,7 @@ final class NewGameStatsViewController: UIViewController {
 //        }
         
         return section
-      } else {
+      } */else {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(1.0))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
@@ -206,6 +208,18 @@ final class NewGameStatsViewController: UIViewController {
       cell.contentView.layoutMargins = .zero
     }
     
+    // TODO: TMP!!!!
+    let ordinal2CellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Int> { cell, indexPath, itemIdentifier in
+      var configuration = UIListContentConfiguration.cell()
+      configuration.text = "\(itemIdentifier)."
+      configuration.textProperties.font = UIFont.monospacedDigitSystemFont(ofSize: UIFont.smallSystemFontSize, weight: .regular)
+      configuration.textProperties.color = .systemGray
+      configuration.directionalLayoutMargins = .zero
+      
+      cell.contentConfiguration = configuration
+      cell.contentView.layoutMargins = .zero
+    }
+    
     let cityCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, City> { cell, indexPath, itemIdentifier in
       var configuration = UIListContentConfiguration.cell()
       if self.selectedSegment == .rarest || self.selectedSegment == .mostCommon {
@@ -216,7 +230,22 @@ final class NewGameStatsViewController: UIViewController {
       configuration.directionalLayoutMargins = .zero
       
       cell.contentConfiguration = configuration
-      cell.contentView.layoutMargins = .zero
+    }
+    
+    let stateCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Item> { cell, indexPath, itemIdentifier in
+      // TODO: MOVE TO RENDERER
+      guard case let .state(stateName, cities) = itemIdentifier else { return }
+      var configuration = UIListContentConfiguration.cell()
+      let state = State(name: stateName)
+      let mas = NSMutableAttributedString(string: "\(stateName)  ")
+      if let flag = state.flag {
+        mas.insert(.init(string: "\(flag) "), at: 0)
+      }
+      mas.append(.init(string: "\(cities.count)", attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
+                                                                   .foregroundColor: UIColor.systemGray]))
+      configuration.attributedText = mas
+      
+      cell.contentConfiguration = configuration
     }
     
     let ratioStatCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Item> { cell, indexPath, itemIdentifier in
@@ -234,19 +263,21 @@ final class NewGameStatsViewController: UIViewController {
       cell.contentConfiguration = configuration
     }
     
-    let chartCellRegistration = UICollectionView.CellRegistration<ChartCollectionViewCell, Item> { cell, indexPath, itemIdentifier in
-      if case let .citiesByState(_, statesToCities) = itemIdentifier {
-        let title = indexPath.row == 0 ? "Top countries" : "Top territories"
-        cell.configure(title: title, data: statesToCities, threshold: 7)
-      }
-    }
+//    let chartCellRegistration = UICollectionView.CellRegistration<ChartCollectionViewCell, Item> { cell, indexPath, itemIdentifier in
+//      if case let .citiesByState(_, statesToCities) = itemIdentifier {
+//        let title = indexPath.row == 0 ? "Top countries" : "Top territories"
+//        cell.configure(title: title, data: statesToCities, threshold: 7)
+//      }
+//    }
     
     let headerRegistration = UICollectionView.SupplementaryRegistration<CollectionViewHeaderReusableView>(elementKind: ElementKind.header) { supplementaryView, elementKind, indexPath in
       if indexPath.section == 0 {
         supplementaryView.text = self.selectedSegment.title
         // TODO: Persist selection
-        supplementaryView.configure(selectedSegmentIndex: self.selectedSegment.rawValue, segmentTitles: CitySegment.asNames)
+        supplementaryView.configureSegments(selectedSegmentIndex: self.selectedSegment.rawValue, segmentTitles: CitySegment.asNames)
         supplementaryView.segmentChangeDelegate = self
+      } else if indexPath.section == 1 {
+        supplementaryView.text = "Top countries"
       } else if indexPath.section == 2 {
         supplementaryView.text = "Other stats"
       }
@@ -270,21 +301,25 @@ final class NewGameStatsViewController: UIViewController {
       supplementaryView.backgroundColor = .systemBackground
     }
     
-    let pagingFooterRegistration = UICollectionView.SupplementaryRegistration<PagingFooterCollectionReusableView>(elementKind: ElementKind.pagingFooter) { supplementaryView, elementKind, indexPath in
-      let itemCount = self.dataSource.snapshot().numberOfItems(inSection: .charts)
-      supplementaryView.configure(with: itemCount)
-
-      supplementaryView.subscribeTo(subject: self.pagingInfoSubject, for: indexPath.section)
-    }
+//    let pagingFooterRegistration = UICollectionView.SupplementaryRegistration<PagingFooterCollectionReusableView>(elementKind: ElementKind.pagingFooter) { supplementaryView, elementKind, indexPath in
+//      let itemCount = self.dataSource.snapshot().numberOfItems(inSection: .charts)
+//      supplementaryView.configure(with: itemCount)
+//
+//      supplementaryView.subscribeTo(subject: self.pagingInfoSubject, for: indexPath.section)
+//    }
     
     dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
       switch itemIdentifier {
         case .ordinal(let index):
           return collectionView.dequeueConfiguredReusableCell(using: ordinalCellRegistration, for: indexPath, item: index)
+        case .ordinal2(let index):
+          return collectionView.dequeueConfiguredReusableCell(using: ordinal2CellRegistration, for: indexPath, item: index)
         case .city(let city):
           return collectionView.dequeueConfiguredReusableCell(using: cityCellRegistration, for: indexPath, item: city)
-        case .citiesByState(_, _):
-          return collectionView.dequeueConfiguredReusableCell(using: chartCellRegistration, for: indexPath, item: itemIdentifier)
+        case .state(_, _):
+          return collectionView.dequeueConfiguredReusableCell(using: stateCellRegistration, for: indexPath, item: itemIdentifier)
+//        case .citiesByState(_, _):
+//          return collectionView.dequeueConfiguredReusableCell(using: chartCellRegistration, for: indexPath, item: itemIdentifier)
         case .formattedStat(_, _):
           return collectionView.dequeueConfiguredReusableCell(using: ratioStatCellRegistration, for: indexPath, item: itemIdentifier)
       }
@@ -296,9 +331,9 @@ final class NewGameStatsViewController: UIViewController {
         return collectionView.dequeueConfiguredReusableSupplementary(using: buttonFooterRegistration, for: indexPath)
       } else if elementKind == ElementKind.textFooter {
         return collectionView.dequeueConfiguredReusableSupplementary(using: textFooterRegistration, for: indexPath)
-      } else if elementKind == ElementKind.pagingFooter {
+      }/* else if elementKind == ElementKind.pagingFooter {
         return collectionView.dequeueConfiguredReusableSupplementary(using: pagingFooterRegistration, for: indexPath)
-      } else {
+      }*/ else {
         return nil
       }
     }
@@ -321,11 +356,17 @@ final class NewGameStatsViewController: UIViewController {
     }
     
     if let statsProvider = statsProvider {
-      snapshot.appendSections([.charts])
+//      snapshot.appendSections([.charts])
+//
+//
+//      snapshot.appendItems([.citiesByState("Countries", statsProvider.citiesByCountry),
+//                            .citiesByState("Territories", statsProvider.citiesByTerritory)])
       
-      
-      snapshot.appendItems([.citiesByState("Countries", statsProvider.citiesByCountry),
-                            .citiesByState("Territories", statsProvider.citiesByTerritory)])
+      snapshot.appendSections([.stateList])
+      statsProvider.citiesByCountry.enumerated().forEach {
+        snapshot.appendItems([.ordinal2($0+1), .state($1.key, $1.value)])
+      }
+//      snapshot.appendItems(statsProvider.citiesByCountry.map({ .state($0, $1) }))
       
       snapshot.appendSections([.otherStats])
       snapshot.appendItems(

@@ -61,7 +61,7 @@ final class CollectionViewHeaderReusableView: UICollectionReusableView {
     stackView.pin(to: safeAreaLayoutGuide)
   }
   
-  func configure(selectedSegmentIndex: Int, segmentTitles: [String]?) {
+  func configureSegments(selectedSegmentIndex: Int, segmentTitles: [String]?) {
     guard let segmentTitles = segmentTitles,
           !segmentTitles.isEmpty else {
       control.isHidden = true

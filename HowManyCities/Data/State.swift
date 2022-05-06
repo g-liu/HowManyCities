@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct State: Codable {
+struct State: Codable, Hashable {
   var value: String
   var name: String
   var states: [State]?
