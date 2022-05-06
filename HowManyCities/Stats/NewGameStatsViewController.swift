@@ -82,21 +82,15 @@ final class NewGameStatsViewController: UIViewController {
         let ordinalItem = NSCollectionLayoutItem(layoutSize: ordinalItemSize)
         let textItem = NSCollectionLayoutItem(layoutSize: textItemSize)
         
-        ordinalItem.contentInsets = .zero
-        textItem.contentInsets = .zero
-        
         let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(1.0))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [ordinalItem, textItem])
-        group.contentInsets = .zero
         
         let section = NSCollectionLayoutSection(group: group)
         
         let boundaryItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
         let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
-        sectionHeader.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
         
         let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.buttonFooter, alignment: .bottom)
-        sectionFooter.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
         sectionFooter.pinToVisibleBounds = true
         
         section.boundarySupplementaryItems = [sectionHeader, sectionFooter]
@@ -113,14 +107,11 @@ final class NewGameStatsViewController: UIViewController {
         
         let boundaryItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
         let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
-        sectionHeader.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
         sectionHeader.pinToVisibleBounds = true
         
         let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.textFooter, alignment: .bottom)
-        sectionFooter.contentInsets = .init(top: 8, leading: 8, bottom: 16, trailing: 8)
         
         section.boundarySupplementaryItems = [sectionHeader, sectionFooter]
-        section.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
         
         return section
       }
@@ -259,9 +250,7 @@ final class NewGameStatsViewController: UIViewController {
         return collectionView.dequeueConfiguredReusableSupplementary(using: buttonFooterRegistration, for: indexPath)
       } else if elementKind == ElementKind.textFooter {
         return collectionView.dequeueConfiguredReusableSupplementary(using: textFooterRegistration, for: indexPath)
-      }/* else if elementKind == ElementKind.pagingFooter {
-        return collectionView.dequeueConfiguredReusableSupplementary(using: pagingFooterRegistration, for: indexPath)
-      }*/ else {
+      } else {
         return nil
       }
     }
