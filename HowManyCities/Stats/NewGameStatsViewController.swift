@@ -401,6 +401,11 @@ extension NewGameStatsViewController: SectionChangeDelegate {
     
     // TODO: New code plz validate
     var snapshot = dataSource.snapshot()
+    
+    snapshot.deleteItems(snapshot.itemIdentifiers(inSection: .cityList))
+    cities.enumerated().forEach {
+      snapshot.appendItems([.ordinal(0, $0+1), $1], toSection: .cityList)
+    }
     snapshot.reloadSections([.cityList])
     
     dataSource.apply(snapshot)
