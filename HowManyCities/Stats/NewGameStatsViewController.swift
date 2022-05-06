@@ -27,8 +27,6 @@ final class NewGameStatsViewController: UIViewController {
     case ordinal(Int /* section index */, Int /* actual number */)
     case city(City)
     case state(String /* state name */, [City])
-    
-//    case citiesByState(String, [String: [City]])
     case formattedStat(Ratio, String)
   }
   
@@ -104,49 +102,7 @@ final class NewGameStatsViewController: UIViewController {
         section.boundarySupplementaryItems = [sectionHeader, sectionFooter]
         
         return section
-      } /*else if sectionIndex == 1 {
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
-        
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.8), heightDimension: .estimated(44.0))
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize, subitems: [item])
-        
-        let section = NSCollectionLayoutSection(group: group)
-        
-        let boundaryItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
-//        let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
-//        sectionHeader.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
-//        sectionHeader.pinToVisibleBounds = true
-        
-        // will be the paging view
-        let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.pagingFooter, alignment: .bottom)
-        sectionFooter.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
-        
-        section.boundarySupplementaryItems = [sectionFooter]
-        section.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
-        section.orthogonalScrollingBehavior = .paging
-        
-        section.visibleItemsInvalidationHandler = { visibleItems, offset, environment in
-          // TODO: This only works if all pages are exactly the width of the cv
-          let page = Int(round(offset.x / self.view.bounds.width))
-          
-          self.pagingInfoSubject.send(.init(currentPage: page))
-        }
-        
-        // HOW THE FUCK DO I DO THIS
-//        section.visibleItemsInvalidationHandler = { [weak self] visibleItems, offset, environment in
-//          if let self = self, let lastVisibleItem = visibleItems.last {
-//            var snapshot = self.dataSource.snapshot()
-//            snapshot.reloadSections([.charts])
-//              // TODO: How the fuck does this shit work, I want to change the fucking title ffs
-//            DispatchQueue.main.async {
-//              self.dataSource.apply(snapshot)
-//            }
-//          }
-//        }
-        
-        return section
-      } */else {
+      } else {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(1.0))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
@@ -253,13 +209,6 @@ final class NewGameStatsViewController: UIViewController {
       cell.contentConfiguration = configuration
     }
     
-//    let chartCellRegistration = UICollectionView.CellRegistration<ChartCollectionViewCell, Item> { cell, indexPath, itemIdentifier in
-//      if case let .citiesByState(_, statesToCities) = itemIdentifier {
-//        let title = indexPath.row == 0 ? "Top countries" : "Top territories"
-//        cell.configure(title: title, data: statesToCities, threshold: 7)
-//      }
-//    }
-    
     let headerRegistration = UICollectionView.SupplementaryRegistration<CollectionViewHeaderReusableView>(elementKind: ElementKind.header) { supplementaryView, elementKind, indexPath in
       if indexPath.section == 0 {
         supplementaryView.text = self.selectedSegment.title
@@ -291,13 +240,6 @@ final class NewGameStatsViewController: UIViewController {
       supplementaryView.backgroundColor = .systemBackground
     }
     
-//    let pagingFooterRegistration = UICollectionView.SupplementaryRegistration<PagingFooterCollectionReusableView>(elementKind: ElementKind.pagingFooter) { supplementaryView, elementKind, indexPath in
-//      let itemCount = self.dataSource.snapshot().numberOfItems(inSection: .charts)
-//      supplementaryView.configure(with: itemCount)
-//
-//      supplementaryView.subscribeTo(subject: self.pagingInfoSubject, for: indexPath.section)
-//    }
-    
     dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
       switch itemIdentifier {
         case .ordinal(_, _):
@@ -306,8 +248,6 @@ final class NewGameStatsViewController: UIViewController {
           return collectionView.dequeueConfiguredReusableCell(using: cityCellRegistration, for: indexPath, item: city)
         case .state(_, _):
           return collectionView.dequeueConfiguredReusableCell(using: stateCellRegistration, for: indexPath, item: itemIdentifier)
-//        case .citiesByState(_, _):
-//          return collectionView.dequeueConfiguredReusableCell(using: chartCellRegistration, for: indexPath, item: itemIdentifier)
         case .formattedStat(_, _):
           return collectionView.dequeueConfiguredReusableCell(using: ratioStatCellRegistration, for: indexPath, item: itemIdentifier)
       }
@@ -344,12 +284,6 @@ final class NewGameStatsViewController: UIViewController {
     }
     
     if let statsProvider = statsProvider {
-//      snapshot.appendSections([.charts])
-//
-//
-//      snapshot.appendItems([.citiesByState("Countries", statsProvider.citiesByCountry),
-//                            .citiesByState("Territories", statsProvider.citiesByTerritory)])
-      
       snapshot.appendSections([.stateList])
       statsProvider.citiesByCountry.sorted {
         if $0.value.count == $1.value.count {
@@ -360,7 +294,6 @@ final class NewGameStatsViewController: UIViewController {
       }.enumerated().forEach {
         snapshot.appendItems([.ordinal(1, $0+1), .state($1.key, $1.value)])
       }
-//      snapshot.appendItems(statsProvider.citiesByCountry.map({ .state($0, $1) }))
       
       snapshot.appendSections([.otherStats])
       snapshot.appendItems(
@@ -380,12 +313,7 @@ final class NewGameStatsViewController: UIViewController {
 
 
 extension NewGameStatsViewController: UICollectionViewDelegate {
-  // TODO: WHY THE FUCK IS THIS NOT GETTING CALLED ON CERTAIN CELLS? WTF?????
-  // OK IS IT JuST THE SIMULATOR PROBLEM
-  // TODO: WHY IN THE FUCK IS THIS BEING CALLED WHEN TAPPING ON THE HEADER????
-  // THAT DOESN'T EVEN MAKE SENSE AND IT'S ONLY HAPPENING ON SIM
-  // TODO: OK FUCK YOU IPAD TOUCH!!!!!
-  // WHY DO YOU HAVE TO BE SUCH A FUCKING PIECE OF SHIT
+  // TODO: Figure out why the iPod touch simulator isn't calling this consistently
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     // If it's a city, open the city page
     if indexPath.section == 0 {
