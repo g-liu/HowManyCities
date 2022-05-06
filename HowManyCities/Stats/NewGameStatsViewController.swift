@@ -17,11 +17,24 @@ final class NewGameStatsViewController: UIViewController {
     static let pagingFooter = "element-kind-pagingFooter"
   }
   
-  enum Section: Hashable {
-    case cityList(CitySegment)
+  enum Section: Int, Hashable, CaseIterable, CustomStringConvertible {
+    case cityList
     case stateList
     case territoryList
     case otherStats
+    
+    var description: String {
+      switch self {
+        case .cityList:
+          return "Top cities"
+        case .stateList:
+          return "Top countries"
+        case .territoryList:
+          return "Topp territories"
+        case .otherStats:
+          return "Other stats"
+      }
+    }
   }
   
   enum Item: Hashable {
@@ -31,7 +44,7 @@ final class NewGameStatsViewController: UIViewController {
     case formattedStat(Ratio, String)
   }
   
-  enum CitySegment: Int, CaseIterable {
+  enum CitySegment: Int, CaseIterable, CustomStringConvertible {
     case largest
     case smallest
     case rarest
@@ -48,7 +61,7 @@ final class NewGameStatsViewController: UIViewController {
       }
     }
     
-    var title: String {
+    var description: String {
       switch self {
         case .largest: return "Largest cities"
         case .smallest: return "Smallest cities"
@@ -132,6 +145,7 @@ final class NewGameStatsViewController: UIViewController {
         
         let boundaryItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
         let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
+        sectionHeader.pinToVisibleBounds = true
         
         let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.buttonFooter, alignment: .bottom)
         sectionFooter.pinToVisibleBounds = true
@@ -164,6 +178,9 @@ final class NewGameStatsViewController: UIViewController {
     
     let cv = UICollectionView(frame: .zero, collectionViewLayout: layout).autolayoutEnabled
     cv.delegate = self
+    
+    // TODO: WHY THE FUCK DOES THIS SHIFT EVERYTHING TO THE RIGHT????
+//    cv.contentInset = .init(top: 8.0, left: 16.0, bottom: 16.0, right: 16.0)
     
     return cv
   }()
@@ -243,7 +260,7 @@ final class NewGameStatsViewController: UIViewController {
     let headerRegistration = UICollectionView.SupplementaryRegistration<CollectionViewHeaderReusableView>(elementKind: ElementKind.header) { supplementaryView, elementKind, indexPath in
       supplementaryView.delegate = self
       if indexPath.section == 0 {
-        supplementaryView.text = self.selectedSegment.title
+        supplementaryView.text = self.selectedSegment.description
         // TODO: Persist selection
         supplementaryView.configure(selectedSegmentIndex: self.selectedSegment.rawValue, segmentTitles: CitySegment.asNames)
       } else if indexPath.section == 1 {
@@ -299,7 +316,8 @@ final class NewGameStatsViewController: UIViewController {
       }
     }
     
-    didChange(segmentIndex: 0)
+//    didChange(segmentIndex: 0)
+    applySnapshot()
     
     collectionView.dataSource = dataSource
   }
@@ -311,7 +329,7 @@ final class NewGameStatsViewController: UIViewController {
   private func applySnapshot() {
     // TODO: Very heavy-handed, wonder if we could update in a more graceful manner?
     var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
-    snapshot.appendSections([.cityList(self.selectedSegment)])
+    snapshot.appendSections([.cityList])
     cities.enumerated().forEach {
       snapshot.appendItems([.ordinal(0, $0+1), $1])
     }
@@ -381,7 +399,11 @@ extension NewGameStatsViewController: SectionChangeDelegate {
     self.selectedSegment = newSegment
     showUpTo = 10
     
-    applySnapshot()
+    // TODO: New code plz validate
+    var snapshot = dataSource.snapshot()
+    snapshot.reloadSections([.cityList])
+    
+    dataSource.apply(snapshot)
   }
   
   func didTapFilter() {
@@ -393,7 +415,7 @@ extension NewGameStatsViewController: ToggleShowAllDelegate {
   func didToggle(_ isShowingAll: Bool) {
     self.showUpTo = isShowingAll ? Int.max : 10
     
-    applySnapshot()
+    applySnapshot() // TODO: Better way???
   }
 }
 
