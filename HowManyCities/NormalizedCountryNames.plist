@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
+	<!-- NB: Differences beteween iafisher and swift's country list can be found at https://www.diffchecker.com/ecAMTtfj -->
 <dict>
 	<key>Antigua and Barbuda</key>
 	<string>Antigua &amp; Barbuda</string>

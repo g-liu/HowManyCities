@@ -71,7 +71,7 @@ extension MapGuessModel: GameStatisticsProvider {
         if c1.name == c2.name {
           return c1.fullTitle < c2.fullTitle
         }
-        return c1.name < c2.name
+        return c1.name.localizedStandardCompare(c2.name) == .orderedAscending
       }
       return c1.population < c2.population
     }

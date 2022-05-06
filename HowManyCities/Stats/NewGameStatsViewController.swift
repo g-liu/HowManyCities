@@ -321,7 +321,7 @@ final class NewGameStatsViewController: UIViewController {
       // TODO: Make these sorted lists persist
       statsProvider.citiesByCountry.sorted {
         if $0.value.count == $1.value.count {
-          return $0.key < $1.key
+          return $0.key.localizedStandardCompare($1.key) == .orderedAscending
         } else {
           return $0.value.count > $1.value.count
         }
@@ -332,7 +332,7 @@ final class NewGameStatsViewController: UIViewController {
       snapshot.appendSections([.territoryList])
       statsProvider.citiesByTerritory.sorted {
         if $0.value.count == $1.value.count {
-          return $0.key < $1.key
+          return $0.key.localizedStandardCompare($1.key) == .orderedAscending
         } else {
           return $0.value.count > $1.value.count
         }
