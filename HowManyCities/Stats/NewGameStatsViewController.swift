@@ -98,7 +98,7 @@ final class NewGameStatsViewController: UIViewController {
   var stateRenderingMode: CountryRenderingMode = .cityCount {
     didSet {
       var snap = dataSource.snapshot()
-      snap.reloadSections([.stateList])
+      snap.reconfigureItems(snap.itemIdentifiers(inSection: .stateList ))
       
       dataSource.apply(snap)
     }
@@ -412,7 +412,9 @@ extension NewGameStatsViewController: SectionChangeDelegate {
     cities.enumerated().forEach {
       snapshot.appendItems([.ordinal(0, $0+1), $1], toSection: .cityList)
     }
+    
     snapshot.reloadSections([.cityList])
+    
     
     dataSource.apply(snapshot)
   }
