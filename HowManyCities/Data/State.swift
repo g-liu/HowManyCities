@@ -70,6 +70,11 @@ struct State: Codable, Hashable {
       return childState.name + ", \(normalizedCountryName)"
     }
     
+    // Special exception for Georgia the country
+    if normalizedCountryName.localizedCaseInsensitiveContains("Georgia") {
+      return "საქართველო"
+    }
+    
     return normalizedCountryName
   }
   
