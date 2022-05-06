@@ -95,7 +95,6 @@ final class NewGameStatsViewController: UIViewController {
         let boundaryItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
         let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
         sectionHeader.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
-        sectionHeader.pinToVisibleBounds = true
         
         let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.buttonFooter, alignment: .bottom)
         sectionFooter.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
@@ -108,7 +107,7 @@ final class NewGameStatsViewController: UIViewController {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.8), heightDimension: .estimated(44.0))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize, subitems: [item])
         
         let section = NSCollectionLayoutSection(group: group)

@@ -55,12 +55,11 @@ enum GuessMode {
         }
         
         // base case
-        let flag = location.flag
-        
-        if flag.isEmpty {
+        if let flag = location.flag {
+          return "\(flag) \(location.name)"
+        } else {
           return location.name
         }
-        return "\(flag) \(location.name)"
     }
   }
   
@@ -95,17 +94,11 @@ enum GuessMode {
   }
   
   private func shortName(for location: State) -> NSAttributedString {
-    var countryCode = location.locale
-    let flag = location.flag
-    
-    if countryCode.isEmpty {
-      // maybe it's a state we're dealing with
-      countryCode = Global.STATE_ABBREVIATIONS[location.name] ?? ""
-    }
+    let countryCode = location.locale ?? Global.STATE_ABBREVIATIONS[location.name] ?? location.name
     
     let countryCodeString = NSAttributedString(string: "\(countryCode)", attributes: shortNameAttributes)
   
-    if !flag.isEmpty {
+    if let flag = location.flag {
       let ms = NSMutableAttributedString(string: "\(flag) ")
       ms.append(countryCodeString)
       return .init(attributedString: ms)

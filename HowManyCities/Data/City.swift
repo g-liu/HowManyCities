@@ -97,7 +97,7 @@ struct City: Codable, Hashable {
     return nil
   }
   
-  var countryFlag: String {
+  var countryFlag: String? {
     State(name: country).flag
   }
   

@@ -73,11 +73,12 @@ struct State: Codable {
     return normalizedCountryName
   }
   
-  var locale: String {
-    return Global.COUNTRY_NAMES_TO_LOCALES[normalizedCountryName] ?? ""
+  var locale: String? {
+    return Global.COUNTRY_NAMES_TO_LOCALES[normalizedCountryName]
   }
   
-  var flag: String {
+  var flag: String? {
+    guard let locale = locale else { return nil }
     let base: UInt32 = 127397
     var s = ""
     for v in locale.unicodeScalars {

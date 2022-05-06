@@ -32,14 +32,16 @@ class CityInfoViewController: UIViewController {
         upperDivisionText = upperDivisionSuffix
       }
       
-      title = "\(city.countryFlag) \(cityName)"
+      if let countryFlag = city.countryFlag {
+        title = "\(countryFlag) \(cityName)"
+      }
       
       let mas = NSMutableAttributedString(string: "\(cityName) ")
       if let capitalDesignation = city.capitalDesignation {
         mas.append(.init(string: capitalDesignation, attributes: [.font: UIFont.systemFont(ofSize: UIFont.systemFontSize),
                                                                   .foregroundColor: UIColor.systemYellow]))
       }
-      mas.append(.init(string: "\(upperDivisionText)\(city.countryFlag)", attributes: [.font: UIFont.systemFont(ofSize: UIFont.systemFontSize),
+      mas.append(.init(string: "\(upperDivisionText)\(city.countryFlag ?? "")", attributes: [.font: UIFont.systemFont(ofSize: UIFont.systemFontSize),
                                                                                        .foregroundColor: UIColor.systemGray]))
       
       cityLabel.attributedText = mas
