@@ -7,8 +7,9 @@
 
 import UIKit
 
-protocol SegmentChangeDelegate: AnyObject {
+protocol SectionChangeDelegate: AnyObject {
   func didChange(segmentIndex: Int)
+  func didTapFilter()
 }
 
 final class CollectionViewHeaderReusableView: UICollectionReusableView {
@@ -18,7 +19,7 @@ final class CollectionViewHeaderReusableView: UICollectionReusableView {
     set { label.text = newValue }
   }
   
-  weak var segmentChangeDelegate: SegmentChangeDelegate? = nil
+  weak var delegate: SectionChangeDelegate? = nil
   
   private lazy var stackView: UIStackView = {
     let stackView = UIStackView().autolayoutEnabled
@@ -33,6 +34,17 @@ final class CollectionViewHeaderReusableView: UICollectionReusableView {
     let label = UILabel(text: "", style: UIFont.TextStyle.largeTitle).autolayoutEnabled
     label.font = UIFont.boldSystemFont(ofSize: label.font.pointSize)
     return label
+  }()
+  
+  private lazy var filterButton: UIButton = {
+    // TODO: DESIGN SUCKS UPDATE LATER
+    var cfg = UIButton.Configuration.filled()
+    cfg.title = "Filter"
+    let button = UIButton(configuration: cfg).autolayoutEnabled
+    button.isHidden = true
+    button.addTarget(self, action: #selector(didTapFilterButton), for: .touchUpInside)
+    
+    return button
   }()
   
   private lazy var control: UISegmentedControl = {
@@ -58,10 +70,18 @@ final class CollectionViewHeaderReusableView: UICollectionReusableView {
     stackView.addArrangedSubview(control)
     
     addSubview(stackView)
+    addSubview(filterButton)
     stackView.pin(to: safeAreaLayoutGuide)
+    
+    // TODO: THIS SUCKS!!!!
+    NSLayoutConstraint.activate([
+      filterButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
+      filterButton.topAnchor.constraint(equalTo: topAnchor, constant: 4)
+    ])
   }
   
-  func configureSegments(selectedSegmentIndex: Int, segmentTitles: [String]?) {
+  func configure(selectedSegmentIndex: Int, segmentTitles: [String]?, showFilterButton: Bool = false) {
+    filterButton.isHidden = !showFilterButton
     guard let segmentTitles = segmentTitles,
           !segmentTitles.isEmpty else {
       control.isHidden = true
@@ -76,6 +96,10 @@ final class CollectionViewHeaderReusableView: UICollectionReusableView {
   
   @objc private func didChangeSegmentIndex() {
     let index = control.selectedSegmentIndex
-    segmentChangeDelegate?.didChange(segmentIndex: index)
+    delegate?.didChange(segmentIndex: index)
+  }
+  
+  @objc private func didTapFilterButton() {
+    delegate?.didTapFilter()
   }
 }

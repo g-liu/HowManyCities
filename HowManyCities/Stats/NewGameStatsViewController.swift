@@ -68,9 +68,51 @@ final class NewGameStatsViewController: UIViewController {
   
   var showUpTo: Int = 10
   
+  // TODO: MOVE THE BELOW CODE TO A SEPARATE RENDERER????
+  // OR at least the logic needs to be encapsulated elsewhere
+  enum CountryRenderingMode: CaseIterable {
+    case cityCount
+    case population
+    
+    var nextMode: Self {
+      // TODO: Shit impl but this will suffice 4 now
+      if self == .cityCount { return .population }
+      else { return .cityCount }
+    }
+  }
+  
+  var stateRenderingMode: CountryRenderingMode = .cityCount {
+    didSet {
+      var snap = dataSource.snapshot()
+      snap.reloadSections([.stateList])
+      
+      dataSource.apply(snap)
+    }
+  }
+  
   var statsProvider: GameStatisticsProvider?
   
   var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
+  
+  private var cities: [Item] {
+    let cityList: [Item]
+    switch selectedSegment {
+      case .smallest:
+        cityList = statsProvider?.smallestCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
+      case .rarest:
+        cityList = statsProvider?.rarestCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
+      case .mostCommon:
+        cityList = statsProvider?.commonCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
+      case .recent:
+        cityList = statsProvider?.recentCitiesGuessed.map(Item.city).prefix(showUpTo).asArray ?? []
+      case .largest:
+        fallthrough
+      default:
+        cityList = statsProvider?.largestCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
+    }
+    
+    return cityList
+  }
   
   private lazy var collectionView: UICollectionView = {
     let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider = { (sectionIndex, environment) -> NSCollectionLayoutSection? in
@@ -171,16 +213,13 @@ final class NewGameStatsViewController: UIViewController {
       // TODO: MOVE TO RENDERER
       guard case let .state(stateName, cities) = itemIdentifier else { return }
       var configuration = UIListContentConfiguration.cell()
-      let state = State(name: stateName)
-      let mas = NSMutableAttributedString(string: "\(stateName)  ")
-      if let flag = state.flag {
-        mas.insert(.init(string: "\(flag) "), at: 0)
+      
+      switch self.stateRenderingMode {
+        case .population:
+          configuration.attributedText = StateTotalPopulationRenderer().string((stateName, cities))
+        case .cityCount:
+          configuration.attributedText = StateCityCountRenderer().string((stateName, cities))
       }
-      // TODO: Proper pluralization
-      let pluralizedString = cities.count > 1 ? "cities" : "city"
-      mas.append(.init(string: "\(cities.count) \(pluralizedString)", attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
-                                                                   .foregroundColor: UIColor.systemGray]))
-      configuration.attributedText = mas
       
       cell.contentConfiguration = configuration
     }
@@ -201,13 +240,14 @@ final class NewGameStatsViewController: UIViewController {
     }
     
     let headerRegistration = UICollectionView.SupplementaryRegistration<CollectionViewHeaderReusableView>(elementKind: ElementKind.header) { supplementaryView, elementKind, indexPath in
+      supplementaryView.delegate = self
       if indexPath.section == 0 {
         supplementaryView.text = self.selectedSegment.title
         // TODO: Persist selection
-        supplementaryView.configureSegments(selectedSegmentIndex: self.selectedSegment.rawValue, segmentTitles: CitySegment.asNames)
-        supplementaryView.segmentChangeDelegate = self
+        supplementaryView.configure(selectedSegmentIndex: self.selectedSegment.rawValue, segmentTitles: CitySegment.asNames)
       } else if indexPath.section == 1 {
         supplementaryView.text = "Top countries"
+        supplementaryView.configure(selectedSegmentIndex: -1, segmentTitles: nil, showFilterButton: true)
       } else if indexPath.section == 2 {
         supplementaryView.text = "Other stats"
       }
@@ -319,7 +359,7 @@ extension NewGameStatsViewController: UICollectionViewDelegate {
 }
 
 
-extension NewGameStatsViewController: SegmentChangeDelegate {
+extension NewGameStatsViewController: SectionChangeDelegate {
   func didChange(segmentIndex: Int) {
     let newSegment = CitySegment.init(rawValue: segmentIndex) ?? .recent
     self.selectedSegment = newSegment
@@ -328,24 +368,8 @@ extension NewGameStatsViewController: SegmentChangeDelegate {
     applySnapshot()
   }
   
-  private var cities: [Item] {
-    let cityList: [Item]
-    switch selectedSegment {
-      case .smallest:
-        cityList = statsProvider?.smallestCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
-      case .rarest:
-        cityList = statsProvider?.rarestCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
-      case .mostCommon:
-        cityList = statsProvider?.commonCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
-      case .recent:
-        cityList = statsProvider?.recentCitiesGuessed.map(Item.city).prefix(showUpTo).asArray ?? []
-      case .largest:
-        fallthrough
-      default:
-        cityList = statsProvider?.largestCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
-    }
-    
-    return cityList
+  func didTapFilter() {
+    stateRenderingMode = stateRenderingMode.nextMode
   }
 }
 
