@@ -259,21 +259,22 @@ final class NewGameStatsViewController: UIViewController {
     
     let headerRegistration = UICollectionView.SupplementaryRegistration<CollectionViewHeaderReusableView>(elementKind: ElementKind.header) { supplementaryView, elementKind, indexPath in
       supplementaryView.delegate = self
-      if indexPath.section == 0 {
-        supplementaryView.text = self.selectedSegment.description
-        // TODO: Persist selection
-        supplementaryView.configure(selectedSegmentIndex: self.selectedSegment.rawValue, segmentTitles: CitySegment.asNames)
-      } else if indexPath.section == 1 {
-        supplementaryView.text = "Top countries"
-        supplementaryView.configure(selectedSegmentIndex: -1, segmentTitles: nil, showFilterButton: true)
-      } else if indexPath.section == 2 {
-        supplementaryView.text = "Top territories"
-        supplementaryView.configure(selectedSegmentIndex: -1, segmentTitles: nil, showFilterButton: true)
-      } else if indexPath.section == 3 {
-        supplementaryView.text = "Other stats"
-      }
-      
       supplementaryView.backgroundColor = .systemBackground
+      
+      guard let section = Section(rawValue: indexPath.section) else { return }
+      supplementaryView.text = section.description
+      
+      switch section {
+        case .cityList:
+          supplementaryView.text = self.selectedSegment.description
+          supplementaryView.configure(selectedSegmentIndex: self.selectedSegment.rawValue, segmentTitles: CitySegment.asNames)
+        case .stateList:
+          supplementaryView.configure(showFilterButton: true)
+        case .territoryList:
+          supplementaryView.configure(showFilterButton: true)
+        case .otherStats:
+          break
+      }
     }
     
     let buttonFooterRegistration = UICollectionView.SupplementaryRegistration<FooterButtonCollectionReusableView>(elementKind: ElementKind.buttonFooter) { supplementaryView, elementKind, indexPath in
@@ -317,7 +318,7 @@ final class NewGameStatsViewController: UIViewController {
     }
     
 //    didChange(segmentIndex: 0)
-    applySnapshot()
+    populateInitialData()
     
     collectionView.dataSource = dataSource
   }
@@ -326,7 +327,7 @@ final class NewGameStatsViewController: UIViewController {
     dismiss(animated: true)
   }
   
-  private func applySnapshot() {
+  private func populateInitialData() {
     // TODO: Very heavy-handed, wonder if we could update in a more graceful manner?
     var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
     snapshot.appendSections([.cityList])
@@ -378,16 +379,18 @@ final class NewGameStatsViewController: UIViewController {
 extension NewGameStatsViewController: UICollectionViewDelegate {
   // TODO: Figure out why the iPod touch simulator isn't calling this consistently
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-    // If it's a city, open the city page
-    if indexPath.section == 0 {
-      // open page
-      let cityVC = CityInfoViewController()
-      cityVC.statsProvider = statsProvider
-      if case let .city(city) = cities[(indexPath.row - indexPath.row%2) / 2] {
-        cityVC.city = city
-      }
-      
-      navigationController?.pushViewController(cityVC)
+    guard let section = Section(rawValue: indexPath.section) else { return }
+    switch section {
+      case .cityList:
+        let cityVC = CityInfoViewController()
+        cityVC.statsProvider = statsProvider
+        if case let .city(city) = cities[(indexPath.row - indexPath.row%2) / 2] {
+          cityVC.city = city
+        }
+        
+        navigationController?.pushViewController(cityVC)
+      default:
+        break
     }
   }
 }
@@ -420,7 +423,7 @@ extension NewGameStatsViewController: ToggleShowAllDelegate {
   func didToggle(_ isShowingAll: Bool) {
     self.showUpTo = isShowingAll ? Int.max : 10
     
-    applySnapshot() // TODO: Better way???
+    populateInitialData() // TODO: Better way???
   }
 }
 

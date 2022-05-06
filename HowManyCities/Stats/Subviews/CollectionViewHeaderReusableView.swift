@@ -80,7 +80,7 @@ final class CollectionViewHeaderReusableView: UICollectionReusableView {
     ])
   }
   
-  func configure(selectedSegmentIndex: Int, segmentTitles: [String]?, showFilterButton: Bool = false) {
+  func configure(selectedSegmentIndex: Int = -1, segmentTitles: [String]? = nil, showFilterButton: Bool = false) {
     filterButton.isHidden = !showFilterButton
     guard let segmentTitles = segmentTitles,
           !segmentTitles.isEmpty else {
