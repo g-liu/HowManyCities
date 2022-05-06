@@ -20,6 +20,7 @@ final class NewGameStatsViewController: UIViewController {
   enum Section: Hashable {
     case cityList(CitySegment)
     case stateList
+    case territoryList
     case otherStats
   }
   
@@ -116,7 +117,7 @@ final class NewGameStatsViewController: UIViewController {
   
   private lazy var collectionView: UICollectionView = {
     let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider = { (sectionIndex, environment) -> NSCollectionLayoutSection? in
-      if sectionIndex == 0 || sectionIndex == 1 {
+      if sectionIndex == 0 || sectionIndex == 1 || sectionIndex == 2 {
         // TODO: How to make these two sizes be like.. [as-little-as-possible, remaining-width]?
         let ordinalItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.12), heightDimension: .estimated(1.0))
         let textItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.88), heightDimension: .estimated(1.0))
@@ -249,6 +250,9 @@ final class NewGameStatsViewController: UIViewController {
         supplementaryView.text = "Top countries"
         supplementaryView.configure(selectedSegmentIndex: -1, segmentTitles: nil, showFilterButton: true)
       } else if indexPath.section == 2 {
+        supplementaryView.text = "Top territories"
+        supplementaryView.configure(selectedSegmentIndex: -1, segmentTitles: nil, showFilterButton: true)
+      } else if indexPath.section == 3 {
         supplementaryView.text = "Other stats"
       }
       
@@ -284,7 +288,7 @@ final class NewGameStatsViewController: UIViewController {
       }
     })
     dataSource.supplementaryViewProvider = { collectionView, elementKind, indexPath in
-      if elementKind == ElementKind.header /*|| elementKind == ElementKind.header2*/ {
+      if elementKind == ElementKind.header {
         return collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
       } else if elementKind == ElementKind.buttonFooter {
         return collectionView.dequeueConfiguredReusableSupplementary(using: buttonFooterRegistration, for: indexPath)
@@ -314,6 +318,7 @@ final class NewGameStatsViewController: UIViewController {
     
     if let statsProvider = statsProvider {
       snapshot.appendSections([.stateList])
+      // TODO: Make these sorted lists persist
       statsProvider.citiesByCountry.sorted {
         if $0.value.count == $1.value.count {
           return $0.key < $1.key
@@ -322,6 +327,17 @@ final class NewGameStatsViewController: UIViewController {
         }
       }.enumerated().forEach {
         snapshot.appendItems([.ordinal(1, $0+1), .state($1.key, $1.value)])
+      }
+      
+      snapshot.appendSections([.territoryList])
+      statsProvider.citiesByTerritory.sorted {
+        if $0.value.count == $1.value.count {
+          return $0.key < $1.key
+        } else {
+          return $0.value.count > $1.value.count
+        }
+      }.enumerated().forEach {
+        snapshot.appendItems([.ordinal(2, $0+1), .state($1.key, $1.value)])
       }
       
       snapshot.appendSections([.otherStats])
