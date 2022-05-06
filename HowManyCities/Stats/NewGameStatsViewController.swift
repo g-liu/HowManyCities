@@ -229,7 +229,9 @@ final class NewGameStatsViewController: UIViewController {
       if let flag = state.flag {
         mas.insert(.init(string: "\(flag) "), at: 0)
       }
-      mas.append(.init(string: "\(cities.count)", attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
+      // TODO: Proper pluralization
+      let pluralizedString = cities.count > 1 ? "cities" : "city"
+      mas.append(.init(string: "\(cities.count) \(pluralizedString)", attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
                                                                    .foregroundColor: UIColor.systemGray]))
       configuration.attributedText = mas
       
@@ -298,7 +300,7 @@ final class NewGameStatsViewController: UIViewController {
     
     dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
       switch itemIdentifier {
-        case .ordinal(let section, let index):
+        case .ordinal(_, _):
           return collectionView.dequeueConfiguredReusableCell(using: ordinalCellRegistration, for: indexPath, item: itemIdentifier)
         case .city(let city):
           return collectionView.dequeueConfiguredReusableCell(using: cityCellRegistration, for: indexPath, item: city)
@@ -349,7 +351,13 @@ final class NewGameStatsViewController: UIViewController {
 //                            .citiesByState("Territories", statsProvider.citiesByTerritory)])
       
       snapshot.appendSections([.stateList])
-      statsProvider.citiesByCountry.enumerated().forEach {
+      statsProvider.citiesByCountry.sorted {
+        if $0.value.count == $1.value.count {
+          return $0.key > $1.key
+        } else {
+          return $0.value.count > $1.value.count
+        }
+      }.enumerated().forEach {
         snapshot.appendItems([.ordinal(1, $0+1), .state($1.key, $1.value)])
       }
 //      snapshot.appendItems(statsProvider.citiesByCountry.map({ .state($0, $1) }))
