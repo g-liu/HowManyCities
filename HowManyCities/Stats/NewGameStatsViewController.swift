@@ -24,8 +24,7 @@ final class NewGameStatsViewController: UIViewController {
   }
   
   enum Item: Hashable {
-    case ordinal(Int)
-    case ordinal2(Int)
+    case ordinal(Int /* section index */, Int /* actual number */)
     case city(City)
     case state(String /* state name */, [City])
     
@@ -197,21 +196,10 @@ final class NewGameStatsViewController: UIViewController {
   }
   
   private func configureDataSource() {
-    let ordinalCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Int> { cell, indexPath, itemIdentifier in
+    let ordinalCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Item> { cell, indexPath, itemIdentifier in
+      guard case let .ordinal(_, number) = itemIdentifier else { return }
       var configuration = UIListContentConfiguration.cell()
-      configuration.text = "\(itemIdentifier)."
-      configuration.textProperties.font = UIFont.monospacedDigitSystemFont(ofSize: UIFont.smallSystemFontSize, weight: .regular)
-      configuration.textProperties.color = .systemGray
-      configuration.directionalLayoutMargins = .zero
-      
-      cell.contentConfiguration = configuration
-      cell.contentView.layoutMargins = .zero
-    }
-    
-    // TODO: TMP!!!!
-    let ordinal2CellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Int> { cell, indexPath, itemIdentifier in
-      var configuration = UIListContentConfiguration.cell()
-      configuration.text = "\(itemIdentifier)."
+      configuration.text = "\(number)."
       configuration.textProperties.font = UIFont.monospacedDigitSystemFont(ofSize: UIFont.smallSystemFontSize, weight: .regular)
       configuration.textProperties.color = .systemGray
       configuration.directionalLayoutMargins = .zero
@@ -310,10 +298,8 @@ final class NewGameStatsViewController: UIViewController {
     
     dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
       switch itemIdentifier {
-        case .ordinal(let index):
-          return collectionView.dequeueConfiguredReusableCell(using: ordinalCellRegistration, for: indexPath, item: index)
-        case .ordinal2(let index):
-          return collectionView.dequeueConfiguredReusableCell(using: ordinal2CellRegistration, for: indexPath, item: index)
+        case .ordinal(let section, let index):
+          return collectionView.dequeueConfiguredReusableCell(using: ordinalCellRegistration, for: indexPath, item: itemIdentifier)
         case .city(let city):
           return collectionView.dequeueConfiguredReusableCell(using: cityCellRegistration, for: indexPath, item: city)
         case .state(_, _):
@@ -352,7 +338,7 @@ final class NewGameStatsViewController: UIViewController {
     var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
     snapshot.appendSections([.cityList(self.selectedSegment)])
     cities.enumerated().forEach {
-      snapshot.appendItems([.ordinal($0+1), $1])
+      snapshot.appendItems([.ordinal(0, $0+1), $1])
     }
     
     if let statsProvider = statsProvider {
@@ -364,7 +350,7 @@ final class NewGameStatsViewController: UIViewController {
       
       snapshot.appendSections([.stateList])
       statsProvider.citiesByCountry.enumerated().forEach {
-        snapshot.appendItems([.ordinal2($0+1), .state($1.key, $1.value)])
+        snapshot.appendItems([.ordinal(1, $0+1), .state($1.key, $1.value)])
       }
 //      snapshot.appendItems(statsProvider.citiesByCountry.map({ .state($0, $1) }))
       
