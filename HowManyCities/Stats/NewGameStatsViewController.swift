@@ -30,7 +30,7 @@ final class NewGameStatsViewController: UIViewController {
         case .stateList:
           return "Top countries"
         case .territoryList:
-          return "Topp territories"
+          return "Top territories"
         case .otherStats:
           return "Other stats"
       }
@@ -130,47 +130,51 @@ final class NewGameStatsViewController: UIViewController {
   
   private lazy var collectionView: UICollectionView = {
     let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider = { (sectionIndex, environment) -> NSCollectionLayoutSection? in
-      if sectionIndex == 0 || sectionIndex == 1 || sectionIndex == 2 {
-        // TODO: How to make these two sizes be like.. [as-little-as-possible, remaining-width]?
-        let ordinalItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.12), heightDimension: .estimated(1.0))
-        let textItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.88), heightDimension: .estimated(1.0))
-        
-        let ordinalItem = NSCollectionLayoutItem(layoutSize: ordinalItemSize)
-        let textItem = NSCollectionLayoutItem(layoutSize: textItemSize)
-        
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(1.0))
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [ordinalItem, textItem])
-        
-        let section = NSCollectionLayoutSection(group: group)
-        
-        let boundaryItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
-        let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
-        sectionHeader.pinToVisibleBounds = true
-        
-        let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.buttonFooter, alignment: .bottom)
-        sectionFooter.pinToVisibleBounds = true
-        
-        section.boundarySupplementaryItems = [sectionHeader, sectionFooter]
-        
-        return section
-      } else {
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(1.0))
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
-        
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(1.0))
-        let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
-        
-        let section = NSCollectionLayoutSection(group: group)
-        
-        let boundaryItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
-        let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
-        sectionHeader.pinToVisibleBounds = true
-        
-        let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.textFooter, alignment: .bottom)
-        
-        section.boundarySupplementaryItems = [sectionHeader, sectionFooter]
-        
-        return section
+      guard let section = Section(rawValue: sectionIndex) else { return nil }
+      switch section {
+        case .cityList,
+            .stateList,
+            .territoryList:
+          // TODO: How to make these two sizes be like.. [as-little-as-possible, remaining-width]?
+          let ordinalItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.12), heightDimension: .estimated(1.0))
+          let textItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.88), heightDimension: .estimated(1.0))
+          
+          let ordinalItem = NSCollectionLayoutItem(layoutSize: ordinalItemSize)
+          let textItem = NSCollectionLayoutItem(layoutSize: textItemSize)
+          
+          let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(1.0))
+          let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [ordinalItem, textItem])
+          
+          let section = NSCollectionLayoutSection(group: group)
+          
+          let boundaryItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
+          let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
+          sectionHeader.pinToVisibleBounds = true
+          
+          let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.buttonFooter, alignment: .bottom)
+          sectionFooter.pinToVisibleBounds = true
+          
+          section.boundarySupplementaryItems = [sectionHeader, sectionFooter]
+          
+          return section
+        case .otherStats:
+          let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(1.0))
+          let item = NSCollectionLayoutItem(layoutSize: itemSize)
+          
+          let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(1.0))
+          let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
+          
+          let section = NSCollectionLayoutSection(group: group)
+          
+          let boundaryItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
+          let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
+          sectionHeader.pinToVisibleBounds = true
+          
+          let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.textFooter, alignment: .bottom)
+          
+          section.boundarySupplementaryItems = [sectionHeader, sectionFooter]
+          
+          return section
       }
     }
     
@@ -402,7 +406,6 @@ extension NewGameStatsViewController: SectionChangeDelegate {
     self.selectedSegment = newSegment
     showUpTo = 10
     
-    // TODO: New code plz validate
     var snapshot = dataSource.snapshot()
     
     snapshot.deleteItems(snapshot.itemIdentifiers(inSection: .cityList))
