@@ -232,8 +232,9 @@ final class NewGameStatsViewController: UIViewController {
     }
     
     let stateCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Item> { cell, indexPath, itemIdentifier in
-      // TODO: MOVE TO RENDERER
-      guard case let .state(stateName, cities) = itemIdentifier else { return }
+      guard case let .state(stateName, cities) = itemIdentifier else {
+        return
+      }
       var configuration = UIListContentConfiguration.cell()
       
       switch self.stateRenderingMode {

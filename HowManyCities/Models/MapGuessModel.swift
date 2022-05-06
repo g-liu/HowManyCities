@@ -85,6 +85,8 @@ extension MapGuessModel: GameStatisticsProvider {
       countriesDict[country, default: []].append($0)
     }
     
+    countriesDict.removeAll(keys: gameConfiguration?.excludeStates ?? [])
+    
     return countriesDict
   }
   
