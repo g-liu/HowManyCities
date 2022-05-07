@@ -312,7 +312,6 @@ final class NewGameStatsViewController: UIViewController {
     
     let buttonFooterRegistration = UICollectionView.SupplementaryRegistration<FooterButtonCollectionReusableView>(elementKind: ElementKind.buttonFooter) { supplementaryView, elementKind, indexPath in
       guard let section = Section(rawValue: indexPath.section) else { return }
-//      supplementaryView.delegate = self
       supplementaryView.backgroundColor = .systemBackground
       supplementaryView.isHidden = false
       
@@ -323,19 +322,15 @@ final class NewGameStatsViewController: UIViewController {
             return
           }
           
-          // TODO: Roll both lines into configure??
-          supplementaryView.isShowingAll = self.showCitiesUpTo == Int.max
-          supplementaryView.configure { isShowingAll in
+          supplementaryView.configure(isShowingAll: self.showCitiesUpTo == Int.max) { isShowingAll in
             self.showCitiesUpTo = isShowingAll ? Int.max : 10
           }
         case .stateList:
-          supplementaryView.isShowingAll = self.showStatesUpTo == Int.max
-          supplementaryView.configure { isShowingAll in
+          supplementaryView.configure(isShowingAll: self.showStatesUpTo == Int.max) { isShowingAll in
             self.showStatesUpTo = isShowingAll ? Int.max : 10
           }
         case .territoryList:
-          supplementaryView.isShowingAll = self.showTerritoriesUpTo == Int.max
-          supplementaryView.configure { isShowingAll in
+          supplementaryView.configure(isShowingAll: self.showTerritoriesUpTo == Int.max) { isShowingAll in
             self.showTerritoriesUpTo = isShowingAll ? Int.max : 10
           }
         case .otherStats:

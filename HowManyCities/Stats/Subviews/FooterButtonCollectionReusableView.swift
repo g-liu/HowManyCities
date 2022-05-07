@@ -21,9 +21,9 @@ final class FooterButtonCollectionReusableView: UICollectionReusableView {
   }()
   
 //  weak var delegate: ToggleShowAllDelegate?
-  var tapCallback: ((Bool) -> Void)? = nil
+  private var tapCallback: ((Bool) -> Void)? = nil
   
-  var isShowingAll: Bool = false {
+  private var isShowingAll: Bool = false {
     didSet {
       if isShowingAll {
         button.setTitle("Show less", for: .normal)
@@ -48,7 +48,8 @@ final class FooterButtonCollectionReusableView: UICollectionReusableView {
     button.pin(to: safeAreaLayoutGuide)
   }
   
-  func configure(tapCallback: ((Bool) -> Void)? = nil) {
+  func configure(isShowingAll: Bool, tapCallback: ((Bool) -> Void)? = nil) {
+    self.isShowingAll = isShowingAll
     self.tapCallback = tapCallback
   }
   
