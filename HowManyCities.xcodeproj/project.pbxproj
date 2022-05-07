@@ -40,6 +40,7 @@
 		6C9F60682825FA640035B0FA /* NSDiffableDataSourceSnapshot+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9F60672825FA640035B0FA /* NSDiffableDataSourceSnapshot+Extension.swift */; };
 		6C9F606A282620B50035B0FA /* ItemRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9F6069282620B50035B0FA /* ItemRenderer.swift */; };
 		6C9F606D2826212C0035B0FA /* StateInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9F606C2826212C0035B0FA /* StateInfoViewController.swift */; };
+		6C9F606F2826266D0035B0FA /* DoubleExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9F606E2826266D0035B0FA /* DoubleExtensionTests.swift */; };
 		6CA6CFE62824476700280348 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CA6CFE52824476700280348 /* String+Extension.swift */; };
 		6CA6CFE928244FA500280348 /* UIParameterizedTapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CA6CFE828244FA500280348 /* UIParameterizedTapGestureRecognizer.swift */; };
 		6CAD7FE827F381DF0057A41E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAD7FE727F381DF0057A41E /* AppDelegate.swift */; };
@@ -135,6 +136,7 @@
 		6C9F60672825FA640035B0FA /* NSDiffableDataSourceSnapshot+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSDiffableDataSourceSnapshot+Extension.swift"; sourceTree = "<group>"; };
 		6C9F6069282620B50035B0FA /* ItemRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemRenderer.swift; sourceTree = "<group>"; };
 		6C9F606C2826212C0035B0FA /* StateInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateInfoViewController.swift; sourceTree = "<group>"; };
+		6C9F606E2826266D0035B0FA /* DoubleExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleExtensionTests.swift; sourceTree = "<group>"; };
 		6CA6CFE52824476700280348 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		6CA6CFE828244FA500280348 /* UIParameterizedTapGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIParameterizedTapGestureRecognizer.swift; sourceTree = "<group>"; };
 		6CAD7FE427F381DF0057A41E /* HowManyCities.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HowManyCities.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -278,6 +280,7 @@
 			isa = PBXGroup;
 			children = (
 				6C9C42B028122229006529E9 /* MKPolygon+Extension_Tests.swift */,
+				6C9F606E2826266D0035B0FA /* DoubleExtensionTests.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -769,6 +772,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6C9F606F2826266D0035B0FA /* DoubleExtensionTests.swift in Sources */,
 				6CBBD5DE28230A1B002D9FC2 /* BearingTests.swift in Sources */,
 				6C7C8D9E2817C1330091E09F /* MapGuessModelTests.swift in Sources */,
 				6C9C42B128122229006529E9 /* MKPolygon+Extension_Tests.swift in Sources */,
