@@ -285,14 +285,23 @@ final class NewGameStatsViewController: UIViewController {
     }
     
     let buttonFooterRegistration = UICollectionView.SupplementaryRegistration<FooterButtonCollectionReusableView>(elementKind: ElementKind.buttonFooter) { supplementaryView, elementKind, indexPath in
-      guard self.selectedSegment == .recent else {
-        supplementaryView.isHidden = true
-        return
+      guard let section = Section(rawValue: indexPath.section) else { return }
+      
+      switch section {
+        case .cityList:
+          guard self.selectedSegment == .recent else {
+            supplementaryView.isHidden = true
+            return
+          }
+          supplementaryView.isHidden = false
+          supplementaryView.delegate = self
+          supplementaryView.isShowingAll = self.showUpTo == Int.max ? true : false
+          supplementaryView.backgroundColor = .systemBackground
+        case .stateList, .territoryList:
+          break
+        case .otherStats:
+          break
       }
-      supplementaryView.isHidden = false
-      supplementaryView.delegate = self
-      supplementaryView.isShowingAll = self.showUpTo == Int.max ? true : false
-      supplementaryView.backgroundColor = .systemBackground
     }
     
     let textFooterRegistration = UICollectionView.SupplementaryRegistration<FooterTextCollectionReusableView>(elementKind: ElementKind.textFooter) { supplementaryView, elementKind, indexPath in
