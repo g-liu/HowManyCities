@@ -429,7 +429,13 @@ extension NewGameStatsViewController: ToggleShowAllDelegate {
   func didToggle(_ isShowingAll: Bool) {
     self.showUpTo = isShowingAll ? Int.max : 10
     
-    populateInitialData() // TODO: Better way???
+    var snapshot = dataSource.snapshot()
+    snapshot.deleteItems(snapshot.itemIdentifiers(inSection: .cityList))
+    cities.enumerated().forEach {
+      snapshot.appendItems([.ordinal(0, $0+1), $1], toSection: .cityList)
+    }
+    
+    dataSource.apply(snapshot)
   }
 }
 
