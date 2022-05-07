@@ -98,8 +98,8 @@ final class NewGameStatsViewController: UIViewController {
   var stateRenderingMode: CountryRenderingMode = .cityCount {
     didSet {
       var snap = dataSource.snapshot()
-      snap.reconfigureItems(snap.itemIdentifiers(inSection: .stateList))
-      snap.reconfigureItems(snap.itemIdentifiers(inSection: .territoryList))
+      refreshStateList(&snap)
+      refreshTerritoryList(&snap)
       
       dataSource.apply(snap)
     }
@@ -370,38 +370,65 @@ extension NewGameStatsViewController {
   /// - Parameter snapshot: The snapshot to apply to. If no snapshot provided, grabs a snapshot from the current dataSource
   /// - Returns: The snapshot with refreshed city list
   func refreshCityList(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
-    snapshot.deleteItems(snapshot.itemIdentifiers(inSection: .cityList))
+    snapshot.deleteItems(inSection: .cityList)
     cities.enumerated().forEach {
       snapshot.appendItems([.ordinal(0, $0+1), $1], toSection: .cityList)
     }
   }
   
-  func refreshStateList(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
-    statsProvider?.citiesByCountry.sorted {
-      if $0.value.count == $1.value.count {
-        return $0.key.localizedStandardCompare($1.key) == .orderedAscending
-      } else {
-        return $0.value.count > $1.value.count
-      }
-    }.enumerated().forEach {
-      snapshot.appendItems([.ordinal(1, $0+1), .state($1.key, $1.value)], toSection: .stateList)
+  private func comparePopulation(_ lhs: (String, [City]), _ rhs: (String, [City])) -> Bool {
+    if lhs.1.totalPopulation == rhs.1.totalPopulation {
+      return lhs.0.localizedStandardCompare(rhs.0) == .orderedAscending
+    } else {
+      return lhs.1.totalPopulation > rhs.1.totalPopulation
     }
   }
   
-  func refreshTerritoryList(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
-    statsProvider?.citiesByTerritory.sorted {
-      if $0.value.count == $1.value.count {
-        return $0.key.localizedStandardCompare($1.key) == .orderedAscending
-      } else {
-        return $0.value.count > $1.value.count
-      }
-    }.enumerated().forEach {
-      snapshot.appendItems([.ordinal(2, $0+1), .state($1.key, $1.value)], toSection: .territoryList)
+  private func compareCityCount(_ lhs: (String, [City]), _ rhs: (String, [City])) -> Bool {
+    if lhs.1.count == rhs.1.count {
+      return lhs.0.localizedStandardCompare(rhs.0) == .orderedAscending
+    } else {
+      return lhs.1.count > rhs.1.count
     }
+  }
+  
+  func refreshStateList(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
+    guard let statsProvider = statsProvider else { return }
+    
+    snapshot.deleteItems(inSection: .stateList)
+    let sortedStates: [(String, [City])]
+    if stateRenderingMode == .cityCount {
+      sortedStates = statsProvider.citiesByCountry.sorted(by: compareCityCount(_:_:))
+    } else {
+      sortedStates = statsProvider.citiesByCountry.sorted(by: comparePopulation(_:_:))
+    }
+      
+    sortedStates.enumerated().forEach {
+      snapshot.appendItems([.ordinal(Section.stateList.rawValue, $0+1), .state($1.0, $1.1)], toSection: .stateList)
+    }
+    snapshot.reconfigureItems(inSection: .stateList)
+  }
+  
+  func refreshTerritoryList(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
+    guard let statsProvider = statsProvider else { return }
+    
+    snapshot.deleteItems(inSection: .territoryList)
+    let sortedTerritories: [(String, [City])]
+    if stateRenderingMode == .cityCount {
+      sortedTerritories = statsProvider.citiesByTerritory.sorted(by: compareCityCount(_:_:))
+    } else {
+      sortedTerritories = statsProvider.citiesByTerritory.sorted(by: comparePopulation(_:_:))
+    }
+      
+    sortedTerritories.enumerated().forEach {
+      snapshot.appendItems([.ordinal(Section.territoryList.rawValue, $0+1), .state($1.0, $1.1)], toSection: .territoryList)
+    }
+    snapshot.reconfigureItems(inSection: .territoryList)
   }
   
   func refreshOtherStats(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
     guard let statsProvider = statsProvider else { return }
+    snapshot.deleteItems(inSection: .territoryList)
     snapshot.appendItems(
       statsProvider.totalGuessedByBracket.map {
         Item.formattedStat($1, "cities over \($0.abbreviated)")
@@ -412,7 +439,6 @@ extension NewGameStatsViewController {
       ], toSection: .otherStats)
   }
 }
-
 
 extension NewGameStatsViewController: SectionChangeDelegate {
   func didChange(segmentIndex: Int) {

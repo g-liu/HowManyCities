@@ -16,4 +16,16 @@ extension NSDiffableDataSourceSnapshot {
     let missingSections = sections.filter { indexOfSection($0) == nil }
     appendSections(missingSections)
   }
+  
+  mutating func reloadItems(inSection section: SectionIdentifierType) {
+    reloadItems(itemIdentifiers(inSection: section))
+  }
+  
+  mutating func reconfigureItems(inSection section: SectionIdentifierType) {
+    reconfigureItems(itemIdentifiers(inSection: section))
+  }
+  
+  mutating func deleteItems(inSection section: SectionIdentifierType) {
+    deleteItems(itemIdentifiers(inSection: section))
+  }
 }
