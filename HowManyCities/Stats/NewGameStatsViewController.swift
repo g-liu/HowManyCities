@@ -78,9 +78,9 @@ final class NewGameStatsViewController: UIViewController {
   
   private let pagingInfoSubject = PassthroughSubject<PagingInfo, Never>()
   
-  var selectedSegment: CitySegment = .largest
+  private var selectedSegment: CitySegment = .largest
   
-  var showCitiesUpTo: Int = 10 {
+  private var showCitiesUpTo: Int = 10 {
     didSet {
       var snapshot = dataSource.snapshot()
       refreshCityList(&snapshot)
@@ -89,7 +89,7 @@ final class NewGameStatsViewController: UIViewController {
     }
   }
   
-  var showStatesUpTo: Int = 10 {
+  private var showStatesUpTo: Int = 10 {
     didSet {
       var snapshot = dataSource.snapshot()
       refreshStateList(&snapshot)
@@ -98,7 +98,7 @@ final class NewGameStatsViewController: UIViewController {
     }
   }
   
-  var showTerritoriesUpTo: Int = 10 {
+  private var showTerritoriesUpTo: Int = 10 {
     didSet {
       var snapshot = dataSource.snapshot()
       refreshTerritoryList(&snapshot)
@@ -120,7 +120,7 @@ final class NewGameStatsViewController: UIViewController {
     }
   }
   
-  var stateRenderingMode: CountryRenderingMode = .cityCount {
+  private var stateRenderingMode: CountryRenderingMode = .cityCount {
     didSet {
       var snapshot = dataSource.snapshot()
       refreshStateList(&snapshot)
@@ -135,7 +135,7 @@ final class NewGameStatsViewController: UIViewController {
   
   var statsProvider: GameStatisticsProvider?
   
-  var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
+  private var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
   
   private var cities: [Item] {
     let cityList: [Item]
@@ -376,7 +376,6 @@ final class NewGameStatsViewController: UIViewController {
       }
     }
     
-//    didChange(segmentIndex: 0)
     populateInitialData()
     
     collectionView.dataSource = dataSource
@@ -542,15 +541,4 @@ extension NewGameStatsViewController: SectionChangeDelegate {
     stateRenderingMode = stateRenderingMode.nextMode
   }
 }
-
-//extension NewGameStatsViewController: ToggleShowAllDelegate {
-//  func didToggle(_ isShowingAll: Bool) {
-//    self.showCitiesUpTo = isShowingAll ? Int.max : 10
-//
-//    var snapshot = dataSource.snapshot()
-//    refreshCityList(&snapshot)
-//
-//    dataSource.apply(snapshot)
-//  }
-//}
 
