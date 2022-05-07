@@ -215,6 +215,7 @@ final class NewGameStatsViewController: UIViewController {
     
     let cv = UICollectionView(frame: .zero, collectionViewLayout: layout).autolayoutEnabled
     cv.delegate = self
+    cv.allowsSelection = true
     
     // TODO: WHY THE FUCK DOES THIS SHIFT EVERYTHING TO THE RIGHT????
     // FUCK YOU COLLECTION VIEW
@@ -400,6 +401,38 @@ final class NewGameStatsViewController: UIViewController {
 
 
 extension NewGameStatsViewController: UICollectionViewDelegate {
+  private func toggleHighlight(_ isOn: Bool, collectionView: UICollectionView, at indexPath: IndexPath) {
+    let color: UIColor = isOn ? .systemFill : .clear
+    
+    switch Section(rawValue: indexPath.section) {
+      case .cityList, .stateList, .territoryList:
+        // also need to highlight the other index path
+        var associatedIndexPath = indexPath
+        if indexPath.row.isOdd {
+          associatedIndexPath.row -= 1
+        } else {
+          associatedIndexPath.row += 1
+        }
+        UIView.animate {
+          self.collectionView.cellForItem(at: indexPath)?.backgroundColor = color
+          self.collectionView.cellForItem(at: associatedIndexPath)?.backgroundColor = color
+        }
+      case .otherStats:
+        UIView.animate {
+          self.collectionView.cellForItem(at: indexPath)?.backgroundColor = color
+        }
+      case .none: break
+    }
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
+    toggleHighlight(true, collectionView: collectionView, at: indexPath)
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
+    toggleHighlight(false, collectionView: collectionView, at: indexPath)
+  }
+  
   // TODO: Figure out why the iPod touch simulator isn't calling this consistently
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     guard let section = Section(rawValue: indexPath.section) else { return }

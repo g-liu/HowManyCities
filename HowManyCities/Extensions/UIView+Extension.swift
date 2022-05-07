@@ -46,3 +46,9 @@ extension UIView {
   }
 }
 
+extension UIView {
+  static func animate(animations: @escaping () -> Void, completion: ((Bool) -> Void)? = nil) {
+    self.animate(withDuration: CATransaction.animationDuration(), animations: animations, completion: completion)
+  }
+}
+
