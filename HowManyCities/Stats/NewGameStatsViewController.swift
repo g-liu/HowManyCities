@@ -444,6 +444,13 @@ extension NewGameStatsViewController: UICollectionViewDelegate {
         }
         
         navigationController?.pushViewController(cityVC)
+        // TODO: Coming soon...
+        //      case .stateList,
+//          .territoryList:
+//        let stateVC = StateInfoViewController()
+//        stateVC.state = /* ???? */
+//
+//        navigationController?.pushViewController(stateVC)
       default:
         break
     }
