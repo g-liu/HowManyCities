@@ -97,11 +97,14 @@ final class NewGameStatsViewController: UIViewController {
   
   var stateRenderingMode: CountryRenderingMode = .cityCount {
     didSet {
-      var snap = dataSource.snapshot()
-      refreshStateList(&snap)
-      refreshTerritoryList(&snap)
+      var snapshot = dataSource.snapshot()
+      refreshStateList(&snapshot)
+      refreshTerritoryList(&snapshot)
       
-      dataSource.apply(snap)
+      snapshot.reconfigureItems(inSection: .stateList)
+      snapshot.reconfigureItems(inSection: .territoryList)
+      
+      dataSource.apply(snapshot)
     }
   }
   
@@ -406,7 +409,6 @@ extension NewGameStatsViewController {
     sortedStates.enumerated().forEach {
       snapshot.appendItems([.ordinal(Section.stateList.rawValue, $0+1), .state($1.0, $1.1)], toSection: .stateList)
     }
-    snapshot.reconfigureItems(inSection: .stateList)
   }
   
   func refreshTerritoryList(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
@@ -423,12 +425,11 @@ extension NewGameStatsViewController {
     sortedTerritories.enumerated().forEach {
       snapshot.appendItems([.ordinal(Section.territoryList.rawValue, $0+1), .state($1.0, $1.1)], toSection: .territoryList)
     }
-    snapshot.reconfigureItems(inSection: .territoryList)
   }
   
   func refreshOtherStats(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
     guard let statsProvider = statsProvider else { return }
-    snapshot.deleteItems(inSection: .territoryList)
+    snapshot.deleteItems(inSection: .otherStats)
     snapshot.appendItems(
       statsProvider.totalGuessedByBracket.map {
         Item.formattedStat($1, "cities over \($0.abbreviated)")
