@@ -45,7 +45,7 @@ final class FooterButtonCollectionReusableView: UICollectionReusableView {
   
   private func setupView() {
     addSubview(button)
-    button.pin(to: safeAreaLayoutGuide)
+    button.pin(to: safeAreaLayoutGuide, margins: .init(top: 8, left: 12, bottom: 8, right: 12))
   }
   
   func configure(isShowingAll: Bool, tapCallback: ((Bool) -> Void)? = nil) {

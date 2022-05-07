@@ -71,7 +71,7 @@ final class CollectionViewHeaderReusableView: UICollectionReusableView {
     
     addSubview(stackView)
     addSubview(sortButton)
-    stackView.pin(to: safeAreaLayoutGuide)
+    stackView.pin(to: safeAreaLayoutGuide, margins: .init(top: 8, left: 12, bottom: 8, right: 12))
     
     // TODO: THIS SUCKS!!!!
     NSLayoutConstraint.activate([

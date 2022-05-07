@@ -175,6 +175,8 @@ final class NewGameStatsViewController: UIViewController {
           let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [ordinalItem, textItem])
           
           let section = NSCollectionLayoutSection(group: group)
+          section.contentInsets = .init(top: 0, leading: 12, bottom: 0, trailing: 12)
+          section.supplementariesFollowContentInsets = false
           
           let boundaryItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
           let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
@@ -194,6 +196,8 @@ final class NewGameStatsViewController: UIViewController {
           let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
           
           let section = NSCollectionLayoutSection(group: group)
+          section.contentInsets = .init(top: 0, leading: 12, bottom: 0, trailing: 12)
+          section.supplementariesFollowContentInsets = false
           
           let boundaryItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
           let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: boundaryItemSize, elementKind: ElementKind.header, alignment: .top)
@@ -213,8 +217,12 @@ final class NewGameStatsViewController: UIViewController {
     cv.delegate = self
     
     // TODO: WHY THE FUCK DOES THIS SHIFT EVERYTHING TO THE RIGHT????
+    // FUCK YOU COLLECTION VIEW
+//    cv.insetsLayoutMarginsFromSafeArea = false
+//    cv.layoutMargins = .init(top: 8, left: 16, bottom: 0, right: 16)
 //    cv.contentInset = .init(top: 8.0, left: 16.0, bottom: 16.0, right: 16.0)
-    
+//    cv.contentInsetAdjustmentBehavior = .scrollableAxes
+//    cv.safeAreaInsets = .init(top: 8, left: 16, bottom: 16, right: 16)
     return cv
   }()
   
