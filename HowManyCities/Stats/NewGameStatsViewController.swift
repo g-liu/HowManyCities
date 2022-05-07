@@ -334,13 +334,15 @@ final class NewGameStatsViewController: UIViewController {
   private func populateInitialData() {
     // TODO: Very heavy-handed, wonder if we could update in a more graceful manner?
     var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
-    snapshot.appendSections([.cityList])
+    snapshot.appendSections([.cityList, .stateList, .territoryList, .otherStats])
+    
+    // CITY LIST
     cities.enumerated().forEach {
-      snapshot.appendItems([.ordinal(0, $0+1), $1])
+      snapshot.appendItems([.ordinal(0, $0+1), $1], toSection: .cityList)
     }
     
     if let statsProvider = statsProvider {
-      snapshot.appendSections([.stateList])
+      // STATE LIST
       // TODO: Make these sorted lists persist
       statsProvider.citiesByCountry.sorted {
         if $0.value.count == $1.value.count {
@@ -349,10 +351,10 @@ final class NewGameStatsViewController: UIViewController {
           return $0.value.count > $1.value.count
         }
       }.enumerated().forEach {
-        snapshot.appendItems([.ordinal(1, $0+1), .state($1.key, $1.value)])
+        snapshot.appendItems([.ordinal(1, $0+1), .state($1.key, $1.value)], toSection: .stateList)
       }
       
-      snapshot.appendSections([.territoryList])
+      // TERRITORY LIST
       statsProvider.citiesByTerritory.sorted {
         if $0.value.count == $1.value.count {
           return $0.key.localizedStandardCompare($1.key) == .orderedAscending
@@ -360,10 +362,10 @@ final class NewGameStatsViewController: UIViewController {
           return $0.value.count > $1.value.count
         }
       }.enumerated().forEach {
-        snapshot.appendItems([.ordinal(2, $0+1), .state($1.key, $1.value)])
+        snapshot.appendItems([.ordinal(2, $0+1), .state($1.key, $1.value)], toSection: .territoryList)
       }
       
-      snapshot.appendSections([.otherStats])
+      // OTHER STATS LIST
       snapshot.appendItems(
         statsProvider.totalGuessedByBracket.map {
           Item.formattedStat($1, "cities over \($0.abbreviated)")
@@ -371,8 +373,7 @@ final class NewGameStatsViewController: UIViewController {
           .formattedStat(statsProvider.totalStatesGuessed, "countries"),
           .formattedStat(statsProvider.totalCapitalsGuessed, "capitals"),
           .formattedStat(statsProvider.totalTerritoriesGuessed, "territories"),
-        ]
-      )
+        ], toSection: .otherStats)
     }
     
     dataSource.apply(snapshot, animatingDifferences: true)
@@ -398,6 +399,9 @@ extension NewGameStatsViewController: UICollectionViewDelegate {
     }
   }
 }
+
+// MARK: - Data source snapshot management
+extension NewGameStatsViewController { }
 
 
 extension NewGameStatsViewController: SectionChangeDelegate {

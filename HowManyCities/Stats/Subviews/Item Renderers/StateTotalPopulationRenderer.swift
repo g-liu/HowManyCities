@@ -19,7 +19,7 @@ final class StateTotalPopulationRenderer: ItemRenderer {
       mas.insert(.init(string: "\(flag) "), at: 0)
     }
     
-    mas.append(.init(string: "\(cities.totalPopulation.abbreviated) total pop.", attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
+    mas.append(.init(string: "\(cities.totalPopulation.abbreviated) 👤\u{fe0e}", attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
                                                                  .foregroundColor: UIColor.systemGray]))
     return mas
   }
