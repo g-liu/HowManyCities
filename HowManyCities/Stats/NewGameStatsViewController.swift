@@ -80,7 +80,11 @@ final class NewGameStatsViewController: UIViewController {
   
   var selectedSegment: CitySegment = .largest
   
-  var showUpTo: Int = 10
+  var showCitiesUpTo: Int = 10
+  
+  var showStatesUpTo: Int = 10
+  
+  var showTerritoriesUpTo: Int = 10
   
   // TODO: MOVE THE BELOW CODE TO A SEPARATE RENDERER????
   // OR at least the logic needs to be encapsulated elsewhere
@@ -122,7 +126,7 @@ final class NewGameStatsViewController: UIViewController {
       case .mostCommon:
         cityList = statsProvider?.commonCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
       case .recent:
-        cityList = statsProvider?.recentCitiesGuessed.map(Item.city).prefix(showUpTo).asArray ?? []
+        cityList = statsProvider?.recentCitiesGuessed.map(Item.city).prefix(showCitiesUpTo).asArray ?? []
       case .largest:
         fallthrough
       default:
@@ -295,9 +299,10 @@ final class NewGameStatsViewController: UIViewController {
           }
           supplementaryView.isHidden = false
           supplementaryView.delegate = self
-          supplementaryView.isShowingAll = self.showUpTo == Int.max ? true : false
+          supplementaryView.isShowingAll = self.showCitiesUpTo == Int.max ? true : false
           supplementaryView.backgroundColor = .systemBackground
         case .stateList, .territoryList:
+          supplementaryView.isHidden = true
           break
         case .otherStats:
           break
@@ -415,7 +420,7 @@ extension NewGameStatsViewController {
       sortedStates = statsProvider.citiesByCountry.sorted(by: comparePopulation(_:_:))
     }
       
-    sortedStates.enumerated().forEach {
+    sortedStates.prefix(showStatesUpTo).enumerated().forEach {
       snapshot.appendItems([.ordinal(Section.stateList.rawValue, $0+1), .state($1.0, $1.1)], toSection: .stateList)
     }
   }
@@ -431,7 +436,7 @@ extension NewGameStatsViewController {
       sortedTerritories = statsProvider.citiesByTerritory.sorted(by: comparePopulation(_:_:))
     }
       
-    sortedTerritories.enumerated().forEach {
+    sortedTerritories.prefix(showTerritoriesUpTo).enumerated().forEach {
       snapshot.appendItems([.ordinal(Section.territoryList.rawValue, $0+1), .state($1.0, $1.1)], toSection: .territoryList)
     }
   }
@@ -454,7 +459,7 @@ extension NewGameStatsViewController: SectionChangeDelegate {
   func didChange(segmentIndex: Int) {
     let newSegment = CitySegment.init(rawValue: segmentIndex) ?? .recent
     self.selectedSegment = newSegment
-    showUpTo = 10
+    showCitiesUpTo = 10
     
     var snapshot = dataSource.snapshot()
     refreshCityList(&snapshot)
@@ -470,7 +475,7 @@ extension NewGameStatsViewController: SectionChangeDelegate {
 
 extension NewGameStatsViewController: ToggleShowAllDelegate {
   func didToggle(_ isShowingAll: Bool) {
-    self.showUpTo = isShowingAll ? Int.max : 10
+    self.showCitiesUpTo = isShowingAll ? Int.max : 10
     
     var snapshot = dataSource.snapshot()
     refreshCityList(&snapshot)
