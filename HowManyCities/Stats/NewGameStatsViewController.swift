@@ -98,7 +98,8 @@ final class NewGameStatsViewController: UIViewController {
   var stateRenderingMode: CountryRenderingMode = .cityCount {
     didSet {
       var snap = dataSource.snapshot()
-      snap.reconfigureItems(snap.itemIdentifiers(inSection: .stateList ))
+      snap.reconfigureItems(snap.itemIdentifiers(inSection: .stateList))
+      snap.reconfigureItems(snap.itemIdentifiers(inSection: .territoryList))
       
       dataSource.apply(snap)
     }
@@ -273,10 +274,8 @@ final class NewGameStatsViewController: UIViewController {
         case .cityList:
           supplementaryView.text = self.selectedSegment.description
           supplementaryView.configure(selectedSegmentIndex: self.selectedSegment.rawValue, segmentTitles: CitySegment.asNames)
-        case .stateList:
-          supplementaryView.configure(showFilterButton: true)
-        case .territoryList:
-          supplementaryView.configure(showFilterButton: true)
+        case .stateList, .territoryList:
+          supplementaryView.configure { self.didTapSort() }
         case .otherStats:
           break
       }
@@ -420,7 +419,7 @@ extension NewGameStatsViewController: SectionChangeDelegate {
     dataSource.apply(snapshot)
   }
   
-  func didTapFilter() {
+  func didTapSort() {
     stateRenderingMode = stateRenderingMode.nextMode
   }
 }

@@ -9,7 +9,6 @@ import UIKit
 
 protocol SectionChangeDelegate: AnyObject {
   func didChange(segmentIndex: Int)
-  func didTapFilter()
 }
 
 final class CollectionViewHeaderReusableView: UICollectionReusableView {
@@ -20,6 +19,7 @@ final class CollectionViewHeaderReusableView: UICollectionReusableView {
   }
   
   weak var delegate: SectionChangeDelegate? = nil
+  private var sortCb: (() -> Void)? = nil
   
   private lazy var stackView: UIStackView = {
     let stackView = UIStackView().autolayoutEnabled
@@ -36,13 +36,13 @@ final class CollectionViewHeaderReusableView: UICollectionReusableView {
     return label
   }()
   
-  private lazy var filterButton: UIButton = {
+  private lazy var sortButton: UIButton = {
     // TODO: DESIGN SUCKS UPDATE LATER
     var cfg = UIButton.Configuration.filled()
-    cfg.title = "Filter"
+    cfg.title = "Sort"
     let button = UIButton(configuration: cfg).autolayoutEnabled
     button.isHidden = true
-    button.addTarget(self, action: #selector(didTapFilterButton), for: .touchUpInside)
+    button.addTarget(self, action: #selector(didTapSortButton), for: .touchUpInside)
     
     return button
   }()
@@ -70,28 +70,34 @@ final class CollectionViewHeaderReusableView: UICollectionReusableView {
     stackView.addArrangedSubview(control)
     
     addSubview(stackView)
-    addSubview(filterButton)
+    addSubview(sortButton)
     stackView.pin(to: safeAreaLayoutGuide)
     
     // TODO: THIS SUCKS!!!!
     NSLayoutConstraint.activate([
-      filterButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
-      filterButton.topAnchor.constraint(equalTo: topAnchor, constant: 4)
+      sortButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
+      sortButton.topAnchor.constraint(equalTo: topAnchor, constant: 4)
     ])
   }
   
-  func configure(selectedSegmentIndex: Int = -1, segmentTitles: [String]? = nil, showFilterButton: Bool = false) {
-    filterButton.isHidden = !showFilterButton
-    guard let segmentTitles = segmentTitles,
-          !segmentTitles.isEmpty else {
+  func configure(selectedSegmentIndex: Int = -1, segmentTitles: [String]? = nil, sortCb: (() -> Void)? = nil) {
+    if let segmentTitles = segmentTitles,
+       !segmentTitles.isEmpty {
+      control.isHidden = false
+      control.segmentTitles = segmentTitles
+      
+      control.selectedSegmentIndex = selectedSegmentIndex
+    } else {
       control.isHidden = true
-      return
     }
-
-    control.isHidden = false
-    control.segmentTitles = segmentTitles
     
-    control.selectedSegmentIndex = selectedSegmentIndex
+    self.sortCb = sortCb
+    if let _ = sortCb {
+      sortButton.isHidden = false
+      sortButton.addTarget(self, action: #selector(didTapSortButton), for: .touchUpInside)
+    } else {
+      sortButton.isHidden = true
+    }
   }
   
   @objc private func didChangeSegmentIndex() {
@@ -99,7 +105,7 @@ final class CollectionViewHeaderReusableView: UICollectionReusableView {
     delegate?.didChange(segmentIndex: index)
   }
   
-  @objc private func didTapFilterButton() {
-    delegate?.didTapFilter()
+  @objc private func didTapSortButton() {
+    sortCb?()
   }
 }
