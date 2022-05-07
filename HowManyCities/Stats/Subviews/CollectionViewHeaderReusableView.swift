@@ -43,6 +43,7 @@ final class CollectionViewHeaderReusableView: UICollectionReusableView {
     let button = UIButton(configuration: cfg).autolayoutEnabled
     button.isHidden = true
     button.addTarget(self, action: #selector(didTapSortButton), for: .touchUpInside)
+    button.setContentHuggingPriority(.required, for: .horizontal)
     
     return button
   }()
@@ -66,18 +67,19 @@ final class CollectionViewHeaderReusableView: UICollectionReusableView {
   }
   
   private func setupView() {
-    stackView.addArrangedSubview(label)
+    let titleStack = UIStackView().autolayoutEnabled
+    titleStack.axis = .horizontal
+    titleStack.alignment = .center
+    titleStack.distribution = .fill
+    titleStack.addArrangedSubviews([label, sortButton])
+    
+    stackView.addArrangedSubview(titleStack)
     stackView.addArrangedSubview(control)
     
-    addSubview(stackView)
-    addSubview(sortButton)
-    stackView.pin(to: safeAreaLayoutGuide, margins: .init(top: 8, left: 12, bottom: 8, right: 12))
+    titleStack.pinSides(to: stackView)
     
-    // TODO: THIS SUCKS!!!!
-    NSLayoutConstraint.activate([
-      sortButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
-      sortButton.topAnchor.constraint(equalTo: topAnchor, constant: 4)
-    ])
+    addSubview(stackView)
+    stackView.pin(to: safeAreaLayoutGuide, margins: .init(top: 8, left: 12, bottom: 8, right: 12))
   }
   
   func configure(selectedSegmentIndex: Int = -1, segmentTitles: [String]? = nil, sortCb: (() -> Void)? = nil) {
