@@ -332,49 +332,13 @@ final class NewGameStatsViewController: UIViewController {
   }
   
   private func populateInitialData() {
-    // TODO: Very heavy-handed, wonder if we could update in a more graceful manner?
     var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
     snapshot.appendSections([.cityList, .stateList, .territoryList, .otherStats])
     
-    // CITY LIST
-    cities.enumerated().forEach {
-      snapshot.appendItems([.ordinal(0, $0+1), $1], toSection: .cityList)
-    }
-    
-    if let statsProvider = statsProvider {
-      // STATE LIST
-      // TODO: Make these sorted lists persist
-      statsProvider.citiesByCountry.sorted {
-        if $0.value.count == $1.value.count {
-          return $0.key.localizedStandardCompare($1.key) == .orderedAscending
-        } else {
-          return $0.value.count > $1.value.count
-        }
-      }.enumerated().forEach {
-        snapshot.appendItems([.ordinal(1, $0+1), .state($1.key, $1.value)], toSection: .stateList)
-      }
-      
-      // TERRITORY LIST
-      statsProvider.citiesByTerritory.sorted {
-        if $0.value.count == $1.value.count {
-          return $0.key.localizedStandardCompare($1.key) == .orderedAscending
-        } else {
-          return $0.value.count > $1.value.count
-        }
-      }.enumerated().forEach {
-        snapshot.appendItems([.ordinal(2, $0+1), .state($1.key, $1.value)], toSection: .territoryList)
-      }
-      
-      // OTHER STATS LIST
-      snapshot.appendItems(
-        statsProvider.totalGuessedByBracket.map {
-          Item.formattedStat($1, "cities over \($0.abbreviated)")
-        } + [
-          .formattedStat(statsProvider.totalStatesGuessed, "countries"),
-          .formattedStat(statsProvider.totalCapitalsGuessed, "capitals"),
-          .formattedStat(statsProvider.totalTerritoriesGuessed, "territories"),
-        ], toSection: .otherStats)
-    }
+    refreshCityList(&snapshot)
+    refreshStateList(&snapshot)
+    refreshTerritoryList(&snapshot)
+    refreshOtherStats(&snapshot)
     
     dataSource.apply(snapshot, animatingDifferences: true)
   }
@@ -401,7 +365,53 @@ extension NewGameStatsViewController: UICollectionViewDelegate {
 }
 
 // MARK: - Data source snapshot management
-extension NewGameStatsViewController { }
+extension NewGameStatsViewController {
+  /// Refresh city list
+  /// - Parameter snapshot: The snapshot to apply to. If no snapshot provided, grabs a snapshot from the current dataSource
+  /// - Returns: The snapshot with refreshed city list
+  func refreshCityList(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
+    snapshot.deleteItems(snapshot.itemIdentifiers(inSection: .cityList))
+    cities.enumerated().forEach {
+      snapshot.appendItems([.ordinal(0, $0+1), $1], toSection: .cityList)
+    }
+  }
+  
+  func refreshStateList(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
+    statsProvider?.citiesByCountry.sorted {
+      if $0.value.count == $1.value.count {
+        return $0.key.localizedStandardCompare($1.key) == .orderedAscending
+      } else {
+        return $0.value.count > $1.value.count
+      }
+    }.enumerated().forEach {
+      snapshot.appendItems([.ordinal(1, $0+1), .state($1.key, $1.value)], toSection: .stateList)
+    }
+  }
+  
+  func refreshTerritoryList(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
+    statsProvider?.citiesByTerritory.sorted {
+      if $0.value.count == $1.value.count {
+        return $0.key.localizedStandardCompare($1.key) == .orderedAscending
+      } else {
+        return $0.value.count > $1.value.count
+      }
+    }.enumerated().forEach {
+      snapshot.appendItems([.ordinal(2, $0+1), .state($1.key, $1.value)], toSection: .territoryList)
+    }
+  }
+  
+  func refreshOtherStats(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
+    guard let statsProvider = statsProvider else { return }
+    snapshot.appendItems(
+      statsProvider.totalGuessedByBracket.map {
+        Item.formattedStat($1, "cities over \($0.abbreviated)")
+      } + [
+        .formattedStat(statsProvider.totalStatesGuessed, "countries"),
+        .formattedStat(statsProvider.totalCapitalsGuessed, "capitals"),
+        .formattedStat(statsProvider.totalTerritoriesGuessed, "territories"),
+      ], toSection: .otherStats)
+  }
+}
 
 
 extension NewGameStatsViewController: SectionChangeDelegate {
@@ -411,14 +421,8 @@ extension NewGameStatsViewController: SectionChangeDelegate {
     showUpTo = 10
     
     var snapshot = dataSource.snapshot()
-    
-    snapshot.deleteItems(snapshot.itemIdentifiers(inSection: .cityList))
-    cities.enumerated().forEach {
-      snapshot.appendItems([.ordinal(0, $0+1), $1], toSection: .cityList)
-    }
-    
+    refreshCityList(&snapshot)
     snapshot.reloadSections([.cityList])
-    
     
     dataSource.apply(snapshot)
   }
@@ -433,10 +437,7 @@ extension NewGameStatsViewController: ToggleShowAllDelegate {
     self.showUpTo = isShowingAll ? Int.max : 10
     
     var snapshot = dataSource.snapshot()
-    snapshot.deleteItems(snapshot.itemIdentifiers(inSection: .cityList))
-    cities.enumerated().forEach {
-      snapshot.appendItems([.ordinal(0, $0+1), $1], toSection: .cityList)
-    }
+    refreshCityList(&snapshot)
     
     dataSource.apply(snapshot)
   }

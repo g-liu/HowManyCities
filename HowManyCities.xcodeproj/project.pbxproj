@@ -40,6 +40,7 @@
 		6C9C42B528122999006529E9 /* MKOverlayRenderer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9C42B428122999006529E9 /* MKOverlayRenderer+Extension.swift */; };
 		6C9F60642825AA930035B0FA /* StateCityCountRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9F60632825AA930035B0FA /* StateCityCountRenderer.swift */; };
 		6C9F60662825AAB90035B0FA /* StateTotalPopulationRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9F60652825AAB90035B0FA /* StateTotalPopulationRenderer.swift */; };
+		6C9F60682825FA640035B0FA /* NSDiffableDataSourceSnapshot+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9F60672825FA640035B0FA /* NSDiffableDataSourceSnapshot+Extension.swift */; };
 		6CA6CFE62824476700280348 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CA6CFE52824476700280348 /* String+Extension.swift */; };
 		6CA6CFE928244FA500280348 /* UIParameterizedTapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CA6CFE828244FA500280348 /* UIParameterizedTapGestureRecognizer.swift */; };
 		6CAD7FE827F381DF0057A41E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAD7FE727F381DF0057A41E /* AppDelegate.swift */; };
@@ -135,6 +136,7 @@
 		6C9C42B428122999006529E9 /* MKOverlayRenderer+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MKOverlayRenderer+Extension.swift"; sourceTree = "<group>"; };
 		6C9F60632825AA930035B0FA /* StateCityCountRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateCityCountRenderer.swift; sourceTree = "<group>"; };
 		6C9F60652825AAB90035B0FA /* StateTotalPopulationRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateTotalPopulationRenderer.swift; sourceTree = "<group>"; };
+		6C9F60672825FA640035B0FA /* NSDiffableDataSourceSnapshot+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSDiffableDataSourceSnapshot+Extension.swift"; sourceTree = "<group>"; };
 		6CA6CFE52824476700280348 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		6CA6CFE828244FA500280348 /* UIParameterizedTapGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIParameterizedTapGestureRecognizer.swift; sourceTree = "<group>"; };
 		6CAD7FE427F381DF0057A41E /* HowManyCities.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HowManyCities.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -377,6 +379,7 @@
 				6C9C42B428122999006529E9 /* MKOverlayRenderer+Extension.swift */,
 				6C9C42AD28121CCD006529E9 /* MKPolygon+Extension.swift */,
 				6C9C42A8281219AE006529E9 /* MKZoomScale+Extension.swift */,
+				6C9F60672825FA640035B0FA /* NSDiffableDataSourceSnapshot+Extension.swift */,
 				6CC3C57F2804FB6C00AE5C50 /* NSLayoutConstraint+Extension.swift */,
 				6CA6CFE52824476700280348 /* String+Extension.swift */,
 				6CAD801827F382F10057A41E /* UIView+Extension.swift */,
@@ -739,6 +742,7 @@
 				6C9C42A728121998006529E9 /* MKZoomablePolygonRenderer.swift in Sources */,
 				6CBBD5E22823A8CD002D9FC2 /* PagingFooterCollectionReusableView.swift in Sources */,
 				6CAD802927F3C1140057A41E /* CityAnnotationView.swift in Sources */,
+				6C9F60682825FA640035B0FA /* NSDiffableDataSourceSnapshot+Extension.swift in Sources */,
 				6CC3C5802804FB6C00AE5C50 /* NSLayoutConstraint+Extension.swift in Sources */,
 				6CAD7FE827F381DF0057A41E /* AppDelegate.swift in Sources */,
 				6C9F60662825AAB90035B0FA /* StateTotalPopulationRenderer.swift in Sources */,
