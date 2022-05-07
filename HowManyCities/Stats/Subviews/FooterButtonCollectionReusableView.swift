@@ -7,9 +7,9 @@
 
 import UIKit
 
-protocol ToggleShowAllDelegate: AnyObject {
-  func didToggle(_ isShowingAll: Bool)
-}
+//protocol ToggleShowAllDelegate: AnyObject {
+//  func didToggle(_ isShowingAll: Bool)
+//}
 
 final class FooterButtonCollectionReusableView: UICollectionReusableView {
   private lazy var button: UIButton = {
@@ -20,7 +20,8 @@ final class FooterButtonCollectionReusableView: UICollectionReusableView {
     return button
   }()
   
-  weak var delegate: ToggleShowAllDelegate?
+//  weak var delegate: ToggleShowAllDelegate?
+  var tapCallback: ((Bool) -> Void)? = nil
   
   var isShowingAll: Bool = false {
     didSet {
@@ -47,8 +48,13 @@ final class FooterButtonCollectionReusableView: UICollectionReusableView {
     button.pin(to: safeAreaLayoutGuide)
   }
   
+  func configure(tapCallback: ((Bool) -> Void)? = nil) {
+    self.tapCallback = tapCallback
+  }
+  
   @objc private func didTapButton() {
     isShowingAll = !isShowingAll
-    delegate?.didToggle(isShowingAll)
+//    delegate?.didToggle(isShowingAll)
+    tapCallback?(isShowingAll)
   }
 }

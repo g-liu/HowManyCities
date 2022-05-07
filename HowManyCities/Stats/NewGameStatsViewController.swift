@@ -80,11 +80,32 @@ final class NewGameStatsViewController: UIViewController {
   
   var selectedSegment: CitySegment = .largest
   
-  var showCitiesUpTo: Int = 10
+  var showCitiesUpTo: Int = 10 {
+    didSet {
+      var snapshot = dataSource.snapshot()
+      refreshCityList(&snapshot)
+      
+      dataSource.apply(snapshot)
+    }
+  }
   
-  var showStatesUpTo: Int = 10
+  var showStatesUpTo: Int = 10 {
+    didSet {
+      var snapshot = dataSource.snapshot()
+      refreshStateList(&snapshot)
+      
+      dataSource.apply(snapshot)
+    }
+  }
   
-  var showTerritoriesUpTo: Int = 10
+  var showTerritoriesUpTo: Int = 10 {
+    didSet {
+      var snapshot = dataSource.snapshot()
+      refreshTerritoryList(&snapshot)
+      
+      dataSource.apply(snapshot)
+    }
+  }
   
   // TODO: MOVE THE BELOW CODE TO A SEPARATE RENDERER????
   // OR at least the logic needs to be encapsulated elsewhere
@@ -214,6 +235,7 @@ final class NewGameStatsViewController: UIViewController {
     collectionView.pin(to: view.safeAreaLayoutGuide)
   }
   
+  // MARK: Data source, registration, headers/footers, cells
   private func configureDataSource() {
     let ordinalCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Item> { cell, indexPath, itemIdentifier in
       guard case let .ordinal(_, number) = itemIdentifier else { return }
@@ -290,6 +312,9 @@ final class NewGameStatsViewController: UIViewController {
     
     let buttonFooterRegistration = UICollectionView.SupplementaryRegistration<FooterButtonCollectionReusableView>(elementKind: ElementKind.buttonFooter) { supplementaryView, elementKind, indexPath in
       guard let section = Section(rawValue: indexPath.section) else { return }
+//      supplementaryView.delegate = self
+      supplementaryView.backgroundColor = .systemBackground
+      supplementaryView.isHidden = false
       
       switch section {
         case .cityList:
@@ -297,13 +322,22 @@ final class NewGameStatsViewController: UIViewController {
             supplementaryView.isHidden = true
             return
           }
-          supplementaryView.isHidden = false
-          supplementaryView.delegate = self
-          supplementaryView.isShowingAll = self.showCitiesUpTo == Int.max ? true : false
-          supplementaryView.backgroundColor = .systemBackground
-        case .stateList, .territoryList:
-          supplementaryView.isHidden = true
-          break
+          
+          // TODO: Roll both lines into configure??
+          supplementaryView.isShowingAll = self.showCitiesUpTo == Int.max
+          supplementaryView.configure { isShowingAll in
+            self.showCitiesUpTo = isShowingAll ? Int.max : 10
+          }
+        case .stateList:
+          supplementaryView.isShowingAll = self.showStatesUpTo == Int.max
+          supplementaryView.configure { isShowingAll in
+            self.showStatesUpTo = isShowingAll ? Int.max : 10
+          }
+        case .territoryList:
+          supplementaryView.isShowingAll = self.showTerritoriesUpTo == Int.max
+          supplementaryView.configure { isShowingAll in
+            self.showTerritoriesUpTo = isShowingAll ? Int.max : 10
+          }
         case .otherStats:
           break
       }
@@ -473,14 +507,14 @@ extension NewGameStatsViewController: SectionChangeDelegate {
   }
 }
 
-extension NewGameStatsViewController: ToggleShowAllDelegate {
-  func didToggle(_ isShowingAll: Bool) {
-    self.showCitiesUpTo = isShowingAll ? Int.max : 10
-    
-    var snapshot = dataSource.snapshot()
-    refreshCityList(&snapshot)
-    
-    dataSource.apply(snapshot)
-  }
-}
+//extension NewGameStatsViewController: ToggleShowAllDelegate {
+//  func didToggle(_ isShowingAll: Bool) {
+//    self.showCitiesUpTo = isShowingAll ? Int.max : 10
+//
+//    var snapshot = dataSource.snapshot()
+//    refreshCityList(&snapshot)
+//
+//    dataSource.apply(snapshot)
+//  }
+//}
 
