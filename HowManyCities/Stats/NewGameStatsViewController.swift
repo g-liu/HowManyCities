@@ -345,9 +345,12 @@ final class NewGameStatsViewController: UIViewController {
       supplementaryView.backgroundColor = .systemBackground
       supplementaryView.isHidden = false
       
+      // TODO: This dependency on statsProvider is troubling, is there another way?
+      
       switch section {
         case .cityList:
-          guard self.selectedSegment == .recent else {
+          guard self.selectedSegment == .recent,
+                (self.statsProvider?.recentCitiesGuessed.count ?? 0) > 10 else {
             supplementaryView.isHidden = true
             return
           }
@@ -357,12 +360,14 @@ final class NewGameStatsViewController: UIViewController {
           }
         case .stateList:
           // NB: Is 20 because 1 cell for the ordinal, 1 cell for the actual content
-          supplementaryView.isHidden = self.dataSource.snapshot().numberOfItems(inSection: .stateList) < 20
+//          supplementaryView.isHidden = self.dataSource.snapshot().numberOfItems(inSection: .stateList) <= 20
+          supplementaryView.isHidden = self.statsProvider?.citiesByCountry.count ?? 0 <= 10
           supplementaryView.configure(isShowingAll: self.showStatesUpTo == Int.max) { isShowingAll in
             self.showStatesUpTo = isShowingAll ? Int.max : 10
           }
         case .territoryList:
-          supplementaryView.isHidden = self.dataSource.snapshot().numberOfItems(inSection: .territoryList) < 20
+//          supplementaryView.isHidden = self.dataSource.snapshot().numberOfItems(inSection: .territoryList) < 20
+          supplementaryView.isHidden = self.statsProvider?.citiesByTerritory.count ?? 0 <= 10
           supplementaryView.configure(isShowingAll: self.showTerritoriesUpTo == Int.max) { isShowingAll in
             self.showTerritoriesUpTo = isShowingAll ? Int.max : 10
           }
