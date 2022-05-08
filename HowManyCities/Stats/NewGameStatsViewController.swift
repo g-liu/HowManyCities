@@ -48,7 +48,7 @@ final class NewGameStatsViewController: UIViewController {
     case largest
     case smallest
     case rarest
-    case mostCommon
+    case popular
     case recent
     
     var name: String {
@@ -56,7 +56,7 @@ final class NewGameStatsViewController: UIViewController {
         case .largest: return "Largest"
         case .smallest: return "Smallest"
         case .rarest: return "Rarest"
-        case .mostCommon: return "Common"
+        case .popular: return "Popular"
         case .recent: return "Recent"
       }
     }
@@ -66,7 +66,7 @@ final class NewGameStatsViewController: UIViewController {
         case .largest: return "Largest cities"
         case .smallest: return "Smallest cities"
         case .rarest: return "Rarest guessed"
-        case .mostCommon: return "Commonly guessed"
+        case .popular: return "Commonly guessed"
         case .recent: return "Your cities"
       }
     }
@@ -144,7 +144,7 @@ final class NewGameStatsViewController: UIViewController {
         cityList = statsProvider?.smallestCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
       case .rarest:
         cityList = statsProvider?.rarestCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
-      case .mostCommon:
+      case .popular:
         cityList = statsProvider?.commonCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
       case .recent:
         cityList = statsProvider?.recentCitiesGuessed.map(Item.city).prefix(showCitiesUpTo).asArray ?? []
@@ -260,7 +260,7 @@ final class NewGameStatsViewController: UIViewController {
     
     let cityCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, City> { cell, indexPath, itemIdentifier in
       var configuration = UIListContentConfiguration.cell()
-      if self.selectedSegment == .rarest || self.selectedSegment == .mostCommon {
+      if self.selectedSegment == .rarest || self.selectedSegment == .popular {
         configuration.attributedText = CityRarityRenderer().string(itemIdentifier)
       } else {
         configuration.attributedText = CityPopulationRenderer().string(itemIdentifier)
