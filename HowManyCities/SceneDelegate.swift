@@ -21,8 +21,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     
     let window = UIWindow(windowScene: windowScene)
-    let vc = MapGuessViewController()
-    vc.didReceiveCities(cities.cities)
+    let vc = MapGuessViewController(cities: cities)
     window.rootViewController = vc
     window.makeKeyAndVisible()
     self.window = window

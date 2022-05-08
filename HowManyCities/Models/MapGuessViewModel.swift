@@ -36,10 +36,14 @@ final class MapGuessViewModel: NSObject {
   var populationGuessed: Int { model.populationGuessed }
   var percentageTotalPopulationGuessed: Double { model.percentageTotalPopulationGuessed }
   
-  override init() {
+  init(cities: Cities? = nil) {
     super.init()
     let decoder = JSONDecoder()
-    if let savedGameState = UserDefaults.standard.object(forKey: "gamestate") as? Data,
+    // TODO: Bifurcate game configuration and model data?????
+    if let cities = cities?.cities {
+      model.guessedCities = Set(cities)
+      retrieveConfiguration() // TODO: BUG: Doesn't update percentage on main screen!!!!
+    } else if let savedGameState = UserDefaults.standard.object(forKey: "gamestate") as? Data,
        let decodedModel = try? decoder.decode(MapGuessModel.self, from: savedGameState) {
       model = decodedModel
     } else {

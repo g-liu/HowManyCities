@@ -108,11 +108,19 @@ final class MapGuessViewController: UIViewController {
     .init().autolayoutEnabled
   }()
   
-  override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-    viewModel = .init()
-    super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+  init(cities: Cities? = nil) {
+    viewModel = .init(cities: cities)
+    
+    super.init(nibName: nil, bundle: nil)
+    
     viewModel.delegate = self
   }
+  
+//  override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+//    viewModel = .init()
+//    super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+//    viewModel.delegate = self
+//  }
   
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
