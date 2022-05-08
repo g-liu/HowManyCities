@@ -42,6 +42,7 @@ final class NewGameStatsViewController: UIViewController {
     case city(City)
     case state(String /* state name */, [City])
     case formattedStat(Ratio, String)
+    case emptyState(Section)
   }
   
   enum CitySegment: Int, CaseIterable, CustomStringConvertible {
@@ -301,6 +302,26 @@ final class NewGameStatsViewController: UIViewController {
       cell.contentConfiguration = configuration
     }
     
+    let emptyStateCellRegistration = UICollectionView.CellRegistration<EmptyStateCollectionViewCell, Section> { cell, indexPath, itemIdentifier in
+      var configuration = UIListContentConfiguration.cell()
+      configuration.textProperties.color = .systemGray
+      configuration.textProperties.font = .italicSystemFont(ofSize: UIFont.labelFontSize)
+//      configuration.textProperties.alignment = .center
+      
+      switch itemIdentifier {
+        case .cityList:
+          configuration.text = "You haven't guessed any cities yet\nCities you guess will appear here."
+        case .stateList:
+          configuration.text = "You haven't guessed any countries yet\nCountries of cities you guess will appear here."
+        case .territoryList:
+          configuration.text = "You haven't guessed any territories yet\nTerritories of cities you guess will appear here."
+        default:
+          break
+      }
+      
+      cell.contentConfiguration = configuration
+    }
+    
     let headerRegistration = UICollectionView.SupplementaryRegistration<CollectionViewHeaderReusableView>(elementKind: ElementKind.header) { supplementaryView, elementKind, indexPath in
       supplementaryView.delegate = self
       supplementaryView.backgroundColor = .systemBackground
@@ -365,6 +386,8 @@ final class NewGameStatsViewController: UIViewController {
           return collectionView.dequeueConfiguredReusableCell(using: stateCellRegistration, for: indexPath, item: itemIdentifier)
         case .formattedStat(_, _):
           return collectionView.dequeueConfiguredReusableCell(using: ratioStatCellRegistration, for: indexPath, item: itemIdentifier)
+        case .emptyState(let section):
+          return collectionView.dequeueConfiguredReusableCell(using: emptyStateCellRegistration, for: indexPath, item: section)
       }
     })
     dataSource.supplementaryViewProvider = { collectionView, elementKind, indexPath in
@@ -440,13 +463,16 @@ extension NewGameStatsViewController: UICollectionViewDelegate {
     guard let section = Section(rawValue: indexPath.section) else { return }
     switch section {
       case .cityList:
-        let cityVC = CityInfoViewController()
-        cityVC.statsProvider = statsProvider
-        if case let .city(city) = cities[(indexPath.row - indexPath.row%2) / 2] {
+        let normalizedIndex = (indexPath.row - indexPath.row%2) / 2
+        if cities.isIndexValid(normalizedIndex),
+           case let .city(city) = cities[normalizedIndex] {
+          let cityVC = CityInfoViewController()
+          cityVC.statsProvider = statsProvider
           cityVC.city = city
+          
+          navigationController?.pushViewController(cityVC)
         }
         
-        navigationController?.pushViewController(cityVC)
         // TODO: Coming soon...
         //      case .stateList,
 //          .territoryList:
@@ -467,6 +493,12 @@ extension NewGameStatsViewController {
   /// - Returns: The snapshot with refreshed city list
   func refreshCityList(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
     snapshot.deleteItems(inSection: .cityList)
+    
+    guard !cities.isEmpty else {
+      snapshot.appendItems([.ordinal(0, 0), .emptyState(Section.cityList)], toSection: .cityList)
+      return
+    }
+    
     cities.enumerated().forEach {
       snapshot.appendItems([.ordinal(0, $0+1), $1], toSection: .cityList)
     }
@@ -489,9 +521,14 @@ extension NewGameStatsViewController {
   }
   
   func refreshStateList(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
-    guard let statsProvider = statsProvider else { return }
-    
     snapshot.deleteItems(inSection: .stateList)
+    
+    guard let statsProvider = statsProvider,
+          !statsProvider.citiesByCountry.isEmpty else {
+      snapshot.appendItems([.ordinal(1, 0), .emptyState(.stateList)], toSection: .stateList)
+      return
+    }
+    
     let sortedStates: [(String, [City])]
     if stateRenderingMode == .cityCount {
       sortedStates = statsProvider.citiesByCountry.sorted(by: compareCityCount(_:_:))
@@ -505,9 +542,14 @@ extension NewGameStatsViewController {
   }
   
   func refreshTerritoryList(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
-    guard let statsProvider = statsProvider else { return }
-    
     snapshot.deleteItems(inSection: .territoryList)
+    
+    guard let statsProvider = statsProvider,
+          !statsProvider.citiesByTerritory.isEmpty else {
+      snapshot.appendItems([.ordinal(2, 0), .emptyState(.territoryList)], toSection: .territoryList)
+      return
+    }
+    
     let sortedTerritories: [(String, [City])]
     if stateRenderingMode == .cityCount {
       sortedTerritories = statsProvider.citiesByTerritory.sorted(by: compareCityCount(_:_:))
@@ -521,8 +563,9 @@ extension NewGameStatsViewController {
   }
   
   func refreshOtherStats(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
-    guard let statsProvider = statsProvider else { return }
     snapshot.deleteItems(inSection: .otherStats)
+    guard let statsProvider = statsProvider else { return }
+    
     snapshot.appendItems(
       statsProvider.totalGuessedByBracket.map {
         Item.formattedStat($1, "cities over \($0.abbreviated)")
