@@ -10,6 +10,7 @@ import MapKit
 
 struct Cities: Codable {
   let cities: [City]
+  let quiz: String?
 }
 
 struct City: Codable, Hashable {
