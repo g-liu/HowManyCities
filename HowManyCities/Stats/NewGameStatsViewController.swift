@@ -335,10 +335,13 @@ final class NewGameStatsViewController: UIViewController {
             self.showCitiesUpTo = isShowingAll ? Int.max : 10
           }
         case .stateList:
+          // NB: Is 20 because 1 cell for the ordinal, 1 cell for the actual content
+          supplementaryView.isHidden = self.dataSource.snapshot().numberOfItems(inSection: .stateList) < 20
           supplementaryView.configure(isShowingAll: self.showStatesUpTo == Int.max) { isShowingAll in
             self.showStatesUpTo = isShowingAll ? Int.max : 10
           }
         case .territoryList:
+          supplementaryView.isHidden = self.dataSource.snapshot().numberOfItems(inSection: .territoryList) < 20
           supplementaryView.configure(isShowingAll: self.showTerritoriesUpTo == Int.max) { isShowingAll in
             self.showTerritoriesUpTo = isShowingAll ? Int.max : 10
           }
