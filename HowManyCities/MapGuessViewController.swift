@@ -443,7 +443,7 @@ extension MapGuessViewController: MKMapViewDelegate {
       let circleRenderer = MKZoomableCircleRenderer(circle: circle)
       circleRenderer.fillColor = .systemRed.withAlphaComponent(0.5)
       circleRenderer.strokeColor = .systemFill
-      circleRenderer.lineWidth = 2
+      circleRenderer.lineWidth = 0.5
       
       return circleRenderer
     } else if let polygon = overlay as? MKPolygon {

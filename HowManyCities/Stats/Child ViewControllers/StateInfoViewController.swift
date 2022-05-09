@@ -51,7 +51,7 @@ final class StateInfoViewController: UIViewController {
   
   init(state: State, guessedCities: [City]) {
     self.state = state
-    self.guessedCities = guessedCities
+    self.guessedCities = guessedCities.sorted(by: \.nameWithStateAbbr)
     
     super.init(nibName: nil, bundle: nil)
   }
@@ -68,10 +68,15 @@ final class StateInfoViewController: UIViewController {
     title = state.nameWithFlag
     
     // TODO: 100% TEMP PLZ REFINE
-    let monoLabel = UILabel(text: "", style: .body).autolayoutEnabled
-    monoLabel.numberOfLines = 0
+    let monoTextView = UITextView().autolayoutEnabled
+    monoTextView.delegate = self
     
-    infoStack.addArrangedSubview(monoLabel)
+    infoStack.addArrangedSubview(monoTextView)
+    monoTextView.isScrollEnabled = false
+    monoTextView.isEditable = false
+    monoTextView.isSelectable = true
+    monoTextView.font = UIFont.systemFont(ofSize: UIFont.labelFontSize)
+    monoTextView.textColor = .label
     
     scrollView.addSubview(mapView)
     scrollView.addSubview(infoStack)
@@ -93,20 +98,30 @@ final class StateInfoViewController: UIViewController {
       scrollView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor)
     ])
     
-    monoLabel.text = guessedCities.map(by: \.name).joined(separator: "; ")
-    
     addCitiesToMap()
+    
+    let attributedText = NSMutableAttributedString(attributedString: guessedCities.enumerated().map {
+      NSAttributedString(string: "\($1.nameWithStateAbbr)", attributes: [.link: URL(string: "takemeto://\($0)")!,
+                                                                         .font: UIFont.systemFont(ofSize: UIFont.labelFontSize),
+                                                                         .foregroundColor: UIColor.label])
+    }.joined(separator: "    "))
+    
+//    attributedText.addAttributes([.font: UIFont.systemFont(ofSize: UIFont.labelFontSize),
+//                                  .foregroundColor: UIColor.label], range: Range(0, attributedText.countt))
+    
+    monoTextView.attributedText = attributedText
   }
   
   private func addCitiesToMap() {
-    guessedCities.forEach {
+    mapView.removeAnnotations(mapView.annotations)
+    mapView.addAnnotations(guessedCities.map {
       let cityAnnotation = $0.asAnnotation
       
       cityAnnotation.title = $0.nameWithStateAbbr
       cityAnnotation.subtitle = "pop: \($0.population.commaSeparated)"
       
-      mapView.addAnnotation(cityAnnotation)
-    }
+      return cityAnnotation
+    })
     
 //    mapView.showAnnotations(mapView.annotations, animated: false)
   }
@@ -120,5 +135,16 @@ extension StateInfoViewController: MKMapViewDelegate {
     annotationView.markerTintColor = .systemRed
 //    annotationView.displayPriority = .init(annotation.subtitle.count)
     return annotationView
+  }
+}
+
+extension StateInfoViewController: UITextViewDelegate {
+  func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+    if URL.scheme == "takemeto",
+       let index = Int(URL.host ?? "💩") {
+      mapView.setRegion(MKCoordinateRegion(center: guessedCities[index].coordinates, span: .init(latitudeDelta: 0.05, longitudeDelta: 0.05)), animated: true)
+//      mapView.showAnnotations([mapView.annotations[index]], animated: true)
+    }
+    return false
   }
 }

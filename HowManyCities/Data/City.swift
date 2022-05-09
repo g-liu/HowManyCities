@@ -110,7 +110,7 @@ struct City: Codable, Hashable {
     175_000 * log10(0.000_05*(population+25_000))
   }
   
-  private var circleSize: CLLocationDistance {
+  private var circleRadius: CLLocationDistance {
     // We must account for the distortion caused by the Mercator projection, otherwise
     // cities closer to the poles will appear to have larger circles
     // See https://en.wikipedia.org/wiki/Mercator_projection#Scale_factor for details.
@@ -133,7 +133,7 @@ struct City: Codable, Hashable {
   }
   
   private var asCircle: MKCircle {
-    .init(center: coordinates, radius: circleSize)
+    .init(center: coordinates, radius: circleRadius)
   }
   
   private var asStar: MKPolygon {

@@ -9,6 +9,6 @@ import Foundation
 
 extension String {
   var entireRange: NSRange {
-    return .init(self.startIndex..<self.endIndex, in: self)
+    .init(self.startIndex..<self.endIndex, in: self)
   }
 }
