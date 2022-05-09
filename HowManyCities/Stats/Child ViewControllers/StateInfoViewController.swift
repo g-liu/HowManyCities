@@ -23,12 +23,19 @@ final class StateInfoViewController: UIViewController {
     let map = MKMapView().autolayoutEnabled
     map.mapType = .satellite
     map.isPitchEnabled = false
-    map.isScrollEnabled = false
+    map.isScrollEnabled = true
     map.isMultipleTouchEnabled = false
-    map.isZoomEnabled = false
+    map.isZoomEnabled = true
     map.isRotateEnabled = false
     map.pointOfInterestFilter = .excludingAll
-    map.searchAndLocate(state.searchName)
+    
+    // TODO: Should probably double check by making sure we have city annotations within.
+    map.searchAndLocate(state.searchName) { region in
+      guard let region = region else { return }
+//      map.setCameraBoundary(MKMapView.CameraBoundary(coordinateRegion: region), animated: false)
+    }
+    
+    map.delegate = self
     
     return map
   }()
@@ -77,7 +84,7 @@ final class StateInfoViewController: UIViewController {
       mapView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
       mapView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
       mapView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-      mapView.heightAnchor.constraint(equalToConstant: 200),
+      mapView.heightAnchor.constraint(equalToConstant: 250),
       
       infoStack.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 8.0),
       infoStack.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 12.0),
@@ -88,6 +95,30 @@ final class StateInfoViewController: UIViewController {
     
     monoLabel.text = guessedCities.map(by: \.name).joined(separator: "; ")
     
+    addCitiesToMap()
   }
   
+  private func addCitiesToMap() {
+    guessedCities.forEach {
+      let cityAnnotation = $0.asAnnotation
+      
+      cityAnnotation.title = $0.nameWithStateAbbr
+      cityAnnotation.subtitle = "pop: \($0.population.commaSeparated)"
+      
+      mapView.addAnnotation(cityAnnotation)
+    }
+    
+//    mapView.showAnnotations(mapView.annotations, animated: false)
+  }
+  
+}
+
+extension StateInfoViewController: MKMapViewDelegate {
+  func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+    let annotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "something")
+    annotationView.clusteringIdentifier = "yuhhhh"
+    annotationView.markerTintColor = .systemRed
+//    annotationView.displayPriority = .init(annotation.subtitle.count)
+    return annotationView
+  }
 }

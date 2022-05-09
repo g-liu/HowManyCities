@@ -139,7 +139,7 @@ class CityInfoViewController: UIViewController {
       mapView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
       mapView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
       mapView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-      mapView.heightAnchor.constraint(equalToConstant: 200),
+      mapView.heightAnchor.constraint(equalToConstant: 250),
       
       infoStack.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 8.0),
       infoStack.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 12.0),
