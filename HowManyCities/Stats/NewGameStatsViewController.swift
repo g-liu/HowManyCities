@@ -167,11 +167,11 @@ final class NewGameStatsViewController: UIViewController {
     var cityList: [City]
     switch selectedSegment {
       case .smallest:
-        cityList = statsProvider?.smallestCitiesGuessed.prefix(10).asArray ?? []
+        cityList = statsProvider?.smallestCitiesGuessed ?? []
       case .rarest:
-        cityList = statsProvider?.rarestCitiesGuessed.prefix(10).asArray ?? []
+        cityList = statsProvider?.rarestCitiesGuessed ?? []
       case .popular:
-        cityList = statsProvider?.commonCitiesGuessed.prefix(10).asArray ?? []
+        cityList = statsProvider?.commonCitiesGuessed ?? []
       case .all:
         cityList = statsProvider?.recentCitiesGuessed ?? []
         
@@ -202,11 +202,11 @@ final class NewGameStatsViewController: UIViewController {
             }
         }
         
-        cityList = cityList.prefix(showCitiesUpTo).asArray
+//        cityList = cityList.prefix(showCitiesUpTo).asArray
       case .largest:
         fallthrough
       default:
-        cityList = statsProvider?.largestCitiesGuessed.prefix(10).asArray ?? []
+        cityList = statsProvider?.largestCitiesGuessed ?? []
     }
     
     return cityList.map(Item.city)
@@ -558,7 +558,15 @@ extension NewGameStatsViewController {
       return
     }
     
-    cities.enumerated().forEach {
+    let shownCities: [Item]
+    switch selectedSegment {
+      case .largest, .smallest, .popular, .rarest:
+        shownCities = cities.prefix(10).asArray
+      case .all:
+        shownCities = cities.prefix(showCitiesUpTo).asArray
+    }
+    
+    shownCities.enumerated().forEach {
       snapshot.appendItems([.ordinal(0, $0+1), $1], toSection: .cityList)
     }
   }
