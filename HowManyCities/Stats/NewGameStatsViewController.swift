@@ -633,18 +633,8 @@ extension NewGameStatsViewController {
           populationSegment = sortedByPopulation.prefix(10)
         }
         
-        populationSegment.enumerated().forEach {
-          items.append(.ordinal(0, $0 + 1))
-          if $1.value.count > 3 {
-            items.append(.multiCity($1.value))
-          } else if !$1.value.isEmpty {
-            items.append(contentsOf: $1.value.map(Item.city))
-          } else {
-            print("WTF THIS SHOULD NEVER HAPPEN 2")
-          }
-        }
+        items = process(populationSegment)
     case .rarest, .popular:
-        // TODO: CODE VERY SIM. 2 ABOVE... is there a way to coalesce?
         let byRarity = statsProvider.citiesByRarity
         
         guard !byRarity.isEmpty else {
@@ -661,16 +651,7 @@ extension NewGameStatsViewController {
           raritySegment = sortedByRarity.prefix(10)
         }
         
-        raritySegment.enumerated().forEach {
-          items.append(.ordinal(0, $0 + 1))
-          if $1.value.count > 3 {
-            items.append(.multiCity($1.value))
-          } else if !$1.value.isEmpty {
-            items.append(contentsOf: $1.value.map(Item.city))
-          } else {
-            print("WTF THIS SHOULD NEVER HAPPEN 2")
-          }
-        }
+        items = process(raritySegment)
     case .all:
         // TODO: ACCOUNT 4 SORTING????? (default mode is recent)
         let recentGuessed = statsProvider.recentCitiesGuessed
@@ -689,6 +670,31 @@ extension NewGameStatsViewController {
     snapshot.appendItems(items, toSection: .cityList)
   }
   
+  private func process<I>(_ segment: Array<I>.SubSequence) -> [Item] {
+    var items: [Item] = .init()
+    segment.enumerated().forEach {
+      items.append(.ordinal(0, $0 + 1))
+      let cities: [City]
+      if let dictEl = $1 as? Dictionary<Int, [City]>.Element {
+        cities = dictEl.value
+      } else if let dictEl = $1 as? Dictionary<Double, [City]>.Element {
+        cities = dictEl.value
+      } else {
+        cities = []
+      }
+      
+      if cities.count > 3 {
+        items.append(.multiCity(cities))
+      } else if !cities.isEmpty {
+        items.append(contentsOf: cities.map(Item.city))
+      } else {
+        print("WTF THIS SHOULD NEVER HAPPEN 2")
+      }
+    }
+    
+    return items
+  }
+   
   private func comparePopulation(_ lhs: (String, [City]), _ rhs: (String, [City])) -> Bool {
     if lhs.1.totalPopulation == rhs.1.totalPopulation {
       return lhs.0.localizedStandardCompare(rhs.0) == .orderedAscending
