@@ -48,7 +48,8 @@ final class MultiCityPopulationRenderer: ItemRenderer {
     
     let mas: NSMutableAttributedString
     let firstFewCitiesNames = item.prefix(3).map(by: \.name) // TODO: Also add state and country if nec.
-    mas = .init(string: "\(firstFewCitiesNames.joined(separator: "; "))")
+    let flagString: String = item.flags.isEmpty ? "" : "\(item.flags) "
+    mas = .init(string: "\(flagString)\(firstFewCitiesNames.joined(separator: "; "))")
     if item.count > 3 {
       let numCitiesRemaining = item.count - 3
       // TODO: Proper pluralization

@@ -321,7 +321,8 @@ final class NewGameStatsViewController: UIViewController {
       } else {
         configuration.attributedText = CityPopulationRenderer().string(itemIdentifier)
       }
-      configuration.directionalLayoutMargins = .zero
+      configuration.directionalLayoutMargins.leading = 0
+      configuration.directionalLayoutMargins.trailing = 0
       
       cell.contentConfiguration = configuration
     }
@@ -333,7 +334,8 @@ final class NewGameStatsViewController: UIViewController {
       } else {
         configuration.attributedText = MultiCityPopulationRenderer().string(itemIdentifier)
       }
-      
+      configuration.directionalLayoutMargins.leading = 0
+      configuration.directionalLayoutMargins.trailing = 0
       cell.contentConfiguration = configuration
     }
     
