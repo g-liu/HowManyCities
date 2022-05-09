@@ -367,28 +367,7 @@ extension MapGuessViewController: MapGuessDelegate {
     
     switch mode {
       case .specific(let state):
-        let req = MKLocalSearch.Request()
-        req.naturalLanguageQuery = state.searchName
-        req.region = .full
-        
-        let search = MKLocalSearch(request: req)
-        search.start { response, error in
-          // placemark.title has to be same country (?)
-          if let boundingRect = response?.boundingRegion,
-             response?.mapItems.count == 1 {
-            self.mapView.setRegion(boundingRect, animated: true)
-          } else if let mapItem = response?.mapItems.first(where: {$0.placemark.title?.contains($0.placemark.name ?? "💩") ?? false}) {
-            if let boundingCircle = mapItem.placemark.region as? CLCircularRegion {
-              self.mapView.setRegion(.init(center: boundingCircle.center, latitudinalMeters: boundingCircle.radius * 1.2, longitudinalMeters: boundingCircle.radius * 1.2), animated: true)
-            } else if let location = mapItem.placemark.location {
-              self.mapView.setRegion(.init(center: location.coordinate, span: self.mapView.region.span), animated: true)
-            } else {
-              self.mapView.setRegion(.init(center: mapItem.placemark.coordinate, span: self.mapView.region.span), animated: true)
-            }
-          } else {
-            // Sorry bud can't help you.
-          }
-        }
+        self.mapView.searchAndLocate(state.searchName)
       default:
         self.mapView.setRegion(.init(center: self.mapView.centerCoordinate, span: .full), animated: true)
     }

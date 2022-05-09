@@ -14,10 +14,7 @@ final class StateCityCountRenderer: ItemRenderer {
     let cities = item.1
     
     let state = State(name: stateName)
-    let mas = NSMutableAttributedString(string: "\(stateName)  ")
-    if let flag = state.flag {
-      mas.insert(.init(string: "\(flag) "), at: 0)
-    }
+    let mas = NSMutableAttributedString(string: "\(state.nameWithFlag)  ")
     // TODO: Proper pluralization
     let pluralizedString = cities.count > 1 ? "cities" : "city"
     mas.append(.init(string: "\(cities.count.commaSeparated) \(pluralizedString)", attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),

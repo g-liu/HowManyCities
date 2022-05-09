@@ -14,10 +14,7 @@ final class StateTotalPopulationRenderer: ItemRenderer {
     let cities = item.1
     
     let state = State(name: stateName)
-    let mas = NSMutableAttributedString(string: "\(stateName)  ")
-    if let flag = state.flag {
-      mas.insert(.init(string: "\(flag) "), at: 0)
-    }
+    let mas = NSMutableAttributedString(string: "\(state.nameWithFlag)  ")
     
     mas.append(.init(string: "\(cities.totalPopulation.abbreviated) 👤\u{fe0e}", attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
                                                                  .foregroundColor: UIColor.systemGray]))

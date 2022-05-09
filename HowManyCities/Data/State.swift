@@ -65,6 +65,14 @@ struct State: Codable, Hashable {
     }
   }
   
+  var nameWithFlag: String {
+    if let flag = flag {
+      return "\(flag) \(name)"
+    } else {
+      return name
+    }
+  }
+  
   var searchName: String {
     if let childState = states?.first {
       return childState.name + ", \(normalizedCountryName)"
