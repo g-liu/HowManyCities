@@ -373,6 +373,10 @@ extension MapGuessViewController: MapGuessDelegate {
     }
   }
   
+  // TODO: We have a bug where we still receive cities that are already on the map
+  // Guess is it is being caused by changes in the `rarity` key path, as this updates dynamically
+  // We should somehow exclude this from criteria of comparison
+  // Perhaps (somehow??) rely solely on the city.pk??
   func didReceiveCities(_ cities: [City]) {
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
@@ -382,11 +386,10 @@ extension MapGuessViewController: MapGuessDelegate {
       
       if cities.count > 1 {
         self.mapView.showAnnotations(annotations, animated: true)
+        // TODO: Proper pluralization
+        self.showToast("+\(cities.count) cities, \(cities.totalPopulation.abbreviated)", toastType: .population)
       } else if let lastCity = cities.last {
         self.mapView.setCenter(lastCity.coordinates, animated: true)
-      }
-      
-      if !cities.isEmpty {
         self.showToast("+\(cities.totalPopulation.abbreviated)", toastType: .population)
       }
     }
