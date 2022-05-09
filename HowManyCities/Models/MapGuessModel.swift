@@ -98,7 +98,7 @@ extension MapGuessModel: GameStatisticsProvider {
   }
   
   var nationalCapitalsGuessed: [City] {
-    guessedCities.filter { $0.nationalCapital }
+    guessedCities.filter(by: \.nationalCapital)
   }
   
   var recentCitiesGuessed: [City] {
@@ -132,7 +132,7 @@ extension MapGuessModel: GameStatisticsProvider {
   }
   
   var totalCapitalsGuessed: Ratio {
-    .init(numerator: guessedCities.filter { $0.nationalCapital }.count, denominator: gameConfiguration?.totalCapitals ?? 0)
+    .init(numerator: guessedCities.filter(by: \.nationalCapital).count, denominator: gameConfiguration?.totalCapitals ?? 0)
   }
   
   var totalStatesGuessed: Ratio {

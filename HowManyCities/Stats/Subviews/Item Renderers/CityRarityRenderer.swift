@@ -44,7 +44,7 @@ final class MultiCityRarityRenderer: ItemRenderer {
     let rarity = item.first?.percentageOfSessions ?? 0.0
     
     let mas: NSMutableAttributedString
-    let firstFewCitiesNames = item.prefix(3).map { $0.name } // TODO: Also add state and country if nec.
+    let firstFewCitiesNames = item.prefix(3).map(by: \.nameWithStateAbbr) // TODO: Also add state and country if nec.
     mas = .init(string: "\(firstFewCitiesNames.joined(separator: "; "))")
     if item.count > 3 {
       let numCitiesRemaining = item.count - 3
@@ -52,6 +52,8 @@ final class MultiCityRarityRenderer: ItemRenderer {
       let remainingString = numCitiesRemaining > 1 ? "…and \(numCitiesRemaining.commaSeparated) others" : "…and \(numCitiesRemaining) other"
       mas.append(.init(string: "\n\t\(remainingString)  ", attributes: [.font: UIFont.italicSystemFont(ofSize: UIFont.labelFontSize),
                                                                       .foregroundColor: UIColor.label.withAlphaComponent(0.8)]))
+    } else {
+      mas.append(.init(string: "  "))
     }
     
     mas.append(.init(string: rarity.asPercentString, attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),

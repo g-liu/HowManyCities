@@ -140,7 +140,7 @@ final class HMCRequestHandler {
     
     request.httpMethod = "POST"
     
-    let requestBody = GameFinishRequestBody(cities: cities.map { $0.asShortForm }, quiz: "world", startTime: Int(startTime.timeIntervalSince1970), usedMultiCityInput: usedMultiCityInput)
+    let requestBody = GameFinishRequestBody(cities: cities.map(by: \.asShortForm), quiz: "world", startTime: Int(startTime.timeIntervalSince1970), usedMultiCityInput: usedMultiCityInput)
     let encoder = JSONEncoder()
     do {
       request.httpBody = try encoder.encode(requestBody)

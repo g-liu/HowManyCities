@@ -260,7 +260,7 @@ class CityInfoViewController: UIViewController {
       addNearbyCityAnnotation($0)
     }
     
-//    mapView.zoom(to: [city.coordinates] + nearbyCities.map { $0.coordinates }, meter: 1500000, edgePadding: .init(inset: 25.0), animated: false)
+//    mapView.zoom(to: [city.coordinates] + nearbyCities.map(by: \.coordinates), meter: 1500000, edgePadding: .init(inset: 25.0), animated: false)
     mapView.showAnnotations(mapView.annotations, animated: true)
   }
   

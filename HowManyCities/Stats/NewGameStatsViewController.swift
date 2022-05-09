@@ -74,7 +74,7 @@ final class NewGameStatsViewController: UIViewController {
     }
     
     static var asNames: [String] {
-      allCases.map { $0.name }
+      allCases.map(by: \.name)
     }
   }
   
@@ -624,7 +624,7 @@ extension NewGameStatsViewController {
           return
         }
         
-        let sortedByPopulation = statsProvider.citiesByPopulation.sorted { $0.key < $1.key }
+        let sortedByPopulation = statsProvider.citiesByPopulation.sorted(by: \.key)
         var populationSegment: Array<Dictionary<Int, [City]>.Element>.SubSequence // TODO: Y U SO COMPLEX TYPE
         if selectedSegment == .largest {
           populationSegment = sortedByPopulation.suffix(10)
@@ -652,7 +652,7 @@ extension NewGameStatsViewController {
           return
         }
         
-        let sortedByRarity = byRarity.sorted { $0.key < $1.key }
+        let sortedByRarity = byRarity.sorted(by: \.key)
         var raritySegment: Array<Dictionary<Double, [City]>.Element>.SubSequence // TODO: Y U SO COMPLEX TYPE
         if selectedSegment == .popular {
           raritySegment = sortedByRarity.suffix(10)
