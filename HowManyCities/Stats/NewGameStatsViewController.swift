@@ -635,10 +635,10 @@ extension NewGameStatsViewController {
         
         populationSegment.enumerated().forEach {
           items.append(.ordinal(0, $0 + 1))
-          if $1.value.count > 1 {
+          if $1.value.count > 3 {
             items.append(.multiCity($1.value))
-          } else if let firstCity = $1.value.first {
-            items.append(.city(firstCity))
+          } else if !$1.value.isEmpty {
+            items.append(contentsOf: $1.value.map(Item.city))
           } else {
             print("WTF THIS SHOULD NEVER HAPPEN 2")
           }
@@ -663,10 +663,10 @@ extension NewGameStatsViewController {
         
         raritySegment.enumerated().forEach {
           items.append(.ordinal(0, $0 + 1))
-          if $1.value.count > 1 {
+          if $1.value.count > 3 {
             items.append(.multiCity($1.value))
-          } else if let firstCity = $1.value.first {
-            items.append(.city(firstCity))
+          } else if !$1.value.isEmpty {
+            items.append(contentsOf: $1.value.map(Item.city))
           } else {
             print("WTF THIS SHOULD NEVER HAPPEN 2")
           }
