@@ -57,7 +57,6 @@ final class MapGuessModel: Codable {
 }
 
 // MARK: - Statistics
-// TODO: Perhaps convert this to a protocol that can be used??
 
 extension MapGuessModel: GameStatisticsProvider {
   var numCitiesGuessed: Int { guessedCities.count }
@@ -124,7 +123,8 @@ extension MapGuessModel: GameStatisticsProvider {
   }
   
   func nearestCity(to city: City) -> City? {
-    guessedCities.max {
+    guard guessedCities.count > 1 else { return nil }
+    return guessedCities.max {
       let distance0 = $0.distance(to: city)
       let distance1 = $1.distance(to: city)
       return distance0 > distance1 && $0 != city && $1 != city
