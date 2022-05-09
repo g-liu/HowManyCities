@@ -91,6 +91,10 @@ struct City: Codable, Hashable {
     }
   }
   
+  var nameWithTerritoryAndCountry: String {
+    [name, territory, country].filter { !$0.isEmpty }.joined(separator: ", ")
+  }
+  
   var capitalDesignation: String? {
     if nationalCapital {
       return "✪"

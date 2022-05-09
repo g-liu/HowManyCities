@@ -11,7 +11,5 @@ import UIKit
 protocol ItemRenderer {
   associatedtype Item
   
-  func render(_ item: Item) -> UIView?
-  
   func string(_ item: Item) -> NSAttributedString
 }

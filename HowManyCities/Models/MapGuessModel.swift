@@ -9,12 +9,6 @@ import Foundation
 import MapKit
 import OrderedCollections
 
-//typealias Ratio = (numerator: Int, denominator: Int)
-struct Ratio: Hashable {
-  let numerator: Int
-  let denominator: Int
-}
-
 protocol GameStatisticsProvider: AnyObject {
   var numCitiesGuessed: Int { get }
   var populationGuessed: Int { get }
@@ -183,7 +177,3 @@ enum CityGuessError: Error {
     }
   }
 }
-
-
-// WHY THE FUCK isn't there just a generic Error type already in Swift???
-struct GenericError: Error { }

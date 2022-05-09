@@ -1,10 +1,5 @@
 PODS:
-  - Charts (4.0.2):
-    - Charts/Core (= 4.0.2)
-  - Charts/Core (4.0.2):
-    - SwiftAlgorithms (~> 1.0)
   - MapCache (0.9.0)
-  - SwiftAlgorithms (1.0.0)
   - SwifterSwift (5.2.0):
     - SwifterSwift/AppKit (= 5.2.0)
     - SwifterSwift/CoreAnimation (= 5.2.0)
@@ -32,23 +27,18 @@ PODS:
   - SwifterSwift/UIKit (5.2.0)
 
 DEPENDENCIES:
-  - Charts (~> 4.0)
   - MapCache (~> 0.9)
   - SwifterSwift (~> 5.2)
 
 SPEC REPOS:
   trunk:
-    - Charts
     - MapCache
-    - SwiftAlgorithms
     - SwifterSwift
 
 SPEC CHECKSUMS:
-  Charts: cfa4e911e6dc289582c2fe011a0e87c03d96727f
   MapCache: b0a9f5f9a0ed7cbac45443fea0e7e03a97bf0c66
-  SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwifterSwift: 334181863c416882d97b7a60c05054d9e4d799e2
 
-PODFILE CHECKSUM: d0c57efc91af1570e825666c7706663054e9161d
+PODFILE CHECKSUM: 7eca9cf9897845d1e0590aa82054d4c4d6c5cef0
 
 COCOAPODS: 1.11.2

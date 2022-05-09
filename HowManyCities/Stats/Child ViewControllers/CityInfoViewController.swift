@@ -8,7 +8,7 @@
 import UIKit
 import MapKit
 
-class CityInfoViewController: UIViewController {
+final class CityInfoViewController: UIViewController {
   weak var statsProvider: GameStatisticsProvider?
   
   private var isShowingFullTitle: Bool = false {
@@ -37,6 +37,8 @@ class CityInfoViewController: UIViewController {
       
       if let countryFlag = city.countryFlag {
         title = "\(countryFlag) \(cityName)"
+      } else {
+        title = city.nameWithTerritoryAndCountry
       }
       
       let mas = NSMutableAttributedString(string: "\(cityName) ")
@@ -260,7 +262,6 @@ class CityInfoViewController: UIViewController {
       addNearbyCityAnnotation($0)
     }
     
-//    mapView.zoom(to: [city.coordinates] + nearbyCities.map(by: \.coordinates), meter: 1500000, edgePadding: .init(inset: 25.0), animated: false)
     mapView.showAnnotations(mapView.annotations, animated: true)
   }
   
@@ -276,7 +277,6 @@ class CityInfoViewController: UIViewController {
     let nearbyCity = nearbyCities[tag]
     addNearbyCityAnnotation(nearbyCity)
     
-//    mapView.zoom(to: [city.coordinates, nearbyCity.coordinates], meter: 1500000, edgePadding: .init(inset: 75.0), animated: false)
     mapView.showAnnotations(mapView.annotations, animated: true)
   }
   
@@ -326,15 +326,5 @@ extension CityInfoViewController: MKMapViewDelegate {
       return polylineRenderer
     }
     return MKOverlayRenderer(overlay: overlay)
-  }
-  
-  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-//    mapView.subviews.enumerated().forEach {
-//      if type(of: $1) == MKAnnotationView.self {
-//        (mapView.subviews[$0] as! MKAnnotationView).canShowCallout = false
-//      }
-//    }
-//    view.canShowCallout = true
-//    mapView.bringSubviewToFront(view)
   }
 }

@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Charts
 import Combine
 
 final class GameStatsViewController: UIViewController {
