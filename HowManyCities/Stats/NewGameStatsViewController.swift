@@ -386,7 +386,7 @@ final class NewGameStatsViewController: UIViewController {
       switch section {
         case .cityList:
           supplementaryView.text = self.selectedSegment.description
-          supplementaryView.configure(selectedSegmentIndex: self.selectedSegment.rawValue, segmentTitles: CitySegment.asNames, sortCb: self.didTapSortCities)
+          supplementaryView.configure(selectedSegmentIndex: self.selectedSegment.rawValue, segmentTitles: CitySegment.asNames, sortCb: self.selectedSegment == .all ? self.didTapSortCities : nil)
         case .stateList, .territoryList:
           supplementaryView.configure(sortCb: self.didTapSortStates)
         case .otherStats:
