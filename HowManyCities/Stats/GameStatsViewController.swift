@@ -1,5 +1,5 @@
 //
-//  NewGameStatsViewController.swift
+//  GameStatsViewController.swift
 //  HowManyCities
 //
 //  Created by Geoffrey Liu on 5/3/22.
@@ -9,7 +9,7 @@ import UIKit
 import Charts
 import Combine
 
-final class NewGameStatsViewController: UIViewController {
+final class GameStatsViewController: UIViewController {
   struct ElementKind {
     static let header = "element-kind-header"
     static let buttonFooter = "element-kind-buttonFooter"
@@ -452,7 +452,7 @@ final class NewGameStatsViewController: UIViewController {
 }
 
 
-extension NewGameStatsViewController: UICollectionViewDelegate {
+extension GameStatsViewController: UICollectionViewDelegate {
   private func toggleHighlight(_ isOn: Bool, collectionView: UICollectionView, at indexPath: IndexPath) {
     let color: UIColor = isOn ? .systemFill : .clear
     guard let section = Section(rawValue: indexPath.section) else { return }
@@ -553,7 +553,7 @@ extension NewGameStatsViewController: UICollectionViewDelegate {
 }
 
 // MARK: - Data source snapshot management
-extension NewGameStatsViewController {
+extension GameStatsViewController {
   /// Refresh city list
   /// - Parameter snapshot: The snapshot to apply to. If no snapshot provided, grabs a snapshot from the current dataSource
   /// - Returns: The snapshot with refreshed city list
@@ -738,7 +738,7 @@ extension NewGameStatsViewController {
   }
 }
 
-extension NewGameStatsViewController: SectionChangeDelegate {
+extension GameStatsViewController: SectionChangeDelegate {
   func didChange(segmentIndex: Int) {
     let newSegment = CitySegment.init(rawValue: segmentIndex) ?? .all
     self.selectedSegment = newSegment
