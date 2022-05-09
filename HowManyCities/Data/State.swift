@@ -93,11 +93,8 @@ struct State: Codable, Hashable {
   var flag: String? {
     guard let locale = locale else { return nil }
     let base: UInt32 = 127397
-    var s = ""
-    for v in locale.unicodeScalars {
-      s.unicodeScalars.append(UnicodeScalar(base + v.value)!)
-    }
-    return String(s)
+    let scalars = locale.unicodeScalars.compactMap { UnicodeScalar(base + $0.value) }
+    return .init(scalars)
   }
   
   var normalizedCountryName: String {

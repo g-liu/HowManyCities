@@ -11,4 +11,8 @@ extension String {
   var entireRange: NSRange {
     .init(self.startIndex..<self.endIndex, in: self)
   }
+  
+  init(_ scalars: [UnicodeScalar]) {
+    self = .init(String.UnicodeScalarView(scalars))
+  }
 }

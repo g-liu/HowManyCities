@@ -80,11 +80,15 @@ struct City: Codable, Hashable {
   }
   
   var nameWithStateAbbr: String {
-    if !state.isEmpty, let stateAbbreviation = Global.STATE_ABBREVIATIONS[state] {
-      return "\(name), \(stateAbbreviation)"
+    if !state.isEmpty {
+      if let stateAbbreviation = Global.STATE_ABBREVIATIONS[state] {
+        return "\(name), \(stateAbbreviation)"
+      } else {
+        return "\(name), \(state)"
+      }
+    } else {
+      return name
     }
-    
-    return name
   }
   
   var capitalDesignation: String? {
