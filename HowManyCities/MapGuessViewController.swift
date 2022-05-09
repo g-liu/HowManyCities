@@ -446,9 +446,9 @@ extension MapGuessViewController: MKMapViewDelegate {
       circleRenderer.lineWidth = 0.5
       
       return circleRenderer
-    } else if let polygon = overlay as? MKPolygon {
+    } else if let polygon = overlay as? MKParameterizedPolygon {
       let polygonRenderer = MKZoomablePolygonRenderer(polygon: polygon)
-      polygonRenderer.fillColor = .systemYellow.withAlphaComponent(0.7)
+      polygonRenderer.fillColor = (polygon.data as? UIColor) ?? .systemYellow.withAlphaComponent(0.7)
       polygonRenderer.strokeColor = .systemFill
       polygonRenderer.lineWidth = 2
       

@@ -125,7 +125,7 @@ struct City: Codable, Hashable {
   
   var asShape: MKOverlay {
     // TODO: This will depend on the gamemode!
-    if /*stateCapital || */nationalCapital {
+    if stateCapital || nationalCapital {
       return asStar
     } else {
       return asCircle
@@ -136,7 +136,7 @@ struct City: Codable, Hashable {
     .init(center: coordinates, radius: circleRadius)
   }
   
-  private var asStar: MKPolygon {
+  private var asStar: MKParameterizedPolygon {
     let corners = 5
     let smoothness = 0.5
     let angleAdjustment = .pi * 2 / CGFloat(corners * 2)
@@ -152,7 +152,9 @@ struct City: Codable, Hashable {
       return .init(x: xCoordinate, y: yCoordinate)
     }
     
-    return .init(points: coordinates, count: coordinates.count)
+    let poly = MKParameterizedPolygon(points: coordinates, count: coordinates.count)
+    poly.data = nationalCapital ? UIColor.systemYellow.withAlphaComponent(0.7) : UIColor.systemRed.withAlphaComponent(0.5)
+    return poly
   }
   
   func distance(to otherCity: City) -> CLLocationDistance {
