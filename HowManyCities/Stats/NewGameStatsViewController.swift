@@ -113,10 +113,9 @@ final class NewGameStatsViewController: UIViewController {
   // OR at least the logic needs to be encapsulated elsewhere
   
   enum CitySortMode: CaseIterable {
-    case aToZ
     case recent
+    case aToZ
     case countryAToZ
-    case population
     
     // TODO: Could make ext?
     var nextMode: Self {
@@ -162,56 +161,6 @@ final class NewGameStatsViewController: UIViewController {
   var statsProvider: GameStatisticsProvider?
   
   private var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
-  
-  // TODO: This is getting so large it should be moved to a view model...
-//  private var cities: [City] {
-//    var cityList: [City]
-//    switch selectedSegment {
-//      case .smallest:
-//        cityList = statsProvider?.smallestCitiesGuessed ?? []
-//      case .rarest:
-//        cityList = statsProvider?.rarestCitiesGuessed ?? []
-//      case .popular:
-//        cityList = statsProvider?.commonCitiesGuessed ?? []
-//      case .all:
-//        cityList = statsProvider?.recentCitiesGuessed ?? []
-//
-//        // TODO: This restriction on sorting (only in `.all` mode) should be exposed on the UI!!!
-//        switch citySortMode {
-//          case .aToZ:
-//            cityList.sort {
-//              $0.fullTitle.localizedStandardCompare($1.fullTitle) == .orderedAscending
-//            }
-//          case .recent:
-//            break // statsProvider gives in this order, nothing to do here
-//          case .countryAToZ:
-//            cityList.sort {
-//              let countryCompare = $0.country.localizedStandardCompare($1.country)
-//              if countryCompare == .orderedSame {
-//                return $0.fullTitle.localizedStandardCompare($1.fullTitle) == .orderedAscending
-//              } else {
-//                return countryCompare == .orderedAscending
-//              }
-//            }
-//          case .population:
-//            cityList.sort {
-//              if $0.population == $1.population {
-//                return $0.fullTitle.localizedStandardCompare($1.fullTitle) == .orderedAscending
-//              } else {
-//                return $0.population > $1.population
-//              }
-//            }
-//        }
-//
-////        cityList = cityList.prefix(showCitiesUpTo).asArray
-//      case .largest:
-//        fallthrough
-//      default:
-//        cityList = statsProvider?.largestCitiesGuessed ?? []
-//    }
-//
-//    return cityList //.map(Item.city)
-//  }
   
   private lazy var collectionView: UICollectionView = {
     let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider = { (sectionIndex, environment) -> NSCollectionLayoutSection? in
@@ -655,12 +604,20 @@ extension NewGameStatsViewController {
         
         items = process(raritySegment)
     case .all:
-        // TODO: ACCOUNT 4 SORTING????? (default mode is recent)
-        let recentGuessed = statsProvider.recentCitiesGuessed
+        var recentGuessed = statsProvider.recentCitiesGuessed
         
         guard !recentGuessed.isEmpty else {
           snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
           return
+        }
+        
+        switch citySortMode {
+          case .aToZ:
+            recentGuessed.sort(by: \.fullTitle, with: { $0.localizedStandardCompare($1) == .orderedAscending })
+          case .recent:
+            break
+          case .countryAToZ:
+            recentGuessed.sort(by: \.country, and: \.fullTitle) // TODO: VERIFY ALL OF THIS
         }
         
         recentGuessed.prefix(showCitiesUpTo).enumerated().forEach {
