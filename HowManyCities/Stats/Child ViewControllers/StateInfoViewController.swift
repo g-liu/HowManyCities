@@ -9,10 +9,18 @@ import UIKit
 
 final class StateInfoViewController: UIViewController {
   
-  var state: State? {
-    didSet {
-      // coming soon...
-    }
+  let state: State
+  let guessedCities: [City]
+  
+  init(state: State, guessedCities: [City]) {
+    self.state = state
+    self.guessedCities = guessedCities
+    
+    super.init(nibName: nil, bundle: nil)
+  }
+  
+  required init?(coder: NSCoder) {
+    fatalError("NOOOOOOOOOO")
   }
   
   override func viewDidLoad() {

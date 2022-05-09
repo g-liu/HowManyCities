@@ -15,11 +15,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
     guard let windowScene = (scene as? UIWindowScene) else { return }
     
-//    let token: Int = 571951
-//    let path = URL(string: "https://iafisher.com/projects/cities/api/load?quiz=world&token=\(token)")!
-////    let path = Bundle.main.url(forResource: "ukraine-montenegro-slovenia", withExtension: "json")!
-//    let data = try! Data(contentsOf: path, options: .mappedIfSafe)
-//    let cities = try! JSONDecoder().decode(Cities.self, from: data)
+    let token: Int = 571951
+    let path = URL(string: "https://iafisher.com/projects/cities/api/load?quiz=world&token=\(token)")!
+//    let path = Bundle.main.url(forResource: "ukraine-montenegro-slovenia", withExtension: "json")!
+    let data = try! Data(contentsOf: path, options: .mappedIfSafe)
+    let cities = try! JSONDecoder().decode(Cities.self, from: data)
     
     
     
@@ -30,8 +30,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     
     let window = UIWindow(windowScene: windowScene)
-//    let vc = MapGuessViewController(cities: cities)
-    let vc = MapGuessViewController()
+    let vc = MapGuessViewController(cities: cities)
+//    let vc = MapGuessViewController()
     window.rootViewController = vc
     window.makeKeyAndVisible()
     self.window = window

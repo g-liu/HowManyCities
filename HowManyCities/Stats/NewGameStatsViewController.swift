@@ -504,15 +504,27 @@ final class NewGameStatsViewController: UIViewController {
 extension NewGameStatsViewController: UICollectionViewDelegate {
   private func toggleHighlight(_ isOn: Bool, collectionView: UICollectionView, at indexPath: IndexPath) {
     let color: UIColor = isOn ? .systemFill : .clear
+    guard let section = Section(rawValue: indexPath.section) else { return }
+    let items = dataSource.snapshot().itemIdentifiers(inSection: section)
     
-    switch Section(rawValue: indexPath.section) {
+    if case .emptyState(_) = items[indexPath.row] {
+      return // nothing to do here
+    }
+    
+    switch section {
       case .cityList, .stateList, .territoryList:
         // also need to highlight the other index path
         var associatedIndexPath = indexPath
         if indexPath.row.isOdd {
           associatedIndexPath.row -= 1
         } else {
+          // this is an ordinal
           associatedIndexPath.row += 1
+          
+          // check to see if we need highlight
+          if case .emptyState(_) = items[associatedIndexPath.row] {
+            return
+          }
         }
         UIView.animate {
           self.collectionView.cellForItem(at: indexPath)?.backgroundColor = color
@@ -522,7 +534,6 @@ extension NewGameStatsViewController: UICollectionViewDelegate {
         UIView.animate {
           self.collectionView.cellForItem(at: indexPath)?.backgroundColor = color
         }
-      case .none: break
     }
   }
   
@@ -537,12 +548,12 @@ extension NewGameStatsViewController: UICollectionViewDelegate {
   // TODO: Figure out why the iPod touch simulator isn't calling this consistently
   // TODO: Disabled for now while we try to restructure the cells that display these cities
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-    
     guard let section = Section(rawValue: indexPath.section) else { return }
+    let items = dataSource.snapshot().itemIdentifiers(inSection: section)
+    let item = items[indexPath.row]
+    
     switch section {
       case .cityList:
-        let items = dataSource.snapshot().itemIdentifiers(inSection: section)
-        let item = items[indexPath.row]
         switch item {
           case .multiCity(_):
             // TODO: HANDLE THIS CASE??!?!
@@ -557,13 +568,19 @@ extension NewGameStatsViewController: UICollectionViewDelegate {
             break // We can't handle this yet
         }
 
-        // TODO: Coming soon...
-        //      case .stateList,
-//          .territoryList:
-//        let stateVC = StateInfoViewController()
-//        stateVC.state = /* ???? */
-//
-//        navigationController?.pushViewController(stateVC)
+      case .stateList, .territoryList:
+        
+        switch item {
+          case .ordinal(_, _):
+            if case let .state(stateName, cities) = items[indexPath.row + 1] {
+              showStateVC(.init(name: stateName), cities: cities)
+            }
+          case .state(let stateName, let cities):
+            showStateVC(.init(name: stateName), cities: cities)
+          default: break
+        }
+
+        
       default:
         break
     }
@@ -575,6 +592,12 @@ extension NewGameStatsViewController: UICollectionViewDelegate {
     cityVC.city = city
 
     navigationController?.pushViewController(cityVC)
+  }
+  
+  private func showStateVC(_ state: State, cities: [City]) {
+    let stateVC = StateInfoViewController(state: state, guessedCities: cities)
+    
+    navigationController?.pushViewController(stateVC)
   }
 }
 
@@ -640,80 +663,6 @@ extension NewGameStatsViewController {
     }
     
     snapshot.appendItems(items, toSection: .cityList)
-    
-//    guard !cities.isEmpty else {
-//      snapshot.appendItems([.ordinal(0, 0), .emptyState(Section.cityList)], toSection: .cityList)
-//      return
-//    }
-    
-//    let shownCities: [Item]
-//    switch selectedSegment {
-//      case .largest, .smallest, .popular, .rarest:
-//        shownCities = cities.prefix(10).asArray
-//      case .all:
-//        shownCities = cities.prefix(showCitiesUpTo).asArray
-//    }
-    
-//  outerLoop: for (index, city) in cities.enumerated() {
-//      if index == 0 {
-//        displayedItems.append(.ordinal(0, 0))
-//        displayedItems.append(.city(city))
-//        continue
-//      }
-//
-//      let lastCity = cities[index-1]
-//
-//      // We want to aggregate cities together when possible
-//      // This depends on the selected segment and how we're sorting
-//      switch selectedSegment {
-//        case .largest, .smallest:
-//          // by population...
-//          if lastCity.population == city.population,
-//             let lastDisplayItem = displayedItems.last {
-//            if case var .multiCity(displayItemCities) = lastDisplayItem {
-//              displayedItems.removeLast()
-//              displayItemCities.append(city)
-//              let itemToInsert = Item.multiCity(displayItemCities)
-//              displayedItems.append(itemToInsert)
-//            } else if case let .city(displayItemCity) = lastDisplayItem {
-//              displayedItems.removeLast()
-//              let itemToInsert = Item.multiCity([displayItemCity, city])
-//              displayedItems.append(itemToInsert)
-//            }
-//          } else {
-//            displayedItems.append(.city(city))
-//          }
-//
-//          if displayedItems.count > 2*showCitiesUpTo { break outerLoop }
-//        case .popular, .rarest:
-//          // by rarity...
-//          // TODO: UNDUPLICATE THIS LOGIC GOD HELP US
-//          if lastCity.percentageOfSessions == city.percentageOfSessions,
-//             let lastDisplayItem = displayedItems.last {
-//            if case var .multiCity(displayItemCities) = lastDisplayItem {
-//              displayedItems.removeLast()
-//              displayItemCities.append(city)
-//              let itemToInsert = Item.multiCity(displayItemCities)
-//              displayedItems.append(itemToInsert)
-//            } else if case let .city(displayItemCity) = lastDisplayItem {
-//              displayedItems.removeLast()
-//              let itemToInsert = Item.multiCity([displayItemCity, city])
-//              displayedItems.append(itemToInsert)
-//            }
-//          } else {
-//            displayedItems.append(.city(city))
-//          }
-//
-//          if displayedItems.count > 2*showCitiesUpTo { break outerLoop }
-//        case .all:
-//          // TODO: IMPLEMENT
-//          displayedItems.append(.city(city))
-//      }
-//    }
-    
-//    shownCities.enumerated().forEach {
-//      snapshot.appendItems([.ordinal(0, $0+1), $1], toSection: .cityList)
-//    }
   }
   
   private func comparePopulation(_ lhs: (String, [City]), _ rhs: (String, [City])) -> Bool {
