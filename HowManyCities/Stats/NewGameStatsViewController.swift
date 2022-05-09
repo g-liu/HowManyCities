@@ -38,7 +38,7 @@ final class NewGameStatsViewController: UIViewController {
   }
   
   enum Item: Hashable {
-    case ordinal(Int /* section index */, Int /* actual number */)
+    case ordinal(Int /* section index */, Int /* actual number */, Int /* another index for disambiguation in case of "ties" */)
     case city(City)
     case multiCity([City])
     case state(String /* state name */, [City])
@@ -303,7 +303,7 @@ final class NewGameStatsViewController: UIViewController {
   // MARK: Data source, registration, headers/footers, cells
   private func configureDataSource() {
     let ordinalCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Item> { cell, indexPath, itemIdentifier in
-      guard case let .ordinal(_, number) = itemIdentifier else { return }
+      guard case let .ordinal(_, number, _) = itemIdentifier else { return }
       var configuration = UIListContentConfiguration.cell()
       configuration.text = "\(number)."
       configuration.textProperties.font = UIFont.monospacedDigitSystemFont(ofSize: UIFont.smallSystemFontSize, weight: .regular)
@@ -452,7 +452,7 @@ final class NewGameStatsViewController: UIViewController {
     
     dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
       switch itemIdentifier {
-        case .ordinal(_, _):
+        case .ordinal(_, _, _):
           return collectionView.dequeueConfiguredReusableCell(using: ordinalCellRegistration, for: indexPath, item: itemIdentifier)
         case .city(let city):
           return collectionView.dequeueConfiguredReusableCell(using: cityCellRegistration, for: indexPath, item: city)
@@ -558,7 +558,7 @@ extension NewGameStatsViewController: UICollectionViewDelegate {
           case .multiCity(_):
             // TODO: HANDLE THIS CASE??!?!
             break
-          case .ordinal(_, _):
+          case .ordinal(_, _, _):
             if case let .city(city) = items[indexPath.row + 1] {
               showCityVC(city)
             }
@@ -571,7 +571,7 @@ extension NewGameStatsViewController: UICollectionViewDelegate {
       case .stateList, .territoryList:
         
         switch item {
-          case .ordinal(_, _):
+          case .ordinal(_, _, _):
             if case let .state(stateName, cities) = items[indexPath.row + 1] {
               showStateVC(.init(name: stateName), cities: cities)
             }
@@ -610,7 +610,7 @@ extension NewGameStatsViewController {
     snapshot.deleteItems(inSection: .cityList)
     
     guard let statsProvider = statsProvider else {
-      snapshot.appendItems([.ordinal(0, 0), .emptyState(.cityList)], toSection: .cityList)
+      snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
       return
     }
     
@@ -620,7 +620,7 @@ extension NewGameStatsViewController {
         let byPopulation = statsProvider.citiesByPopulation
         
         guard !byPopulation.isEmpty else {
-          snapshot.appendItems([.ordinal(0, 0), .emptyState(.cityList)], toSection: .cityList)
+          snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
           return
         }
         
@@ -638,7 +638,7 @@ extension NewGameStatsViewController {
         let byRarity = statsProvider.citiesByRarity
         
         guard !byRarity.isEmpty else {
-          snapshot.appendItems([.ordinal(0, 0), .emptyState(.cityList)], toSection: .cityList)
+          snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
           return
         }
         
@@ -657,12 +657,12 @@ extension NewGameStatsViewController {
         let recentGuessed = statsProvider.recentCitiesGuessed
         
         guard !recentGuessed.isEmpty else {
-          snapshot.appendItems([.ordinal(0, 0), .emptyState(.cityList)], toSection: .cityList)
+          snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
           return
         }
         
         recentGuessed.prefix(showCitiesUpTo).enumerated().forEach {
-          items.append(.ordinal(0, $0 + 1))
+          items.append(.ordinal(0, $0 + 1, 0))
           items.append(.city($1))
         }
     }
@@ -673,7 +673,8 @@ extension NewGameStatsViewController {
   private func process<I>(_ segment: Array<I>.SubSequence) -> [Item] {
     var items: [Item] = .init()
     segment.enumerated().forEach {
-      items.append(.ordinal(0, $0 + 1))
+      let ordinalNumber = $0 + 1
+      items.append(.ordinal(0, ordinalNumber, 0))
       let cities: [City]
       if let dictEl = $1 as? Dictionary<Int, [City]>.Element {
         cities = dictEl.value
@@ -683,10 +684,14 @@ extension NewGameStatsViewController {
         cities = []
       }
       
-      if cities.count > 1 {
+      if cities.count > 3 {
         items.append(.multiCity(cities))
-      } else if let city = cities.first {
-        items.append(Item.city(city))
+      } else if !cities.isEmpty {
+        items.removeLast()
+        cities.enumerated().forEach { cityIndex, city in
+          items.append(.ordinal(0, ordinalNumber, cityIndex))
+          items.append(.city(city))
+        }
       } else {
         print("WTF THIS SHOULD NEVER HAPPEN 2")
       }
@@ -716,7 +721,7 @@ extension NewGameStatsViewController {
     
     guard let statsProvider = statsProvider,
           !statsProvider.citiesByCountry.isEmpty else {
-      snapshot.appendItems([.ordinal(1, 0), .emptyState(.stateList)], toSection: .stateList)
+      snapshot.appendItems([.ordinal(1, 0, 0), .emptyState(.stateList)], toSection: .stateList)
       return
     }
     
@@ -728,7 +733,7 @@ extension NewGameStatsViewController {
     }
       
     sortedStates.prefix(showStatesUpTo).enumerated().forEach {
-      snapshot.appendItems([.ordinal(Section.stateList.rawValue, $0+1), .state($1.0, $1.1)], toSection: .stateList)
+      snapshot.appendItems([.ordinal(Section.stateList.rawValue, $0+1, 0), .state($1.0, $1.1)], toSection: .stateList)
     }
   }
   
@@ -737,7 +742,7 @@ extension NewGameStatsViewController {
     
     guard let statsProvider = statsProvider,
           !statsProvider.citiesByTerritory.isEmpty else {
-      snapshot.appendItems([.ordinal(2, 0), .emptyState(.territoryList)], toSection: .territoryList)
+      snapshot.appendItems([.ordinal(2, 0, 0), .emptyState(.territoryList)], toSection: .territoryList)
       return
     }
     
@@ -749,7 +754,7 @@ extension NewGameStatsViewController {
     }
       
     sortedTerritories.prefix(showTerritoriesUpTo).enumerated().forEach {
-      snapshot.appendItems([.ordinal(Section.territoryList.rawValue, $0+1), .state($1.0, $1.1)], toSection: .territoryList)
+      snapshot.appendItems([.ordinal(Section.territoryList.rawValue, $0+1, 0), .state($1.0, $1.1)], toSection: .territoryList)
     }
   }
   
