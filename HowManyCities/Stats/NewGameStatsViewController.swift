@@ -536,31 +536,46 @@ extension NewGameStatsViewController: UICollectionViewDelegate {
   
   // TODO: Figure out why the iPod touch simulator isn't calling this consistently
   // TODO: Disabled for now while we try to restructure the cells that display these cities
-//  func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//    guard let section = Section(rawValue: indexPath.section) else { return }
-//    switch section {
-//      case .cityList:
-//        let normalizedIndex = (indexPath.row - indexPath.row%2) / 2
-//        if cities.isIndexValid(normalizedIndex) {
-//          let city = cities[normalizedIndex]
-//          let cityVC = CityInfoViewController()
-//          cityVC.statsProvider = statsProvider
-//          cityVC.city = city
+  func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    
+    guard let section = Section(rawValue: indexPath.section) else { return }
+    switch section {
+      case .cityList:
+        let items = dataSource.snapshot().itemIdentifiers(inSection: section)
+        let item = items[indexPath.row]
+        switch item {
+          case .multiCity(_):
+            // TODO: HANDLE THIS CASE??!?!
+            break
+          case .ordinal(_, _):
+            if case let .city(city) = items[indexPath.row + 1] {
+              showCityVC(city)
+            }
+          case .city(let city):
+            showCityVC(city)
+          default:
+            break // We can't handle this yet
+        }
+
+        // TODO: Coming soon...
+        //      case .stateList,
+//          .territoryList:
+//        let stateVC = StateInfoViewController()
+//        stateVC.state = /* ???? */
 //
-//          navigationController?.pushViewController(cityVC)
-//        }
-//
-//        // TODO: Coming soon...
-//        //      case .stateList,
-////          .territoryList:
-////        let stateVC = StateInfoViewController()
-////        stateVC.state = /* ???? */
-////
-////        navigationController?.pushViewController(stateVC)
-//      default:
-//        break
-//    }
-//  }
+//        navigationController?.pushViewController(stateVC)
+      default:
+        break
+    }
+  }
+  
+  private func showCityVC(_ city: City) {
+    let cityVC = CityInfoViewController()
+    cityVC.statsProvider = statsProvider
+    cityVC.city = city
+
+    navigationController?.pushViewController(cityVC)
+  }
 }
 
 // MARK: - Data source snapshot management
