@@ -159,6 +159,7 @@ class CityInfoViewController: UIViewController {
     }
     
     let annotation = city.asAnnotation
+    annotation.title = city.name
     mapView.addAnnotation(annotation)
     
     mapView.setRegion(.init(center: annotation.coordinate, span: .full), animated: true)
@@ -290,7 +291,10 @@ class CityInfoViewController: UIViewController {
   
   private func addNearbyCityAnnotation(_ nearbyCity: City) {
     guard let city = city else { return }
-    mapView.addAnnotation(nearbyCity.asAnnotation)
+    let nearbyCityAnnotation = nearbyCity.asAnnotation
+    nearbyCityAnnotation.title = name(for: nearbyCity, comparedTo: city)
+    nearbyCityAnnotation.subtitle = "pop: \(nearbyCity.population.commaSeparated)"
+    mapView.addAnnotation(nearbyCityAnnotation)
     
     let line = MKPolyline(coordinates: [city.coordinates, nearbyCity.coordinates])
     mapView.addOverlay(line)
@@ -313,11 +317,21 @@ extension CityInfoViewController: MKMapViewDelegate {
   func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
     if let polyline = overlay as? MKPolyline {
       let polylineRenderer = MKPolylineRenderer(overlay: polyline)
-      polylineRenderer.strokeColor = .systemFill
-      polylineRenderer.lineWidth = 1
+      polylineRenderer.strokeColor = .systemRed
+      polylineRenderer.lineWidth = 2
       polylineRenderer.lineDashPattern = [2, 4]
       return polylineRenderer
     }
     return MKOverlayRenderer(overlay: overlay)
+  }
+  
+  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+//    mapView.subviews.enumerated().forEach {
+//      if type(of: $1) == MKAnnotationView.self {
+//        (mapView.subviews[$0] as! MKAnnotationView).canShowCallout = false
+//      }
+//    }
+//    view.canShowCallout = true
+//    mapView.bringSubviewToFront(view)
   }
 }

@@ -50,7 +50,7 @@ final class NewGameStatsViewController: UIViewController {
     case smallest
     case rarest
     case popular
-    case recent
+    case all
     
     var name: String {
       switch self {
@@ -58,7 +58,7 @@ final class NewGameStatsViewController: UIViewController {
         case .smallest: return "Smallest"
         case .rarest: return "Rarest"
         case .popular: return "Popular"
-        case .recent: return "Recent"
+        case .all: return "All"
       }
     }
     
@@ -68,7 +68,7 @@ final class NewGameStatsViewController: UIViewController {
         case .smallest: return "Smallest cities"
         case .rarest: return "Rarest guessed"
         case .popular: return "Commonly guessed"
-        case .recent: return "Your cities"
+        case .all: return "All cities (recent)"
       }
     }
     
@@ -147,7 +147,7 @@ final class NewGameStatsViewController: UIViewController {
         cityList = statsProvider?.rarestCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
       case .popular:
         cityList = statsProvider?.commonCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
-      case .recent:
+      case .all:
         cityList = statsProvider?.recentCitiesGuessed.map(Item.city).prefix(showCitiesUpTo).asArray ?? []
       case .largest:
         fallthrough
@@ -349,7 +349,7 @@ final class NewGameStatsViewController: UIViewController {
       
       switch section {
         case .cityList:
-          guard self.selectedSegment == .recent,
+          guard self.selectedSegment == .all,
                 (self.statsProvider?.recentCitiesGuessed.count ?? 0) > 10 else {
             supplementaryView.isHidden = true
             return
@@ -584,7 +584,7 @@ extension NewGameStatsViewController {
 
 extension NewGameStatsViewController: SectionChangeDelegate {
   func didChange(segmentIndex: Int) {
-    let newSegment = CitySegment.init(rawValue: segmentIndex) ?? .recent
+    let newSegment = CitySegment.init(rawValue: segmentIndex) ?? .all
     self.selectedSegment = newSegment
     showCitiesUpTo = 10
     
