@@ -683,10 +683,10 @@ extension NewGameStatsViewController {
         cities = []
       }
       
-      if cities.count > 3 {
+      if cities.count > 1 {
         items.append(.multiCity(cities))
-      } else if !cities.isEmpty {
-        items.append(contentsOf: cities.map(Item.city))
+      } else if let city = cities.first {
+        items.append(Item.city(city))
       } else {
         print("WTF THIS SHOULD NEVER HAPPEN 2")
       }
