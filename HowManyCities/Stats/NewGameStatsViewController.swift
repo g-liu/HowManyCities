@@ -69,7 +69,7 @@ final class NewGameStatsViewController: UIViewController {
         case .smallest: return "Smallest cities"
         case .rarest: return "Rarest guessed"
         case .popular: return "Commonly guessed"
-        case .all: return "All cities (recent)"
+        case .all: return "All cities"
       }
     }
     
@@ -617,7 +617,13 @@ extension NewGameStatsViewController {
           case .recent:
             break
           case .countryAToZ:
-            recentGuessed.sort(by: \.country, and: \.fullTitle) // TODO: VERIFY ALL OF THIS
+            recentGuessed.sort {
+              if $0.country == $1.country {
+                return $0.fullTitle.localizedStandardCompare($1.fullTitle) == .orderedAscending
+              } else {
+                return $0.country.localizedStandardCompare($1.country) == .orderedAscending
+              }
+            }
         }
         
         recentGuessed.prefix(showCitiesUpTo).enumerated().forEach {
