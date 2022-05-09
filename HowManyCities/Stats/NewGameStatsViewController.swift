@@ -609,18 +609,28 @@ extension NewGameStatsViewController {
   func refreshCityList(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
     snapshot.deleteItems(inSection: .cityList)
     
-    guard let statsProvider = statsProvider else { return }
+    guard let statsProvider = statsProvider else {
+      snapshot.appendItems([.ordinal(0, 0), .emptyState(.cityList)], toSection: .cityList)
+      return
+    }
     
     var items = [Item]()
     switch selectedSegment {
     case .largest, .smallest:
-        let byPopulation = statsProvider.citiesByPopulation.sorted { $0.key < $1.key }
+        let byPopulation = statsProvider.citiesByPopulation
+        
+        guard !byPopulation.isEmpty else {
+          snapshot.appendItems([.ordinal(0, 0), .emptyState(.cityList)], toSection: .cityList)
+          return
+        }
+        
+        let sortedByPopulation = statsProvider.citiesByPopulation.sorted { $0.key < $1.key }
         var populationSegment: Array<Dictionary<Int, [City]>.Element>.SubSequence // TODO: Y U SO COMPLEX TYPE
         if selectedSegment == .largest {
-          populationSegment = byPopulation.suffix(10)
+          populationSegment = sortedByPopulation.suffix(10)
           populationSegment.reverse()
         } else {
-          populationSegment = byPopulation.prefix(10)
+          populationSegment = sortedByPopulation.prefix(10)
         }
         
         populationSegment.enumerated().forEach {
@@ -635,13 +645,20 @@ extension NewGameStatsViewController {
         }
     case .rarest, .popular:
         // TODO: CODE VERY SIM. 2 ABOVE... is there a way to coalesce?
-        let byRarity = statsProvider.citiesByRarity.sorted { $0.key < $1.key }
+        let byRarity = statsProvider.citiesByRarity
+        
+        guard !byRarity.isEmpty else {
+          snapshot.appendItems([.ordinal(0, 0), .emptyState(.cityList)], toSection: .cityList)
+          return
+        }
+        
+        let sortedByRarity = byRarity.sorted { $0.key < $1.key }
         var raritySegment: Array<Dictionary<Double, [City]>.Element>.SubSequence // TODO: Y U SO COMPLEX TYPE
         if selectedSegment == .popular {
-          raritySegment = byRarity.suffix(10)
+          raritySegment = sortedByRarity.suffix(10)
           raritySegment.reverse()
         } else {
-          raritySegment = byRarity.prefix(10)
+          raritySegment = sortedByRarity.prefix(10)
         }
         
         raritySegment.enumerated().forEach {
@@ -656,7 +673,14 @@ extension NewGameStatsViewController {
         }
     case .all:
         // TODO: ACCOUNT 4 SORTING????? (default mode is recent)
-        statsProvider.recentCitiesGuessed.prefix(showCitiesUpTo).enumerated().forEach {
+        let recentGuessed = statsProvider.recentCitiesGuessed
+        
+        guard !recentGuessed.isEmpty else {
+          snapshot.appendItems([.ordinal(0, 0), .emptyState(.cityList)], toSection: .cityList)
+          return
+        }
+        
+        recentGuessed.prefix(showCitiesUpTo).enumerated().forEach {
           items.append(.ordinal(0, $0 + 1))
           items.append(.city($1))
         }
