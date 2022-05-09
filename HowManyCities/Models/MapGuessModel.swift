@@ -80,40 +80,25 @@ extension MapGuessModel: GameStatisticsProvider {
   }
   
   var citiesByCountry: [String: [City]] {
-//    var countriesDict = [String: [City]]()
-//    guessedCities.forEach {
-//      let country = $0.country
-//      guard !country.isEmpty else { return }
-//      countriesDict[country, default: []].append($0)
-//    }
-//
-//    countriesDict.removeAll(keys: gameConfiguration?.excludeStates ?? [])
-//
-//    return countriesDict
-    
-    var dict = Dictionary(grouping: guessedCities) { $0.country }
+    var dict = Dictionary(grouping: guessedCities, by: \.country)
     dict.removeAll(keys: gameConfiguration?.excludeStates ?? [])
     return dict
   }
   
   var citiesByTerritory: [String: [City]] {
-//    var territoriesDict = [String: [City]]()
-//    guessedCities.forEach {
-//      let territory = $0.territory
-//      guard !territory.isEmpty else { return }
-//      territoriesDict[territory, default: []].append($0)
-//    }
-//
-//    return territoriesDict
-    .init(grouping: guessedCities) { $0.territory }
+    var dict = Dictionary(grouping: guessedCities, by: \.territory)
+    dict.removeAll(keys: [""])
+    return dict
   }
   
   var citiesByRarity: [Double : [City]] {
-    .init(grouping: guessedCities) { $0.percentageOfSessions ?? -1.0 /* TODO: HANDLE THIS CASE */ }
+    var dict = Dictionary(grouping: guessedCities) { $0.percentageOfSessions ?? -1.0 }
+    dict.removeAll(keys: [-1.0])
+    return dict
   }
   
   var citiesByPopulation: [Int : [City]] {
-    .init(grouping: guessedCities) { $0.population }
+    .init(grouping: guessedCities, by: \.population)
   }
   
   var nationalCapitalsGuessed: [City] {
@@ -227,3 +212,7 @@ enum CityGuessError: Error {
     }
   }
 }
+
+
+// WHY THE FUCK isn't there just a generic Error type already in Swift???
+struct GenericError: Error { }

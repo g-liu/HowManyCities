@@ -52,7 +52,7 @@ final class MultiCityPopulationRenderer: ItemRenderer {
     if item.count > 3 {
       let numCitiesRemaining = item.count - 3
       // TODO: Proper pluralization
-      let remainingString = numCitiesRemaining > 1 ? "and \(numCitiesRemaining) others…" : "and \(numCitiesRemaining) other…"
+      let remainingString = numCitiesRemaining > 1 ? "…and \(numCitiesRemaining.commaSeparated) others" : "…and \(numCitiesRemaining) other"
       mas.append(.init(string: "\n\(remainingString)  ", attributes: [.font: UIFont.italicSystemFont(ofSize: UIFont.labelFontSize)]))
     }
     
