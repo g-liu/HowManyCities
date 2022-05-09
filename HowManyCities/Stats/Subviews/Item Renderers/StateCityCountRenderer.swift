@@ -20,7 +20,7 @@ final class StateCityCountRenderer: ItemRenderer {
     }
     // TODO: Proper pluralization
     let pluralizedString = cities.count > 1 ? "cities" : "city"
-    mas.append(.init(string: "\(cities.count) \(pluralizedString)", attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
+    mas.append(.init(string: "\(cities.count.commaSeparated) \(pluralizedString)", attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
                                                                  .foregroundColor: UIColor.systemGray]))
     return mas
   }
