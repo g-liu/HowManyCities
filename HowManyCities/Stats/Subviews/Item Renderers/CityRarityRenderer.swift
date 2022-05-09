@@ -50,7 +50,8 @@ final class MultiCityRarityRenderer: ItemRenderer {
       let numCitiesRemaining = item.count - 3
       // TODO: Proper pluralization
       let remainingString = numCitiesRemaining > 1 ? "…and \(numCitiesRemaining.commaSeparated) others" : "…and \(numCitiesRemaining) other"
-      mas.append(.init(string: "\n\(remainingString)  ", attributes: [.font: UIFont.italicSystemFont(ofSize: UIFont.labelFontSize)]))
+      mas.append(.init(string: "\n\t\(remainingString)  ", attributes: [.font: UIFont.italicSystemFont(ofSize: UIFont.labelFontSize),
+                                                                      .foregroundColor: UIColor.label.withAlphaComponent(0.8)]))
     }
     
     mas.append(.init(string: rarity.asPercentString, attributes: [.font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),

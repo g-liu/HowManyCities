@@ -26,10 +26,6 @@ protocol GameStatisticsProvider: AnyObject {
   
   var nationalCapitalsGuessed: [City] { get }
   
-//  var largestCitiesGuessed: [City] { get }
-//  var smallestCitiesGuessed: [City] { get }
-//  var rarestCitiesGuessed: [City] { get }
-//  var commonCitiesGuessed: [City] { get }
   var recentCitiesGuessed: [City] { get }
   
   func guessedCities(near city: City) -> [City]
@@ -104,31 +100,6 @@ extension MapGuessModel: GameStatisticsProvider {
   var nationalCapitalsGuessed: [City] {
     guessedCities.filter { $0.nationalCapital }
   }
-  
-//  var largestCitiesGuessed: [City] {
-//    citiesGuessedSortedIncreasing.reversed()
-//  }
-//
-//  var smallestCitiesGuessed: [City] {
-//    citiesGuessedSortedIncreasing
-//  }
-  
-//  var rarestCitiesGuessed: [City] {
-//    guessedCities.filter { ($0.percentageOfSessions ?? 1.0) > 0.0 }
-//      .sorted { c1, c2 in
-//        if c1.percentageOfSessions == c2.percentageOfSessions {
-//          return c1.fullTitle.localizedStandardCompare(c2.fullTitle) == .orderedAscending
-//        }
-//        return (c1.percentageOfSessions ?? 0.0) < (c2.percentageOfSessions ?? 0.0)
-//      }
-//  }
-//
-//  var commonCitiesGuessed: [City] {
-//    guessedCities.filter { $0.percentageOfSessions != nil }
-//      .sorted { c1, c2 in
-//        (c1.percentageOfSessions ?? 0.0) > (c2.percentageOfSessions ?? 0.0)
-//      }
-//  }
   
   var recentCitiesGuessed: [City] {
     guessedCities.reversed()
