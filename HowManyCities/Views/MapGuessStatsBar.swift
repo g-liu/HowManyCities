@@ -39,7 +39,7 @@ final class MapGuessStatsBar: UIView {
   private lazy var stackView: UIStackView = {
     let stackView = UIStackView().autolayoutEnabled
     stackView.axis = .horizontal
-    stackView.spacing = 16.0
+    stackView.spacing = 8.0
     
     return stackView
   }()

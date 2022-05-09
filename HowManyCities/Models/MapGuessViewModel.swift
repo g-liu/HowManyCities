@@ -55,6 +55,7 @@ final class MapGuessViewModel: NSObject {
   private func retrieveConfiguration() {
     HMCRequestHandler.shared.retrieveConfiguration { [weak self] config in
       self?.model.gameConfiguration = config
+      self?.delegate?.didReceiveCities([]) // Need to "force" update
     }
   }
   
