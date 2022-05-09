@@ -44,9 +44,9 @@ final class MultiCityRarityRenderer: ItemRenderer {
     let rarity = item.first?.percentageOfSessions ?? 0.0
     
     let mas: NSMutableAttributedString
-    let firstFewCitiesNames = item.prefix(3).map(by: \.nameWithStateAbbr) // TODO: Also add state and country if nec.
+    let firstFewCitiesNames = item.prefix(3).map(by: \.nameWithStateAbbr).joined(separator: "; ") // TODO: Also add state and country if nec.
     let flagString: String = item.flags.isEmpty ? "" : "\(item.flags) "
-    mas = .init(string: "\(flagString)\(firstFewCitiesNames.joined(separator: "; "))")
+    mas = .init(string: "\(flagString)\(firstFewCitiesNames)")
     if item.count > 3 {
       let numCitiesRemaining = item.count - 3
       // TODO: Proper pluralization
