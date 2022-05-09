@@ -793,14 +793,13 @@ extension NewGameStatsViewController: SectionChangeDelegate {
   func didChange(segmentIndex: Int) {
     let newSegment = CitySegment.init(rawValue: segmentIndex) ?? .all
     self.selectedSegment = newSegment
-    showCitiesUpTo = 10
+//    showCitiesUpTo = 10 // TODO: DO NOT FUCKING CHANGE THIS OR ELSE YOU WILL CAUSE A DOUBLE-RELOAD
     
-    // TODO: Verify that we don't need this -- because we're already doing this in changing `showCitiesUpTo`
-//    var snapshot = dataSource.snapshot()
-//    refreshCityList(&snapshot)
-//    snapshot.reloadSections([.cityList])
-//
-//    dataSource.apply(snapshot)
+    var snapshot = dataSource.snapshot()
+    refreshCityList(&snapshot)
+    snapshot.reloadSections([.cityList])
+
+    dataSource.apply(snapshot)
   }
   
   func didTapSortCities() {
