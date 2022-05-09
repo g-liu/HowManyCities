@@ -376,11 +376,11 @@ final class NewGameStatsViewController: UIViewController {
       
       switch itemIdentifier {
         case .cityList:
-          configuration.text = "You haven't guessed any cities yet\nCities you guess will appear here."
+          configuration.text = "You haven't guessed any cities yet.\nCities you guess will appear here."
         case .stateList:
-          configuration.text = "You haven't guessed any countries yet\nCountries of cities you guess will appear here."
+          configuration.text = "You haven't guessed any countries yet.\nCountries of cities you guess will appear here."
         case .territoryList:
-          configuration.text = "You haven't guessed any territories yet\nTerritories of cities you guess will appear here."
+          configuration.text = "You haven't guessed any territories yet.\nTerritories of cities you guess will appear here."
         default:
           break
       }
