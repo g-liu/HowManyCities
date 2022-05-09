@@ -110,18 +110,42 @@ final class NewGameStatsViewController: UIViewController {
   
   // TODO: MOVE THE BELOW CODE TO A SEPARATE RENDERER????
   // OR at least the logic needs to be encapsulated elsewhere
-  enum CountryRenderingMode: CaseIterable {
+  
+  enum CitySortMode: CaseIterable {
+    case aToZ
+    case recent
+    case countryAToZ
+    case population
+    
+    // TODO: Could make ext?
+    var nextMode: Self {
+      let nextIndex = ((Self.allCases.firstIndex(of: self) ?? -1) + 1) % Self.allCases.count
+      return Self.allCases[nextIndex]
+    }
+  }
+  
+  enum StateSortMode: CaseIterable {
     case cityCount
     case population
     
     var nextMode: Self {
-      // TODO: Shit impl but this will suffice 4 now
-      if self == .cityCount { return .population }
-      else { return .cityCount }
+      let nextIndex = ((Self.allCases.firstIndex(of: self) ?? -1) + 1) % Self.allCases.count
+      return Self.allCases[nextIndex]
     }
   }
   
-  private var stateRenderingMode: CountryRenderingMode = .cityCount {
+  private var citySortMode: CitySortMode = .recent {
+    didSet {
+      var snapshot = dataSource.snapshot()
+      refreshCityList(&snapshot)
+      
+      snapshot.reconfigureItems(inSection: .cityList)
+      
+      dataSource.apply(snapshot)
+    }
+  }
+  
+  private var stateSortMode: StateSortMode = .cityCount {
     didSet {
       var snapshot = dataSource.snapshot()
       refreshStateList(&snapshot)
@@ -138,24 +162,54 @@ final class NewGameStatsViewController: UIViewController {
   
   private var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
   
+  // TODO: This is getting so large it should be moved to a view model...
   private var cities: [Item] {
-    let cityList: [Item]
+    var cityList: [City]
     switch selectedSegment {
       case .smallest:
-        cityList = statsProvider?.smallestCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
+        cityList = statsProvider?.smallestCitiesGuessed.prefix(10).asArray ?? []
       case .rarest:
-        cityList = statsProvider?.rarestCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
+        cityList = statsProvider?.rarestCitiesGuessed.prefix(10).asArray ?? []
       case .popular:
-        cityList = statsProvider?.commonCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
+        cityList = statsProvider?.commonCitiesGuessed.prefix(10).asArray ?? []
       case .all:
-        cityList = statsProvider?.recentCitiesGuessed.map(Item.city).prefix(showCitiesUpTo).asArray ?? []
+        cityList = statsProvider?.recentCitiesGuessed ?? []
+        
+        // TODO: This restriction on sorting (only in `.all` mode) should be exposed on the UI!!!
+        switch citySortMode {
+          case .aToZ:
+            cityList.sort {
+              $0.fullTitle.localizedStandardCompare($1.fullTitle) == .orderedAscending
+            }
+          case .recent:
+            break // statsProvider gives in this order, nothing to do here
+          case .countryAToZ:
+            cityList.sort {
+              let countryCompare = $0.country.localizedStandardCompare($1.country)
+              if countryCompare == .orderedSame {
+                return $0.fullTitle.localizedStandardCompare($1.fullTitle) == .orderedAscending
+              } else {
+                return countryCompare == .orderedAscending
+              }
+            }
+          case .population:
+            cityList.sort {
+              if $0.population == $1.population {
+                return $0.fullTitle.localizedStandardCompare($1.fullTitle) == .orderedAscending
+              } else {
+                return $0.population > $1.population
+              }
+            }
+        }
+        
+        cityList = cityList.prefix(showCitiesUpTo).asArray
       case .largest:
         fallthrough
       default:
-        cityList = statsProvider?.largestCitiesGuessed.map(Item.city).prefix(10).asArray ?? []
+        cityList = statsProvider?.largestCitiesGuessed.prefix(10).asArray ?? []
     }
     
-    return cityList
+    return cityList.map(Item.city)
   }
   
   private lazy var collectionView: UICollectionView = {
@@ -277,7 +331,7 @@ final class NewGameStatsViewController: UIViewController {
       }
       var configuration = UIListContentConfiguration.cell()
       
-      switch self.stateRenderingMode {
+      switch self.stateSortMode {
         case .population:
           configuration.attributedText = StateTotalPopulationRenderer().string((stateName, cities))
         case .cityCount:
@@ -332,9 +386,9 @@ final class NewGameStatsViewController: UIViewController {
       switch section {
         case .cityList:
           supplementaryView.text = self.selectedSegment.description
-          supplementaryView.configure(selectedSegmentIndex: self.selectedSegment.rawValue, segmentTitles: CitySegment.asNames)
+          supplementaryView.configure(selectedSegmentIndex: self.selectedSegment.rawValue, segmentTitles: CitySegment.asNames, sortCb: self.didTapSortCities)
         case .stateList, .territoryList:
-          supplementaryView.configure { self.didTapSort() }
+          supplementaryView.configure(sortCb: self.didTapSortStates)
         case .otherStats:
           break
       }
@@ -535,7 +589,7 @@ extension NewGameStatsViewController {
     }
     
     let sortedStates: [(String, [City])]
-    if stateRenderingMode == .cityCount {
+    if stateSortMode == .cityCount {
       sortedStates = statsProvider.citiesByCountry.sorted(by: compareCityCount(_:_:))
     } else {
       sortedStates = statsProvider.citiesByCountry.sorted(by: comparePopulation(_:_:))
@@ -556,7 +610,7 @@ extension NewGameStatsViewController {
     }
     
     let sortedTerritories: [(String, [City])]
-    if stateRenderingMode == .cityCount {
+    if stateSortMode == .cityCount {
       sortedTerritories = statsProvider.citiesByTerritory.sorted(by: compareCityCount(_:_:))
     } else {
       sortedTerritories = statsProvider.citiesByTerritory.sorted(by: comparePopulation(_:_:))
@@ -595,8 +649,12 @@ extension NewGameStatsViewController: SectionChangeDelegate {
     dataSource.apply(snapshot)
   }
   
-  func didTapSort() {
-    stateRenderingMode = stateRenderingMode.nextMode
+  func didTapSortCities() {
+    citySortMode = citySortMode.nextMode
+  }
+  
+  func didTapSortStates() {
+    stateSortMode = stateSortMode.nextMode
   }
 }
 
