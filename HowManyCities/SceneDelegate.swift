@@ -15,9 +15,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
     guard let windowScene = (scene as? UIWindowScene) else { return }
     
-//    let path = Bundle.main.url(forResource: "user-inputted-every-country", withExtension: "json")!
+//    let token: Int = 572278
+//    let path = URL(string: "https://iafisher.com/projects/cities/api/load?quiz=world&token=\(token)")!
+////    let path = Bundle.main.url(forResource: "ukraine-montenegro-slovenia", withExtension: "json")!
 //    let data = try! Data(contentsOf: path, options: .mappedIfSafe)
 //    let cities = try! JSONDecoder().decode(Cities.self, from: data)
+    
+    
+    
+    
+    // If you need massive amounts of test data...
+    // How about EVERY SINGLE CITY???
+    // https://docs.google.com/document/d/e/2PACX-1vQFFpGe37TNu7X4_Y8aPijZnTT00t449LjC1xndpP-o839B3hbnQgEKLtKzpCvjQ-TzqyrE3Nn6VuYK/pub
     
     
     let window = UIWindow(windowScene: windowScene)
