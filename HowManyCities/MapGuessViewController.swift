@@ -108,11 +108,19 @@ final class MapGuessViewController: UIViewController {
     .init().autolayoutEnabled
   }()
   
-  override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-    viewModel = .init()
-    super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+  init(cities: Cities? = nil) {
+    viewModel = .init(cities: cities)
+    
+    super.init(nibName: nil, bundle: nil)
+    
     viewModel.delegate = self
   }
+  
+//  override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+//    viewModel = .init()
+//    super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+//    viewModel.delegate = self
+//  }
   
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
@@ -363,16 +371,13 @@ extension MapGuessViewController: MapGuessDelegate {
       self.cityInputTextField.text = ""
       self.updateMap(.init(cities))
       
-      /*if cities.count > 1 {
-       let center = cities.reduce(.init(latitude: 0, longitude: 0)) { acc, curr -> CLLocationCoordinate2D in
-       return acc + curr.coordinates
-       } / cities.count
-       self.mapView.setCenter(center, animated: true)
-       } else */if let lastCity = cities.last {
+      if let lastCity = cities.last {
          self.mapView.setCenter(lastCity.coordinates, animated: true)
        }
       
-      self.showToast("+\(cities.totalPopulation.abbreviated)", toastType: .population)
+      if !cities.isEmpty {
+        self.showToast("+\(cities.totalPopulation.abbreviated)", toastType: .population)
+      }
     }
   }
   
