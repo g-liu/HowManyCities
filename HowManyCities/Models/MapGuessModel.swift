@@ -21,13 +21,15 @@ protocol GameStatisticsProvider: AnyObject {
   
   var citiesByCountry: [String: [City]] { get }
   var citiesByTerritory: [String: [City]] { get }
+  var citiesByPopulation: [Int: [City]] { get }
+  var citiesByRarity: [Double: [City]] { get }
   
   var nationalCapitalsGuessed: [City] { get }
   
-  var largestCitiesGuessed: [City] { get }
-  var smallestCitiesGuessed: [City] { get }
-  var rarestCitiesGuessed: [City] { get }
-  var commonCitiesGuessed: [City] { get }
+//  var largestCitiesGuessed: [City] { get }
+//  var smallestCitiesGuessed: [City] { get }
+//  var rarestCitiesGuessed: [City] { get }
+//  var commonCitiesGuessed: [City] { get }
   var recentCitiesGuessed: [City] { get }
   
   func guessedCities(near city: City) -> [City]
@@ -78,57 +80,70 @@ extension MapGuessModel: GameStatisticsProvider {
   }
   
   var citiesByCountry: [String: [City]] {
-    var countriesDict = [String: [City]]()
-    guessedCities.forEach {
-      let country = $0.country
-      guard !country.isEmpty else { return }
-      countriesDict[country, default: []].append($0)
-    }
+//    var countriesDict = [String: [City]]()
+//    guessedCities.forEach {
+//      let country = $0.country
+//      guard !country.isEmpty else { return }
+//      countriesDict[country, default: []].append($0)
+//    }
+//
+//    countriesDict.removeAll(keys: gameConfiguration?.excludeStates ?? [])
+//
+//    return countriesDict
     
-    countriesDict.removeAll(keys: gameConfiguration?.excludeStates ?? [])
-    
-    return countriesDict
+    var dict = Dictionary(grouping: guessedCities) { $0.country }
+    dict.removeAll(keys: gameConfiguration?.excludeStates ?? [])
+    return dict
   }
   
   var citiesByTerritory: [String: [City]] {
-    var territoriesDict = [String: [City]]()
-    guessedCities.forEach {
-      let territory = $0.territory
-      guard !territory.isEmpty else { return }
-      territoriesDict[territory, default: []].append($0)
-    }
-    
-    return territoriesDict
+//    var territoriesDict = [String: [City]]()
+//    guessedCities.forEach {
+//      let territory = $0.territory
+//      guard !territory.isEmpty else { return }
+//      territoriesDict[territory, default: []].append($0)
+//    }
+//
+//    return territoriesDict
+    .init(grouping: guessedCities) { $0.territory }
+  }
+  
+  var citiesByRarity: [Double : [City]] {
+    .init(grouping: guessedCities) { $0.percentageOfSessions ?? -1.0 /* TODO: HANDLE THIS CASE */ }
+  }
+  
+  var citiesByPopulation: [Int : [City]] {
+    .init(grouping: guessedCities) { $0.population }
   }
   
   var nationalCapitalsGuessed: [City] {
     guessedCities.filter { $0.nationalCapital }
   }
   
-  var largestCitiesGuessed: [City] {
-    citiesGuessedSortedIncreasing.reversed()
-  }
+//  var largestCitiesGuessed: [City] {
+//    citiesGuessedSortedIncreasing.reversed()
+//  }
+//
+//  var smallestCitiesGuessed: [City] {
+//    citiesGuessedSortedIncreasing
+//  }
   
-  var smallestCitiesGuessed: [City] {
-    citiesGuessedSortedIncreasing
-  }
-  
-  var rarestCitiesGuessed: [City] {
-    guessedCities.filter { ($0.percentageOfSessions ?? 1.0) > 0.0 }
-      .sorted { c1, c2 in
-        if c1.percentageOfSessions == c2.percentageOfSessions {
-          return c1.fullTitle.localizedStandardCompare(c2.fullTitle) == .orderedAscending
-        }
-        return (c1.percentageOfSessions ?? 0.0) < (c2.percentageOfSessions ?? 0.0)
-      }
-  }
-  
-  var commonCitiesGuessed: [City] {
-    guessedCities.filter { $0.percentageOfSessions != nil }
-      .sorted { c1, c2 in
-        (c1.percentageOfSessions ?? 0.0) > (c2.percentageOfSessions ?? 0.0)
-      }
-  }
+//  var rarestCitiesGuessed: [City] {
+//    guessedCities.filter { ($0.percentageOfSessions ?? 1.0) > 0.0 }
+//      .sorted { c1, c2 in
+//        if c1.percentageOfSessions == c2.percentageOfSessions {
+//          return c1.fullTitle.localizedStandardCompare(c2.fullTitle) == .orderedAscending
+//        }
+//        return (c1.percentageOfSessions ?? 0.0) < (c2.percentageOfSessions ?? 0.0)
+//      }
+//  }
+//
+//  var commonCitiesGuessed: [City] {
+//    guessedCities.filter { $0.percentageOfSessions != nil }
+//      .sorted { c1, c2 in
+//        (c1.percentageOfSessions ?? 0.0) > (c2.percentageOfSessions ?? 0.0)
+//      }
+//  }
   
   var recentCitiesGuessed: [City] {
     guessedCities.reversed()

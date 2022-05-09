@@ -19,6 +19,9 @@ class CityInfoViewController: UIViewController {
       let upperDivisionText: String
       let numberOfLines = isShowingFullTitle ? 0 : 2
       
+      // City name disambiguation is sometimes presented in parentheses
+      // Ex. the city of Fugging (Upper Austria)
+      // We want to render as Fugging instead.
       let upperDivisionSuffix = isShowingFullTitle ? city.upperDivisionTitle : city.upperDivisionTitleWithAbbr
       let regex = try! NSRegularExpression(pattern: #"\s+\((.+)\)"#)
       let matches = regex.matches(in: city.name, range: city.name.entireRange)

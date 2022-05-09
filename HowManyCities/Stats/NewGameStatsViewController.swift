@@ -40,6 +40,7 @@ final class NewGameStatsViewController: UIViewController {
   enum Item: Hashable {
     case ordinal(Int /* section index */, Int /* actual number */)
     case city(City)
+    case multiCity([City])
     case state(String /* state name */, [City])
     case formattedStat(Ratio, String)
     case emptyState(Section)
@@ -163,54 +164,54 @@ final class NewGameStatsViewController: UIViewController {
   private var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
   
   // TODO: This is getting so large it should be moved to a view model...
-  private var cities: [Item] {
-    var cityList: [City]
-    switch selectedSegment {
-      case .smallest:
-        cityList = statsProvider?.smallestCitiesGuessed ?? []
-      case .rarest:
-        cityList = statsProvider?.rarestCitiesGuessed ?? []
-      case .popular:
-        cityList = statsProvider?.commonCitiesGuessed ?? []
-      case .all:
-        cityList = statsProvider?.recentCitiesGuessed ?? []
-        
-        // TODO: This restriction on sorting (only in `.all` mode) should be exposed on the UI!!!
-        switch citySortMode {
-          case .aToZ:
-            cityList.sort {
-              $0.fullTitle.localizedStandardCompare($1.fullTitle) == .orderedAscending
-            }
-          case .recent:
-            break // statsProvider gives in this order, nothing to do here
-          case .countryAToZ:
-            cityList.sort {
-              let countryCompare = $0.country.localizedStandardCompare($1.country)
-              if countryCompare == .orderedSame {
-                return $0.fullTitle.localizedStandardCompare($1.fullTitle) == .orderedAscending
-              } else {
-                return countryCompare == .orderedAscending
-              }
-            }
-          case .population:
-            cityList.sort {
-              if $0.population == $1.population {
-                return $0.fullTitle.localizedStandardCompare($1.fullTitle) == .orderedAscending
-              } else {
-                return $0.population > $1.population
-              }
-            }
-        }
-        
-//        cityList = cityList.prefix(showCitiesUpTo).asArray
-      case .largest:
-        fallthrough
-      default:
-        cityList = statsProvider?.largestCitiesGuessed ?? []
-    }
-    
-    return cityList.map(Item.city)
-  }
+//  private var cities: [City] {
+//    var cityList: [City]
+//    switch selectedSegment {
+//      case .smallest:
+//        cityList = statsProvider?.smallestCitiesGuessed ?? []
+//      case .rarest:
+//        cityList = statsProvider?.rarestCitiesGuessed ?? []
+//      case .popular:
+//        cityList = statsProvider?.commonCitiesGuessed ?? []
+//      case .all:
+//        cityList = statsProvider?.recentCitiesGuessed ?? []
+//
+//        // TODO: This restriction on sorting (only in `.all` mode) should be exposed on the UI!!!
+//        switch citySortMode {
+//          case .aToZ:
+//            cityList.sort {
+//              $0.fullTitle.localizedStandardCompare($1.fullTitle) == .orderedAscending
+//            }
+//          case .recent:
+//            break // statsProvider gives in this order, nothing to do here
+//          case .countryAToZ:
+//            cityList.sort {
+//              let countryCompare = $0.country.localizedStandardCompare($1.country)
+//              if countryCompare == .orderedSame {
+//                return $0.fullTitle.localizedStandardCompare($1.fullTitle) == .orderedAscending
+//              } else {
+//                return countryCompare == .orderedAscending
+//              }
+//            }
+//          case .population:
+//            cityList.sort {
+//              if $0.population == $1.population {
+//                return $0.fullTitle.localizedStandardCompare($1.fullTitle) == .orderedAscending
+//              } else {
+//                return $0.population > $1.population
+//              }
+//            }
+//        }
+//
+////        cityList = cityList.prefix(showCitiesUpTo).asArray
+//      case .largest:
+//        fallthrough
+//      default:
+//        cityList = statsProvider?.largestCitiesGuessed ?? []
+//    }
+//
+//    return cityList //.map(Item.city)
+//  }
   
   private lazy var collectionView: UICollectionView = {
     let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider = { (sectionIndex, environment) -> NSCollectionLayoutSection? in
@@ -325,6 +326,17 @@ final class NewGameStatsViewController: UIViewController {
       cell.contentConfiguration = configuration
     }
     
+    let multiCityCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, [City]> { cell, indexPath, itemIdentifier in
+      var configuration = UIListContentConfiguration.cell()
+      if self.selectedSegment == .rarest || self.selectedSegment == .popular {
+        configuration.attributedText = MultiCityRarityRenderer().string(itemIdentifier)
+      } else {
+        configuration.attributedText = MultiCityPopulationRenderer().string(itemIdentifier)
+      }
+      
+      cell.contentConfiguration = configuration
+    }
+    
     let stateCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Item> { cell, indexPath, itemIdentifier in
       guard case let .state(stateName, cities) = itemIdentifier else {
         return
@@ -386,7 +398,10 @@ final class NewGameStatsViewController: UIViewController {
       switch section {
         case .cityList:
           supplementaryView.text = self.selectedSegment.description
-          supplementaryView.configure(selectedSegmentIndex: self.selectedSegment.rawValue, segmentTitles: CitySegment.asNames, sortCb: self.selectedSegment == .all ? self.didTapSortCities : nil)
+          supplementaryView.configure(selectedSegmentIndex: self.selectedSegment.rawValue, segmentTitles: CitySegment.asNames, sortCb: self.selectedSegment == .all ? self.didTapSortCities : nil) // TODO: I'm having second thoughts about sorting, why not just enable the "show all" button for the other categories?
+          // And we could reduce most/least populated into 1 segment, same with popular/rarest, and then in the third tab
+          // can sort alphabetically, alphabetically by country, recently, or...
+          // MAYBE JUST HAVE 1 CATEGORY WITH DIFFERENT SORTT OPTIONS?? LIKE F*CK THE SEGMENT
         case .stateList, .territoryList:
           supplementaryView.configure(sortCb: self.didTapSortStates)
         case .otherStats:
@@ -441,6 +456,8 @@ final class NewGameStatsViewController: UIViewController {
           return collectionView.dequeueConfiguredReusableCell(using: ordinalCellRegistration, for: indexPath, item: itemIdentifier)
         case .city(let city):
           return collectionView.dequeueConfiguredReusableCell(using: cityCellRegistration, for: indexPath, item: city)
+        case .multiCity(let cities):
+          return collectionView.dequeueConfiguredReusableCell(using: multiCityCellRegistration, for: indexPath, item: cities)
         case .state(_, _):
           return collectionView.dequeueConfiguredReusableCell(using: stateCellRegistration, for: indexPath, item: itemIdentifier)
         case .formattedStat(_, _):
@@ -518,31 +535,32 @@ extension NewGameStatsViewController: UICollectionViewDelegate {
   }
   
   // TODO: Figure out why the iPod touch simulator isn't calling this consistently
-  func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-    guard let section = Section(rawValue: indexPath.section) else { return }
-    switch section {
-      case .cityList:
-        let normalizedIndex = (indexPath.row - indexPath.row%2) / 2
-        if cities.isIndexValid(normalizedIndex),
-           case let .city(city) = cities[normalizedIndex] {
-          let cityVC = CityInfoViewController()
-          cityVC.statsProvider = statsProvider
-          cityVC.city = city
-          
-          navigationController?.pushViewController(cityVC)
-        }
-        
-        // TODO: Coming soon...
-        //      case .stateList,
-//          .territoryList:
-//        let stateVC = StateInfoViewController()
-//        stateVC.state = /* ???? */
+  // TODO: Disabled for now while we try to restructure the cells that display these cities
+//  func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+//    guard let section = Section(rawValue: indexPath.section) else { return }
+//    switch section {
+//      case .cityList:
+//        let normalizedIndex = (indexPath.row - indexPath.row%2) / 2
+//        if cities.isIndexValid(normalizedIndex) {
+//          let city = cities[normalizedIndex]
+//          let cityVC = CityInfoViewController()
+//          cityVC.statsProvider = statsProvider
+//          cityVC.city = city
 //
-//        navigationController?.pushViewController(stateVC)
-      default:
-        break
-    }
-  }
+//          navigationController?.pushViewController(cityVC)
+//        }
+//
+//        // TODO: Coming soon...
+//        //      case .stateList,
+////          .territoryList:
+////        let stateVC = StateInfoViewController()
+////        stateVC.state = /* ???? */
+////
+////        navigationController?.pushViewController(stateVC)
+//      default:
+//        break
+//    }
+//  }
 }
 
 // MARK: - Data source snapshot management
@@ -553,22 +571,134 @@ extension NewGameStatsViewController {
   func refreshCityList(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
     snapshot.deleteItems(inSection: .cityList)
     
-    guard !cities.isEmpty else {
-      snapshot.appendItems([.ordinal(0, 0), .emptyState(Section.cityList)], toSection: .cityList)
-      return
-    }
+    guard let statsProvider = statsProvider else { return }
     
-    let shownCities: [Item]
+    var items = [Item]()
     switch selectedSegment {
-      case .largest, .smallest, .popular, .rarest:
-        shownCities = cities.prefix(10).asArray
-      case .all:
-        shownCities = cities.prefix(showCitiesUpTo).asArray
+    case .largest, .smallest:
+        let byPopulation = statsProvider.citiesByPopulation.sorted { $0.key < $1.key }
+        var populationSegment: Array<Dictionary<Int, [City]>.Element>.SubSequence // TODO: Y U SO COMPLEX TYPE
+        if selectedSegment == .largest {
+          populationSegment = byPopulation.suffix(10)
+          populationSegment.reverse()
+        } else {
+          populationSegment = byPopulation.prefix(10)
+        }
+        
+        populationSegment.enumerated().forEach {
+          items.append(.ordinal(0, $0 + 1))
+          if $1.value.count > 1 {
+            items.append(.multiCity($1.value))
+          } else if let firstCity = $1.value.first {
+            items.append(.city(firstCity))
+          } else {
+            print("WTF THIS SHOULD NEVER HAPPEN 2")
+          }
+        }
+    case .rarest, .popular:
+        // TODO: CODE VERY SIM. 2 ABOVE... is there a way to coalesce?
+        let byRarity = statsProvider.citiesByRarity.sorted { $0.key < $1.key }
+        var raritySegment: Array<Dictionary<Double, [City]>.Element>.SubSequence // TODO: Y U SO COMPLEX TYPE
+        if selectedSegment == .popular {
+          raritySegment = byRarity.suffix(10)
+          raritySegment.reverse()
+        } else {
+          raritySegment = byRarity.prefix(10)
+        }
+        
+        raritySegment.enumerated().forEach {
+          items.append(.ordinal(0, $0 + 1))
+          if $1.value.count > 1 {
+            items.append(.multiCity($1.value))
+          } else if let firstCity = $1.value.first {
+            items.append(.city(firstCity))
+          } else {
+            print("WTF THIS SHOULD NEVER HAPPEN 2")
+          }
+        }
+    case .all:
+        // TODO: ACCOUNT 4 SORTING????? (default mode is recent)
+        statsProvider.recentCitiesGuessed.prefix(showCitiesUpTo).enumerated().forEach {
+          items.append(.ordinal(0, $0 + 1))
+          items.append(.city($1))
+        }
     }
     
-    shownCities.enumerated().forEach {
-      snapshot.appendItems([.ordinal(0, $0+1), $1], toSection: .cityList)
-    }
+    snapshot.appendItems(items, toSection: .cityList)
+    
+//    guard !cities.isEmpty else {
+//      snapshot.appendItems([.ordinal(0, 0), .emptyState(Section.cityList)], toSection: .cityList)
+//      return
+//    }
+    
+//    let shownCities: [Item]
+//    switch selectedSegment {
+//      case .largest, .smallest, .popular, .rarest:
+//        shownCities = cities.prefix(10).asArray
+//      case .all:
+//        shownCities = cities.prefix(showCitiesUpTo).asArray
+//    }
+    
+//  outerLoop: for (index, city) in cities.enumerated() {
+//      if index == 0 {
+//        displayedItems.append(.ordinal(0, 0))
+//        displayedItems.append(.city(city))
+//        continue
+//      }
+//
+//      let lastCity = cities[index-1]
+//
+//      // We want to aggregate cities together when possible
+//      // This depends on the selected segment and how we're sorting
+//      switch selectedSegment {
+//        case .largest, .smallest:
+//          // by population...
+//          if lastCity.population == city.population,
+//             let lastDisplayItem = displayedItems.last {
+//            if case var .multiCity(displayItemCities) = lastDisplayItem {
+//              displayedItems.removeLast()
+//              displayItemCities.append(city)
+//              let itemToInsert = Item.multiCity(displayItemCities)
+//              displayedItems.append(itemToInsert)
+//            } else if case let .city(displayItemCity) = lastDisplayItem {
+//              displayedItems.removeLast()
+//              let itemToInsert = Item.multiCity([displayItemCity, city])
+//              displayedItems.append(itemToInsert)
+//            }
+//          } else {
+//            displayedItems.append(.city(city))
+//          }
+//
+//          if displayedItems.count > 2*showCitiesUpTo { break outerLoop }
+//        case .popular, .rarest:
+//          // by rarity...
+//          // TODO: UNDUPLICATE THIS LOGIC GOD HELP US
+//          if lastCity.percentageOfSessions == city.percentageOfSessions,
+//             let lastDisplayItem = displayedItems.last {
+//            if case var .multiCity(displayItemCities) = lastDisplayItem {
+//              displayedItems.removeLast()
+//              displayItemCities.append(city)
+//              let itemToInsert = Item.multiCity(displayItemCities)
+//              displayedItems.append(itemToInsert)
+//            } else if case let .city(displayItemCity) = lastDisplayItem {
+//              displayedItems.removeLast()
+//              let itemToInsert = Item.multiCity([displayItemCity, city])
+//              displayedItems.append(itemToInsert)
+//            }
+//          } else {
+//            displayedItems.append(.city(city))
+//          }
+//
+//          if displayedItems.count > 2*showCitiesUpTo { break outerLoop }
+//        case .all:
+//          // TODO: IMPLEMENT
+//          displayedItems.append(.city(city))
+//      }
+//    }
+    
+//    shownCities.enumerated().forEach {
+//      snapshot.appendItems([.ordinal(0, $0+1), $1], toSection: .cityList)
+//    }
   }
   
   private func comparePopulation(_ lhs: (String, [City]), _ rhs: (String, [City])) -> Bool {
@@ -650,11 +780,12 @@ extension NewGameStatsViewController: SectionChangeDelegate {
     self.selectedSegment = newSegment
     showCitiesUpTo = 10
     
-    var snapshot = dataSource.snapshot()
-    refreshCityList(&snapshot)
-    snapshot.reloadSections([.cityList])
-    
-    dataSource.apply(snapshot)
+    // TODO: Verify that we don't need this -- because we're already doing this in changing `showCitiesUpTo`
+//    var snapshot = dataSource.snapshot()
+//    refreshCityList(&snapshot)
+//    snapshot.reloadSections([.cityList])
+//
+//    dataSource.apply(snapshot)
   }
   
   func didTapSortCities() {
