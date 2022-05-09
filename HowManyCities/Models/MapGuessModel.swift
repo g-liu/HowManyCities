@@ -114,9 +114,12 @@ extension MapGuessModel: GameStatisticsProvider {
   }
   
   var rarestCitiesGuessed: [City] {
-    guessedCities.filter { $0.percentageOfSessions != nil }
+    guessedCities.filter { ($0.percentageOfSessions ?? 1.0) > 0.0 }
       .sorted { c1, c2 in
-        (c1.percentageOfSessions ?? 0.0) < (c2.percentageOfSessions ?? 0.0)
+        if c1.percentageOfSessions == c2.percentageOfSessions {
+          return c1.fullTitle.localizedStandardCompare(c2.fullTitle) == .orderedAscending
+        }
+        return (c1.percentageOfSessions ?? 0.0) < (c2.percentageOfSessions ?? 0.0)
       }
   }
   
