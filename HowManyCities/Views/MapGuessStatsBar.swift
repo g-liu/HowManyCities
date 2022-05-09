@@ -104,7 +104,7 @@ final class CounterLabel: UILabel {
   private var formattedCount: String {
     switch formatOption {
       case .integer:
-        return "\(count.asInt)"
+        return "\(count.asInt.commaSeparated)"
       case .abbreviatedInteger:
         return "\(count.asInt.abbreviated)"
       case .percent:

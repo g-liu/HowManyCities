@@ -181,14 +181,22 @@ class CityInfoViewController: UIViewController {
       nearbyCities.enumerated().forEach {
         if $1 == city { return }
         
-        let distanceInKm = Int(round(city.distance(to: $1) / 1000.0))
+        let distanceInKm = city.distance(to: $1) / 1000.0
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .decimal
+        if distanceInKm > 0 {
+          numberFormatter.maximumFractionDigits = Int(max(0, ceil(-log10(distanceInKm) + 1.0)))
+        } else {
+          numberFormatter.maximumFractionDigits = 0
+        }
+        let distanceInKmString = numberFormatter.string(from: distanceInKm as NSNumber) ?? String(distanceInKm)
+        
         let bearing = city.bearing(to: $1)
         
         let nearbyCityLabel = UILabel(text: "", style: .body).autolayoutEnabled
         let cityTitle = name(for: $1, comparedTo: city)
-        let mas = NSMutableAttributedString(string: "\(cityTitle) ")
-        mas.append(.init(string: "\(distanceInKm.commaSeparated)km \(bearing.asArrow)", attributes: [.foregroundColor: UIColor.systemGray]))
-//        mas.append(.init(string: "\(bearing.asArrow)", attributes: [.font: UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)]))
+        let mas = NSMutableAttributedString(string: "\(cityTitle)  ")
+        mas.append(.init(string: "\(distanceInKmString)km \(bearing.asArrow)", attributes: [.foregroundColor: UIColor.systemGray]))
         nearbyCityLabel.attributedText = mas
         
         nearbyCityLabel.tag = $0
