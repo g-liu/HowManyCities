@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import Combine
+//import Combine
 
 final class GameStatsViewController: UIViewController {
   struct ElementKind {
@@ -45,41 +45,7 @@ final class GameStatsViewController: UIViewController {
     case emptyState(Section)
   }
   
-  enum CitySegment: Int, CaseIterable, CustomStringConvertible {
-    case largest
-    case smallest
-    case rarest
-    case popular
-    case all
-    
-    var name: String {
-      switch self {
-        case .largest: return "Largest"
-        case .smallest: return "Smallest"
-        case .rarest: return "Rarest"
-        case .popular: return "Popular"
-        case .all: return "All"
-      }
-    }
-    
-    var description: String {
-      switch self {
-        case .largest: return "Largest cities"
-        case .smallest: return "Smallest cities"
-        case .rarest: return "Rarest guessed"
-        case .popular: return "Commonly guessed"
-        case .all: return "All cities"
-      }
-    }
-    
-    static var asNames: [String] {
-      allCases.map(by: \.name)
-    }
-  }
-  
-  private let pagingInfoSubject = PassthroughSubject<PagingInfo, Never>()
-  
-  private var selectedSegment: CitySegment = .largest
+//  private let pagingInfoSubject = PassthroughSubject<PagingInfo, Never>()
   
   private var showCitiesUpTo: Int = 10 {
     didSet {
@@ -264,11 +230,12 @@ final class GameStatsViewController: UIViewController {
     
     let cityCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, City> { cell, indexPath, itemIdentifier in
       var configuration = UIListContentConfiguration.cell()
-      if self.selectedSegment == .rarest || self.selectedSegment == .popular {
-        configuration.attributedText = CityRarityRenderer().string(itemIdentifier)
-      } else {
+      // TODO: I'll be back
+//      if self.selectedSegment == .rarest || self.selectedSegment == .popular {
+//        configuration.attributedText = CityRarityRenderer().string(itemIdentifier)
+//      } else {
         configuration.attributedText = CityPopulationRenderer().string(itemIdentifier)
-      }
+//      }
       configuration.directionalLayoutMargins.leading = 0
       configuration.directionalLayoutMargins.trailing = 0
       
@@ -277,11 +244,11 @@ final class GameStatsViewController: UIViewController {
     
     let multiCityCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, [City]> { cell, indexPath, itemIdentifier in
       var configuration = UIListContentConfiguration.cell()
-      if self.selectedSegment == .rarest || self.selectedSegment == .popular {
-        configuration.attributedText = MultiCityRarityRenderer().string(itemIdentifier)
-      } else {
+//      if self.selectedSegment == .rarest || self.selectedSegment == .popular {
+//        configuration.attributedText = MultiCityRarityRenderer().string(itemIdentifier)
+//      } else {
         configuration.attributedText = MultiCityPopulationRenderer().string(itemIdentifier)
-      }
+//      }
       configuration.directionalLayoutMargins.leading = 0
       configuration.directionalLayoutMargins.trailing = 0
       cell.contentConfiguration = configuration
@@ -339,7 +306,6 @@ final class GameStatsViewController: UIViewController {
     }
     
     let headerRegistration = UICollectionView.SupplementaryRegistration<CollectionViewHeaderReusableView>(elementKind: ElementKind.header) { supplementaryView, elementKind, indexPath in
-      supplementaryView.delegate = self
       supplementaryView.backgroundColor = .systemBackground
       
       guard let section = Section(rawValue: indexPath.section) else { return }
@@ -347,11 +313,10 @@ final class GameStatsViewController: UIViewController {
       
       switch section {
         case .cityList:
-          supplementaryView.text = self.selectedSegment.description
-          supplementaryView.configure(selectedSegmentIndex: self.selectedSegment.rawValue, segmentTitles: CitySegment.asNames, sortCb: self.selectedSegment == .all ? self.didTapSortCities : nil) // TODO: I'm having second thoughts about sorting, why not just enable the "show all" button for the other categories?
-          // And we could reduce most/least populated into 1 segment, same with popular/rarest, and then in the third tab
+          // TODO: And we could reduce most/least populated into 1 segment, same with popular/rarest, and then in the third tab
           // can sort alphabetically, alphabetically by country, recently, or...
           // MAYBE JUST HAVE 1 CATEGORY WITH DIFFERENT SORTT OPTIONS?? LIKE F*CK THE SEGMENT
+          supplementaryView.configure(sortCb: self.didTapSortCities)
         case .stateList, .territoryList:
           supplementaryView.configure(sortCb: self.didTapSortStates)
         case .otherStats:
@@ -368,8 +333,7 @@ final class GameStatsViewController: UIViewController {
       
       switch section {
         case .cityList:
-          guard self.selectedSegment == .all,
-                (self.statsProvider?.recentCitiesGuessed.count ?? 0) > 10 else {
+            guard (self.statsProvider?.recentCitiesGuessed.count ?? 0) > 10 else {
             supplementaryView.isHidden = true
             return
           }
@@ -565,44 +529,45 @@ extension GameStatsViewController {
     }
     
     var items = [Item]()
-    switch selectedSegment {
-    case .largest, .smallest:
-        let byPopulation = statsProvider.citiesByPopulation
-        
-        guard !byPopulation.isEmpty else {
-          snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
-          return
-        }
-        
-        let sortedByPopulation = statsProvider.citiesByPopulation.sorted(by: \.key)
-        var populationSegment: Array<Dictionary<Int, [City]>.Element>.SubSequence // TODO: Y U SO COMPLEX TYPE
-        if selectedSegment == .largest {
-          populationSegment = sortedByPopulation.suffix(10)
-          populationSegment.reverse()
-        } else {
-          populationSegment = sortedByPopulation.prefix(10)
-        }
-        
-        items = process(populationSegment)
-    case .rarest, .popular:
-        let byRarity = statsProvider.citiesByRarity
-        
-        guard !byRarity.isEmpty else {
-          snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
-          return
-        }
-        
-        let sortedByRarity = byRarity.sorted(by: \.key)
-        var raritySegment: Array<Dictionary<Double, [City]>.Element>.SubSequence // TODO: Y U SO COMPLEX TYPE
-        if selectedSegment == .popular {
-          raritySegment = sortedByRarity.suffix(10)
-          raritySegment.reverse()
-        } else {
-          raritySegment = sortedByRarity.prefix(10)
-        }
-        
-        items = process(raritySegment)
-    case .all:
+    // TODO: Will be back! Just have to implement a new way of sorting the cities in this list.
+//    switch selectedSegment {
+//    case .largest, .smallest:
+//        let byPopulation = statsProvider.citiesByPopulation
+//
+//        guard !byPopulation.isEmpty else {
+//          snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
+//          return
+//        }
+//
+//        let sortedByPopulation = statsProvider.citiesByPopulation.sorted(by: \.key)
+//        var populationSegment: Array<Dictionary<Int, [City]>.Element>.SubSequence // TODO: Y U SO COMPLEX TYPE
+//        if selectedSegment == .largest {
+//          populationSegment = sortedByPopulation.suffix(10)
+//          populationSegment.reverse()
+//        } else {
+//          populationSegment = sortedByPopulation.prefix(10)
+//        }
+//
+//        items = process(populationSegment)
+//    case .rarest, .popular:
+//        let byRarity = statsProvider.citiesByRarity
+//
+//        guard !byRarity.isEmpty else {
+//          snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
+//          return
+//        }
+//
+//        let sortedByRarity = byRarity.sorted(by: \.key)
+//        var raritySegment: Array<Dictionary<Double, [City]>.Element>.SubSequence // TODO: Y U SO COMPLEX TYPE
+//        if selectedSegment == .popular {
+//          raritySegment = sortedByRarity.suffix(10)
+//          raritySegment.reverse()
+//        } else {
+//          raritySegment = sortedByRarity.prefix(10)
+//        }
+//
+//        items = process(raritySegment)
+//    case .all:
         var recentGuessed = statsProvider.recentCitiesGuessed
         
         guard !recentGuessed.isEmpty else {
@@ -614,6 +579,7 @@ extension GameStatsViewController {
           case .aToZ:
             recentGuessed.sort(by: \.fullTitle, with: { $0.localizedStandardCompare($1) == .orderedAscending })
           case .recent:
+            // shit's already sorted
             break
           case .countryAToZ:
             recentGuessed.sort {
@@ -629,7 +595,7 @@ extension GameStatsViewController {
           items.append(.ordinal(0, $0 + 1, 0))
           items.append(.city($1))
         }
-    }
+//    }
     
     snapshot.appendItems(items, toSection: .cityList)
   }
@@ -737,19 +703,7 @@ extension GameStatsViewController {
   }
 }
 
-extension GameStatsViewController: SectionChangeDelegate {
-  func didChange(segmentIndex: Int) {
-    let newSegment = CitySegment.init(rawValue: segmentIndex) ?? .all
-    self.selectedSegment = newSegment
-//    showCitiesUpTo = 10 // TODO: DO NOT FUCKING CHANGE THIS OR ELSE YOU WILL CAUSE A DOUBLE-RELOAD
-    
-    var snapshot = dataSource.snapshot()
-    refreshCityList(&snapshot)
-    snapshot.reloadSections([.cityList])
-
-    dataSource.apply(snapshot)
-  }
-  
+extension GameStatsViewController {
   func didTapSortCities() {
     citySortMode = citySortMode.nextMode
   }

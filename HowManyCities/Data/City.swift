@@ -32,6 +32,10 @@ struct City: Codable, Hashable {
   let archived: Bool
   let percentageOfSessions: Double?
   
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(pk)
+  }
+  
   //  let code: AnyObject // I HAVE NO FUCKING CLUE WHAT TYPE THIS SHOULD BE
   
   init(
