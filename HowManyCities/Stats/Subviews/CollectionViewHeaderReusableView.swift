@@ -26,7 +26,7 @@ final class CollectionViewHeaderReusableView: UICollectionReusableView {
 //  }()
   
   private lazy var label: UILabel = {
-    let label = UILabel(text: "", style: UIFont.TextStyle.largeTitle).autolayoutEnabled
+    let label = UILabel(text: "", style: UIFont.TextStyle.title1).autolayoutEnabled
     label.font = UIFont.boldSystemFont(ofSize: label.font.pointSize)
     return label
   }()

@@ -9,6 +9,10 @@ import UIKit
 //import Combine
 
 final class GameStatsViewController: UIViewController {
+  // TODO: ALL THESE sTRUCTTS ENUMS AND PROPERTIES NEED TO GET MOVED TO A VIEW MODEL OR SOMETHING
+  // INSTEAD OF CLOGGING UP THE VC
+  // AND IMPLEMENT CACHING FOR SOME OF THE CPU-HEAVY OPERATIONS
+  // LIKE SORT, FILTER, OR MAP ON LARGE DATASETS!!!!!!
   struct ElementKind {
     static let header = "element-kind-header"
     static let buttonFooter = "element-kind-buttonFooter"
@@ -77,15 +81,37 @@ final class GameStatsViewController: UIViewController {
   // TODO: MOVE THE BELOW CODE TO A SEPARATE RENDERER????
   // OR at least the logic needs to be encapsulated elsewhere
   
-  enum CitySortMode: CaseIterable {
+  enum CitySortMode: CaseIterable, CustomStringConvertible {
     case recent
     case aToZ
     case countryAToZ
+    case populationDescending
+    case rarityAscending
+    
+    var description: String {
+      switch self {
+        case .recent:
+          return "Recent cities"
+        case .aToZ:
+          return "Cities A→Z"
+        case .countryAToZ:
+          return "Cities A→Z by country"
+        case .populationDescending:
+          return "Largest cities"
+        case .rarityAscending:
+          return "Rarest cities"
+      }
+    }
     
     // TODO: Could make ext?
     var nextMode: Self {
       let nextIndex = ((Self.allCases.firstIndex(of: self) ?? -1) + 1) % Self.allCases.count
       return Self.allCases[nextIndex]
+    }
+    
+    var showsRarity: Bool {
+      // TODO: Make this an ENUM or part of the renderer or SOMETHING needs to be more stateful!
+      self == .rarityAscending
     }
   }
   
@@ -99,12 +125,16 @@ final class GameStatsViewController: UIViewController {
     }
   }
   
-  private var citySortMode: CitySortMode = .recent {
+  private var citySortMode: CitySortMode = .populationDescending {
     didSet {
       var snapshot = dataSource.snapshot()
       refreshCityList(&snapshot)
       
-      snapshot.reconfigureItems(inSection: .cityList)
+//      if oldValue.showsRarity != citySortMode.showsRarity {
+//        snapshot.reconfigureItems(inSection: .cityList)
+//      }
+      // TODO: Is there a better way to toggle reload? Or avoid?
+      snapshot.reloadSections([.cityList])
       
       dataSource.apply(snapshot)
     }
@@ -231,11 +261,11 @@ final class GameStatsViewController: UIViewController {
     let cityCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, City> { cell, indexPath, itemIdentifier in
       var configuration = UIListContentConfiguration.cell()
       // TODO: I'll be back
-//      if self.selectedSegment == .rarest || self.selectedSegment == .popular {
-//        configuration.attributedText = CityRarityRenderer().string(itemIdentifier)
-//      } else {
+      if self.citySortMode == .rarityAscending {
+        configuration.attributedText = CityRarityRenderer().string(itemIdentifier)
+      } else {
         configuration.attributedText = CityPopulationRenderer().string(itemIdentifier)
-//      }
+      }
       configuration.directionalLayoutMargins.leading = 0
       configuration.directionalLayoutMargins.trailing = 0
       
@@ -244,11 +274,11 @@ final class GameStatsViewController: UIViewController {
     
     let multiCityCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, [City]> { cell, indexPath, itemIdentifier in
       var configuration = UIListContentConfiguration.cell()
-//      if self.selectedSegment == .rarest || self.selectedSegment == .popular {
-//        configuration.attributedText = MultiCityRarityRenderer().string(itemIdentifier)
-//      } else {
+      if self.citySortMode == .rarityAscending {
+        configuration.attributedText = MultiCityRarityRenderer().string(itemIdentifier)
+      } else {
         configuration.attributedText = MultiCityPopulationRenderer().string(itemIdentifier)
-//      }
+      }
       configuration.directionalLayoutMargins.leading = 0
       configuration.directionalLayoutMargins.trailing = 0
       cell.contentConfiguration = configuration
@@ -316,6 +346,7 @@ final class GameStatsViewController: UIViewController {
           // TODO: And we could reduce most/least populated into 1 segment, same with popular/rarest, and then in the third tab
           // can sort alphabetically, alphabetically by country, recently, or...
           // MAYBE JUST HAVE 1 CATEGORY WITH DIFFERENT SORTT OPTIONS?? LIKE F*CK THE SEGMENT
+          supplementaryView.text = self.citySortMode.description
           supplementaryView.configure(sortCb: self.didTapSortCities)
         case .stateList, .territoryList:
           supplementaryView.configure(sortCb: self.didTapSortStates)
@@ -568,39 +599,64 @@ extension GameStatsViewController {
 //
 //        items = process(raritySegment)
 //    case .all:
-        var recentGuessed = statsProvider.recentCitiesGuessed
         
-        guard !recentGuessed.isEmpty else {
-          snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
-          return
-        }
+//    var cityList: [City]
+        
+//        guard !recentGuessed.isEmpty else {
+//          snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
+//          return
+//        }
         
         switch citySortMode {
+          case .populationDescending:
+            let intermediateList = statsProvider.citiesByPopulation.sorted(by: \.key, with: >).prefix(showCitiesUpTo)
+            items = process(intermediateList)
+          case .rarityAscending:
+            let intermediateList = statsProvider.citiesByRarity.sorted(by: \.key).prefix(showCitiesUpTo)
+            items = process(intermediateList)
           case .aToZ:
-            recentGuessed.sort(by: \.fullTitle, with: { $0.localizedStandardCompare($1) == .orderedAscending })
+            let intermediateList = statsProvider.recentCitiesGuessed.sorted(by: \.fullTitle, with: { $0.localizedStandardCompare($1) == .orderedAscending }).prefix(showCitiesUpTo)
+            intermediateList.enumerated().forEach {
+              items.append(contentsOf: [.ordinal(0, $0+1, 0), .city($1)])
+            }
           case .recent:
+            let intermediateList = statsProvider.recentCitiesGuessed.prefix(showCitiesUpTo)
+            intermediateList.enumerated().forEach {
+              items.append(contentsOf: [.ordinal(0, $0+1, 0), .city($1)])
+            }
             // shit's already sorted
             break
           case .countryAToZ:
-            recentGuessed.sort {
+            let intermediateList = statsProvider.recentCitiesGuessed.sorted {
               if $0.country == $1.country {
                 return $0.fullTitle.localizedStandardCompare($1.fullTitle) == .orderedAscending
               } else {
                 return $0.country.localizedStandardCompare($1.country) == .orderedAscending
               }
+            }.prefix(showCitiesUpTo)
+            intermediateList.enumerated().forEach {
+              items.append(contentsOf: [.ordinal(0, $0+1, 0), .city($1)])
             }
         }
-        
-        recentGuessed.prefix(showCitiesUpTo).enumerated().forEach {
-          items.append(.ordinal(0, $0 + 1, 0))
-          items.append(.city($1))
-        }
+    
+//    guard !cityList.isEmpty else {
+//      snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
+//      return
+//    }
+//
+//        cityList.prefix(showCitiesUpTo).enumerated().forEach {
+//          items.append(.ordinal(0, $0 + 1, 0))
+//          items.append(.city($1))
+//        }
 //    }
     
+    if items.isEmpty {
+      items.append(contentsOf: [.ordinal(0, 0, 0), .emptyState(.cityList)])
+    }
     snapshot.appendItems(items, toSection: .cityList)
   }
   
-  private func process<I>(_ segment: Array<I>.SubSequence) -> [Item] {
+  private func process<I/*TODO: There must be some way to constrain this*/>(_ segment: Array<I>.SubSequence) -> [Item] {
     var items: [Item] = .init()
     segment.enumerated().forEach {
       let ordinalNumber = $0 + 1

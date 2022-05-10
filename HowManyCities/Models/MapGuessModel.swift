@@ -56,18 +56,6 @@ extension MapGuessModel: GameStatisticsProvider {
   var numCitiesGuessed: Int { guessedCities.count }
   var populationGuessed: Int { guessedCities.reduce(0) { $0 + $1.population } }
   
-  private var citiesGuessedSortedIncreasing: [City] {
-    guessedCities.sorted { c1, c2 in
-      if c1.population == c2.population {
-        if c1.name == c2.name {
-          return c1.fullTitle < c2.fullTitle
-        }
-        return c1.name.localizedStandardCompare(c2.name) == .orderedAscending
-      }
-      return c1.population < c2.population
-    }
-  }
-  
   var citiesByCountry: [String: [City]] {
     var dict = Dictionary(grouping: guessedCities, by: \.country)
     dict.removeAll(keys: gameConfiguration?.excludeStates ?? [])
