@@ -130,11 +130,11 @@ final class GameStatsViewController: UIViewController {
       var snapshot = dataSource.snapshot()
       refreshCityList(&snapshot)
       
-//      if oldValue.showsRarity != citySortMode.showsRarity {
-//        snapshot.reconfigureItems(inSection: .cityList)
-//      }
+      if oldValue.showsRarity != citySortMode.showsRarity {
+        snapshot.reconfigureItems(inSection: .cityList)
+      }
       // TODO: Is there a better way to toggle reload? Or avoid?
-      snapshot.reloadSections([.cityList])
+//      snapshot.reloadSections([.cityList])
       
       dataSource.apply(snapshot)
     }
