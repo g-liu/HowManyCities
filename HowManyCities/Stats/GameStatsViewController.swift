@@ -260,7 +260,6 @@ final class GameStatsViewController: UIViewController {
     
     let cityCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, City> { cell, indexPath, itemIdentifier in
       var configuration = UIListContentConfiguration.cell()
-      // TODO: I'll be back
       if self.citySortMode == .rarityAscending {
         configuration.attributedText = CityRarityRenderer().string(itemIdentifier)
       } else {
@@ -319,7 +318,6 @@ final class GameStatsViewController: UIViewController {
       var configuration = UIListContentConfiguration.cell()
       configuration.textProperties.color = .systemGray
       configuration.textProperties.font = .italicSystemFont(ofSize: UIFont.labelFontSize)
-//      configuration.textProperties.alignment = .center
       
       switch itemIdentifier {
         case .cityList:
@@ -560,96 +558,38 @@ extension GameStatsViewController {
     }
     
     var items = [Item]()
-    // TODO: Will be back! Just have to implement a new way of sorting the cities in this list.
-//    switch selectedSegment {
-//    case .largest, .smallest:
-//        let byPopulation = statsProvider.citiesByPopulation
-//
-//        guard !byPopulation.isEmpty else {
-//          snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
-//          return
-//        }
-//
-//        let sortedByPopulation = statsProvider.citiesByPopulation.sorted(by: \.key)
-//        var populationSegment: Array<Dictionary<Int, [City]>.Element>.SubSequence // TODO: Y U SO COMPLEX TYPE
-//        if selectedSegment == .largest {
-//          populationSegment = sortedByPopulation.suffix(10)
-//          populationSegment.reverse()
-//        } else {
-//          populationSegment = sortedByPopulation.prefix(10)
-//        }
-//
-//        items = process(populationSegment)
-//    case .rarest, .popular:
-//        let byRarity = statsProvider.citiesByRarity
-//
-//        guard !byRarity.isEmpty else {
-//          snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
-//          return
-//        }
-//
-//        let sortedByRarity = byRarity.sorted(by: \.key)
-//        var raritySegment: Array<Dictionary<Double, [City]>.Element>.SubSequence // TODO: Y U SO COMPLEX TYPE
-//        if selectedSegment == .popular {
-//          raritySegment = sortedByRarity.suffix(10)
-//          raritySegment.reverse()
-//        } else {
-//          raritySegment = sortedByRarity.prefix(10)
-//        }
-//
-//        items = process(raritySegment)
-//    case .all:
-        
-//    var cityList: [City]
-        
-//        guard !recentGuessed.isEmpty else {
-//          snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
-//          return
-//        }
-        
-        switch citySortMode {
-          case .populationDescending:
-            let intermediateList = statsProvider.citiesByPopulation.sorted(by: \.key, with: >).prefix(showCitiesUpTo)
-            items = process(intermediateList)
-          case .rarityAscending:
-            let intermediateList = statsProvider.citiesByRarity.sorted(by: \.key).prefix(showCitiesUpTo)
-            items = process(intermediateList)
-          case .aToZ:
-            let intermediateList = statsProvider.recentCitiesGuessed.sorted(by: \.fullTitle, with: { $0.localizedStandardCompare($1) == .orderedAscending }).prefix(showCitiesUpTo)
-            intermediateList.enumerated().forEach {
-              items.append(contentsOf: [.ordinal(0, $0+1, 0), .city($1)])
-            }
-          case .recent:
-            let intermediateList = statsProvider.recentCitiesGuessed.prefix(showCitiesUpTo)
-            intermediateList.enumerated().forEach {
-              items.append(contentsOf: [.ordinal(0, $0+1, 0), .city($1)])
-            }
-            // shit's already sorted
-            break
-          case .countryAToZ:
-            let intermediateList = statsProvider.recentCitiesGuessed.sorted {
-              if $0.country == $1.country {
-                return $0.fullTitle.localizedStandardCompare($1.fullTitle) == .orderedAscending
-              } else {
-                return $0.country.localizedStandardCompare($1.country) == .orderedAscending
-              }
-            }.prefix(showCitiesUpTo)
-            intermediateList.enumerated().forEach {
-              items.append(contentsOf: [.ordinal(0, $0+1, 0), .city($1)])
-            }
+    switch citySortMode {
+      case .populationDescending:
+        let intermediateList = statsProvider.citiesByPopulation.sorted(by: \.key, with: >).prefix(showCitiesUpTo)
+        items = process(intermediateList)
+      case .rarityAscending:
+        let intermediateList = statsProvider.citiesByRarity.sorted(by: \.key).prefix(showCitiesUpTo)
+        items = process(intermediateList)
+      case .aToZ:
+        let intermediateList = statsProvider.recentCitiesGuessed.sorted(by: \.fullTitle, with: { $0.localizedStandardCompare($1) == .orderedAscending }).prefix(showCitiesUpTo)
+        intermediateList.enumerated().forEach {
+          items.append(contentsOf: [.ordinal(0, $0+1, 0), .city($1)])
         }
-    
-//    guard !cityList.isEmpty else {
-//      snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
-//      return
-//    }
-//
-//        cityList.prefix(showCitiesUpTo).enumerated().forEach {
-//          items.append(.ordinal(0, $0 + 1, 0))
-//          items.append(.city($1))
-//        }
-//    }
-    
+      case .recent:
+        let intermediateList = statsProvider.recentCitiesGuessed.prefix(showCitiesUpTo)
+        intermediateList.enumerated().forEach {
+          items.append(contentsOf: [.ordinal(0, $0+1, 0), .city($1)])
+        }
+        // shit's already sorted
+        break
+      case .countryAToZ:
+        let intermediateList = statsProvider.recentCitiesGuessed.sorted {
+          if $0.country == $1.country {
+            return $0.fullTitle.localizedStandardCompare($1.fullTitle) == .orderedAscending
+          } else {
+            return $0.country.localizedStandardCompare($1.country) == .orderedAscending
+          }
+        }.prefix(showCitiesUpTo)
+        intermediateList.enumerated().forEach {
+          items.append(contentsOf: [.ordinal(0, $0+1, 0), .city($1)])
+        }
+    }
+
     if items.isEmpty {
       items.append(contentsOf: [.ordinal(0, 0, 0), .emptyState(.cityList)])
     }
