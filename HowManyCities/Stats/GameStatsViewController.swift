@@ -20,11 +20,30 @@ final class GameStatsViewController: UIViewController {
     static let pagingFooter = "element-kind-pagingFooter"
   }
   
-  enum Section: Int, Hashable, CaseIterable, CustomStringConvertible {
-    case cityList
+  enum Section: RawRepresentable, Hashable, CustomStringConvertible {
+    case cityList(sortMode: CitySortMode)
     case stateList
     case territoryList
     case otherStats
+    
+    init?(rawValue: Int) {
+      switch rawValue {
+        case 1: self = .stateList
+        case 2: self = .territoryList
+        case 3: self = .otherStats
+        case 0: self = .cityList(sortMode: .recent)
+        default: return nil
+      }
+    }
+    
+    var rawValue: Int {
+      switch self {
+        case .stateList: return 1
+        case .territoryList: return 2
+        case .otherStats: return 3
+        case .cityList: return 0
+      }
+    }
     
     var description: String {
       switch self {
@@ -134,7 +153,7 @@ final class GameStatsViewController: UIViewController {
 //        snapshot.reconfigureItems(inSection: .cityList)
 //      }
       // TODO: Is there a better way to toggle reload? Or avoid?
-      snapshot.reloadSections([.cityList])
+//      snapshot.reloadSections([.cityList(sortMode: citySortMode)])
       
       dataSource.apply(snapshot)
     }
@@ -434,7 +453,7 @@ final class GameStatsViewController: UIViewController {
   
   private func populateInitialData() {
     var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
-    snapshot.appendSections([.cityList, .stateList, .territoryList, .otherStats])
+    snapshot.appendSections([.cityList(sortMode: citySortMode), .stateList, .territoryList, .otherStats])
     
     refreshCityList(&snapshot)
     refreshStateList(&snapshot)
@@ -552,108 +571,51 @@ extension GameStatsViewController {
   /// - Parameter snapshot: The snapshot to apply to. If no snapshot provided, grabs a snapshot from the current dataSource
   /// - Returns: The snapshot with refreshed city list
   func refreshCityList(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
-    snapshot.deleteItems(inSection: .cityList)
+    snapshot.deleteItems(inSection: .cityList(sortMode: citySortMode))
     
     guard let statsProvider = statsProvider else {
-      snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
+      snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList(sortMode: citySortMode))], toSection: .cityList(sortMode: citySortMode))
       return
     }
     
     var items = [Item]()
-    // TODO: Will be back! Just have to implement a new way of sorting the cities in this list.
-//    switch selectedSegment {
-//    case .largest, .smallest:
-//        let byPopulation = statsProvider.citiesByPopulation
-//
-//        guard !byPopulation.isEmpty else {
-//          snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
-//          return
-//        }
-//
-//        let sortedByPopulation = statsProvider.citiesByPopulation.sorted(by: \.key)
-//        var populationSegment: Array<Dictionary<Int, [City]>.Element>.SubSequence // TODO: Y U SO COMPLEX TYPE
-//        if selectedSegment == .largest {
-//          populationSegment = sortedByPopulation.suffix(10)
-//          populationSegment.reverse()
-//        } else {
-//          populationSegment = sortedByPopulation.prefix(10)
-//        }
-//
-//        items = process(populationSegment)
-//    case .rarest, .popular:
-//        let byRarity = statsProvider.citiesByRarity
-//
-//        guard !byRarity.isEmpty else {
-//          snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
-//          return
-//        }
-//
-//        let sortedByRarity = byRarity.sorted(by: \.key)
-//        var raritySegment: Array<Dictionary<Double, [City]>.Element>.SubSequence // TODO: Y U SO COMPLEX TYPE
-//        if selectedSegment == .popular {
-//          raritySegment = sortedByRarity.suffix(10)
-//          raritySegment.reverse()
-//        } else {
-//          raritySegment = sortedByRarity.prefix(10)
-//        }
-//
-//        items = process(raritySegment)
-//    case .all:
         
-//    var cityList: [City]
-        
-//        guard !recentGuessed.isEmpty else {
-//          snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
-//          return
-//        }
-        
-        switch citySortMode {
-          case .populationDescending:
-            let intermediateList = statsProvider.citiesByPopulation.sorted(by: \.key, with: >).prefix(showCitiesUpTo)
-            items = process(intermediateList)
-          case .rarityAscending:
-            let intermediateList = statsProvider.citiesByRarity.sorted(by: \.key).prefix(showCitiesUpTo)
-            items = process(intermediateList)
-          case .aToZ:
-            let intermediateList = statsProvider.recentCitiesGuessed.sorted(by: \.fullTitle, with: { $0.localizedStandardCompare($1) == .orderedAscending }).prefix(showCitiesUpTo)
-            intermediateList.enumerated().forEach {
-              items.append(contentsOf: [.ordinal(0, $0+1, 0), .city($1)])
-            }
-          case .recent:
-            let intermediateList = statsProvider.recentCitiesGuessed.prefix(showCitiesUpTo)
-            intermediateList.enumerated().forEach {
-              items.append(contentsOf: [.ordinal(0, $0+1, 0), .city($1)])
-            }
-            // shit's already sorted
-            break
-          case .countryAToZ:
-            let intermediateList = statsProvider.recentCitiesGuessed.sorted {
-              if $0.country == $1.country {
-                return $0.fullTitle.localizedStandardCompare($1.fullTitle) == .orderedAscending
-              } else {
-                return $0.country.localizedStandardCompare($1.country) == .orderedAscending
-              }
-            }.prefix(showCitiesUpTo)
-            intermediateList.enumerated().forEach {
-              items.append(contentsOf: [.ordinal(0, $0+1, 0), .city($1)])
-            }
+    switch citySortMode {
+      case .populationDescending:
+        let intermediateList = statsProvider.citiesByPopulation.sorted(by: \.key, with: >).prefix(showCitiesUpTo)
+        items = process(intermediateList)
+      case .rarityAscending:
+        let intermediateList = statsProvider.citiesByRarity.sorted(by: \.key).prefix(showCitiesUpTo)
+        items = process(intermediateList)
+      case .aToZ:
+        let intermediateList = statsProvider.recentCitiesGuessed.sorted(by: \.fullTitle, with: { $0.localizedStandardCompare($1) == .orderedAscending }).prefix(showCitiesUpTo)
+        intermediateList.enumerated().forEach {
+          items.append(contentsOf: [.ordinal(0, $0+1, 0), .city($1)])
         }
-    
-//    guard !cityList.isEmpty else {
-//      snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
-//      return
-//    }
-//
-//        cityList.prefix(showCitiesUpTo).enumerated().forEach {
-//          items.append(.ordinal(0, $0 + 1, 0))
-//          items.append(.city($1))
-//        }
-//    }
+      case .recent:
+        let intermediateList = statsProvider.recentCitiesGuessed.prefix(showCitiesUpTo)
+        intermediateList.enumerated().forEach {
+          items.append(contentsOf: [.ordinal(0, $0+1, 0), .city($1)])
+        }
+        // shit's already sorted
+        break
+      case .countryAToZ:
+        let intermediateList = statsProvider.recentCitiesGuessed.sorted {
+          if $0.country == $1.country {
+            return $0.fullTitle.localizedStandardCompare($1.fullTitle) == .orderedAscending
+          } else {
+            return $0.country.localizedStandardCompare($1.country) == .orderedAscending
+          }
+        }.prefix(showCitiesUpTo)
+        intermediateList.enumerated().forEach {
+          items.append(contentsOf: [.ordinal(0, $0+1, 0), .city($1)])
+        }
+    }
     
     if items.isEmpty {
-      items.append(contentsOf: [.ordinal(0, 0, 0), .emptyState(.cityList)])
+      items.append(contentsOf: [.ordinal(0, 0, 0), .emptyState(.cityList(sortMode: citySortMode))])
     }
-    snapshot.appendItems(items, toSection: .cityList)
+    snapshot.appendItems(items, toSection: .cityList(sortMode: citySortMode))
   }
   
   private func process<I/*TODO: There must be some way to constrain this*/>(_ segment: Array<I>.SubSequence) -> [Item] {
