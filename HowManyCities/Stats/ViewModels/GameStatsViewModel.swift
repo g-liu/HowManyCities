@@ -8,10 +8,9 @@
 import Foundation
 import UIKit
 
+// TODO: This ideally should be a struct but we're having problems with simulatenous access...
 final class GameStatsViewModel {
-  // TODO: ALL THESE sTRUCTTS ENUMS AND PROPERTIES NEED TO GET MOVED TO A VIEW MODEL OR SOMETHING
-  // INSTEAD OF CLOGGING UP THE VC
-  // AND IMPLEMENT CACHING FOR SOME OF THE CPU-HEAVY OPERATIONS
+  // TODO: AND IMPLEMENT CACHING FOR SOME OF THE CPU-HEAVY OPERATIONS
   // LIKE SORT, FILTER, OR MAP ON LARGE DATASETS!!!!!!
   struct ElementKind {
     static let header = "element-kind-header"
@@ -98,10 +97,6 @@ final class GameStatsViewModel {
   
   var stateSortMode: StateSortMode = .cityCount {
     didSet {
-      // TODO: DidSet to update UI was working when all this code was in UIVC... BUT
-      // I don't think this will work anymore
-      
-      // Will have to bifurcate further and probably get rid of didSet for this purpose. 
       var snapshot = dataSource.snapshot()
       refreshStateList(&snapshot)
       refreshTerritoryList(&snapshot)
@@ -122,7 +117,6 @@ final class GameStatsViewModel {
   }
   
   func string(for city: City) -> NSAttributedString {
-    // TODO: FUCK your simultaneous access we're not even FUCKING writing, we'll be back.
     if citySortMode == .rarityAscending {
       return CityRarityRenderer().string(city)
     } else {
@@ -135,6 +129,15 @@ final class GameStatsViewModel {
       return MultiCityRarityRenderer().string(multiCity)
     } else {
       return MultiCityPopulationRenderer().string(multiCity)
+    }
+  }
+  
+  func string(for stateName: String, _ cities: [City]) -> NSAttributedString {
+    switch stateSortMode {
+      case .population:
+        return StateTotalPopulationRenderer().string((stateName, cities))
+      case .cityCount:
+        return StateCityCountRenderer().string((stateName, cities))
     }
   }
   

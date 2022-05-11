@@ -150,13 +150,7 @@ final class GameStatsViewController: UIViewController {
         return
       }
       var configuration = UIListContentConfiguration.cell()
-      
-      switch self.viewModel.stateSortMode {
-        case .population:
-          configuration.attributedText = StateTotalPopulationRenderer().string((stateName, cities))
-        case .cityCount:
-          configuration.attributedText = StateCityCountRenderer().string((stateName, cities))
-      }
+      configuration.attributedText = self.viewModel.string(for: stateName, cities)
       
       cell.contentConfiguration = configuration
     }
