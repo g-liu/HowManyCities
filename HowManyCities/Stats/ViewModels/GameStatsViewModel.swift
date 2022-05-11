@@ -168,8 +168,14 @@ final class GameStatsViewModel {
       case .populationDescending:
         let intermediateList = statsProvider.citiesByPopulation.sorted(by: \.key, with: >).prefix(showCitiesUpTo)
         items = process(intermediateList)
+      case .populationAscending:
+        let intermediateList = statsProvider.citiesByPopulation.sorted(by: \.key).prefix(showCitiesUpTo)
+        items = process(intermediateList)
       case .rarityAscending:
         let intermediateList = statsProvider.citiesByRarity.sorted(by: \.key).prefix(showCitiesUpTo)
+        items = process(intermediateList)
+      case .rarityDescending:
+        let intermediateList = statsProvider.citiesByRarity.sorted(by: \.key, with: >).prefix(showCitiesUpTo)
         items = process(intermediateList)
       case .aToZ:
         let intermediateList = statsProvider.recentCitiesGuessed.sorted(by: \.fullTitle, with: { $0.localizedStandardCompare($1) == .orderedAscending }).prefix(showCitiesUpTo)

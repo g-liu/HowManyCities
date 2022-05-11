@@ -12,20 +12,26 @@ enum CitySortMode: CaseIterable, CustomStringConvertible {
   case aToZ
   case countryAToZ
   case populationDescending
+  case populationAscending
   case rarityAscending
+  case rarityDescending
   
   var description: String {
     switch self {
       case .recent:
-        return "Recent cities"
+        return "Most recent"
       case .aToZ:
-        return "Cities A→Z"
+        return "Alphabetical"
       case .countryAToZ:
-        return "Cities A→Z by country"
+        return "Alphabetical by country"
       case .populationDescending:
-        return "Largest cities"
+        return "Most populous"
+      case .populationAscending:
+        return "Least populous"
       case .rarityAscending:
-        return "Rarest cities"
+        return "Least guessed"
+      case .rarityDescending:
+        return "Most commonly guessed"
     }
   }
   
@@ -42,12 +48,21 @@ enum CitySortMode: CaseIterable, CustomStringConvertible {
 }
 
 // TODO: Coalesce into above?
-enum StateSortMode: CaseIterable {
+enum StateSortMode: CaseIterable, CustomStringConvertible {
   case cityCount
   case population
   
   var nextMode: Self {
     let nextIndex = ((Self.allCases.firstIndex(of: self) ?? -1) + 1) % Self.allCases.count
     return Self.allCases[nextIndex]
+  }
+  
+  var description: String {
+    switch self {
+      case .cityCount:
+        return "Most cities guessed"
+      case .population:
+        return "Total population guessed"
+    }
   }
 }

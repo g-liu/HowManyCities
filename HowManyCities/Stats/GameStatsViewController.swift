@@ -186,16 +186,17 @@ final class GameStatsViewController: UIViewController {
       supplementaryView.backgroundColor = .systemBackground
       
       guard let section = Section(rawValue: indexPath.section) else { return }
-      supplementaryView.text = section.description
+      supplementaryView.title = section.description
       
       switch section {
         case .cityList:
           // TODO: And we could reduce most/least populated into 1 segment, same with popular/rarest, and then in the third tab
           // can sort alphabetically, alphabetically by country, recently, or...
           // MAYBE JUST HAVE 1 CATEGORY WITH DIFFERENT SORTT OPTIONS?? LIKE F*CK THE SEGMENT
-          supplementaryView.text = self.viewModel.citySortMode.description
+          supplementaryView.subtitle = self.viewModel.citySortMode.description
           supplementaryView.configure(sortCb: self.didTapSortCities)
         case .stateList, .territoryList:
+          supplementaryView.subtitle = self.viewModel.stateSortMode.description
           supplementaryView.configure(sortCb: self.didTapSortStates)
         case .otherStats:
           break
@@ -220,14 +221,11 @@ final class GameStatsViewController: UIViewController {
             self.viewModel.showCitiesUpTo = isShowingAll ? Int.max : 10
           }
         case .stateList:
-          // NB: Is 20 because 1 cell for the ordinal, 1 cell for the actual content
-//          supplementaryView.isHidden = self.dataSource.snapshot().numberOfItems(inSection: .stateList) <= 20
           supplementaryView.isHidden = self.viewModel.statsProvider?.citiesByCountry.count ?? 0 <= 10
           supplementaryView.configure(isShowingAll: self.viewModel.showStatesUpTo == Int.max) { isShowingAll in
             self.viewModel.showStatesUpTo = isShowingAll ? Int.max : 10
           }
         case .territoryList:
-//          supplementaryView.isHidden = self.dataSource.snapshot().numberOfItems(inSection: .territoryList) < 20
           supplementaryView.isHidden = self.viewModel.statsProvider?.citiesByTerritory.count ?? 0 <= 10
           supplementaryView.configure(isShowingAll: self.viewModel.showTerritoriesUpTo == Int.max) { isShowingAll in
             self.viewModel.showTerritoriesUpTo = isShowingAll ? Int.max : 10
@@ -391,10 +389,21 @@ extension GameStatsViewController: UICollectionViewDelegate {
 extension GameStatsViewController {
   func didTapSortCities() {
     viewModel.citySortMode = viewModel.citySortMode.nextMode
+    
+    // TODO: Lmao this is so fucking illegal
+    guard let titleHeader = collectionView.supplementaryView(forElementKind: ElementKind.header, at: .init(row: 0, section: Section.cityList.rawValue)) as? CollectionViewHeaderReusableView else { return }
+    titleHeader.subtitle = viewModel.citySortMode.description
   }
   
   func didTapSortStates() {
     viewModel.stateSortMode = viewModel.stateSortMode.nextMode
+    // TODO: Lmao this is so fucking illegal
+    guard let titleHeader = collectionView.supplementaryView(forElementKind: ElementKind.header, at: .init(row: 0, section: Section.stateList.rawValue)) as? CollectionViewHeaderReusableView else { return }
+    titleHeader.subtitle = viewModel.stateSortMode.description
+    
+    // TODO: Lmao this is so fucking illegal
+    guard let titleHeader2 = collectionView.supplementaryView(forElementKind: ElementKind.header, at: .init(row: 0, section: Section.territoryList.rawValue)) as? CollectionViewHeaderReusableView else { return }
+    titleHeader2.subtitle = viewModel.stateSortMode.description
   }
 }
 

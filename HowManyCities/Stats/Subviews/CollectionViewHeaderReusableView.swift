@@ -9,25 +9,37 @@ import UIKit
 
 final class CollectionViewHeaderReusableView: UICollectionReusableView {
   override var reuseIdentifier: String? { "CollectionViewHeaderReusableView" }
-  var text: String? {
+  var title: String? {
     get { label.text }
     set { label.text = newValue }
   }
   
+  var subtitle: String? {
+    get { subLabel.text }
+    set { subLabel.text = newValue }
+  }
+  
   private var sortCb: (() -> Void)? = nil
   
-//  private lazy var stackView: UIStackView = {
-//    let stackView = UIStackView().autolayoutEnabled
-//    stackView.axis = .vertical
-//    stackView.alignment = .leading
-//    stackView.spacing = 8.0
-//
-//    return stackView
-//  }()
+  private lazy var stackView: UIStackView = {
+    let stackView = UIStackView().autolayoutEnabled
+    stackView.axis = .horizontal
+    stackView.spacing = 8.0
+    stackView.alignment = .top
+
+    return stackView
+  }()
   
   private lazy var label: UILabel = {
     let label = UILabel(text: "", style: UIFont.TextStyle.title1).autolayoutEnabled
     label.font = UIFont.boldSystemFont(ofSize: label.font.pointSize)
+    return label
+  }()
+  
+  private lazy var subLabel: UILabel = {
+    let label = UILabel(text: "", style: UIFont.TextStyle.subheadline).autolayoutEnabled
+    label.textColor = .systemGray
+//    label.font = UIFont.boldSystemFont(ofSize: label.font.pointSize)
     return label
   }()
   
@@ -55,13 +67,16 @@ final class CollectionViewHeaderReusableView: UICollectionReusableView {
   
   private func setupView() {
     let titleStack = UIStackView().autolayoutEnabled
-    titleStack.axis = .horizontal
-    titleStack.alignment = .center
-    titleStack.distribution = .fill
-    titleStack.addArrangedSubviews([label, sortButton])
+    titleStack.axis = .vertical
+    titleStack.alignment = .leading
+    titleStack.spacing = 8.0
+//    titleStack.distribution = .fill
+    titleStack.addArrangedSubviews([label, subLabel])
     
-    addSubview(titleStack)
-    titleStack.pin(to: safeAreaLayoutGuide, margins: .init(top: 8, left: 12, bottom: 8, right: 12))
+    stackView.addArrangedSubviews([titleStack, sortButton])
+    
+    addSubview(stackView)
+    stackView.pin(to: safeAreaLayoutGuide, margins: .init(top: 8, left: 12, bottom: 8, right: 12))
   }
   
   func configure(sortCb: (() -> Void)? = nil) {
