@@ -294,8 +294,7 @@ final class MapGuessViewController: UIViewController {
   }
   
   @objc private func didTapMoreStats() {
-    let vc = GameStatsViewController()
-    vc.statsProvider = viewModel.gameStatsProvider
+    let vc = GameStatsViewController(statsProvider: viewModel.gameStatsProvider)
     present(UINavigationController(rootViewController: vc), animated: true)
   }
 }

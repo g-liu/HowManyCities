@@ -9,111 +9,13 @@ import UIKit
 //import Combine
 
 final class GameStatsViewController: UIViewController {
-  // TODO: ALL THESE sTRUCTTS ENUMS AND PROPERTIES NEED TO GET MOVED TO A VIEW MODEL OR SOMETHING
-  // INSTEAD OF CLOGGING UP THE VC
-  // AND IMPLEMENT CACHING FOR SOME OF THE CPU-HEAVY OPERATIONS
-  // LIKE SORT, FILTER, OR MAP ON LARGE DATASETS!!!!!!
-  struct ElementKind {
-    static let header = "element-kind-header"
-    static let buttonFooter = "element-kind-buttonFooter"
-    static let textFooter = "element-kind-textFooter"
-    static let pagingFooter = "element-kind-pagingFooter"
-  }
-  
-  enum Section: Int, Hashable, CaseIterable, CustomStringConvertible {
-    case cityList
-    case stateList
-    case territoryList
-    case otherStats
-    
-    var description: String {
-      switch self {
-        case .cityList:
-          return "Top cities"
-        case .stateList:
-          return "Top countries"
-        case .territoryList:
-          return "Top territories"
-        case .otherStats:
-          return "Other stats"
-      }
-    }
-  }
-  
-  enum Item: Hashable {
-    case ordinal(Int /* section index */, Int /* actual number */, Int /* another index for disambiguation in case of "ties" */)
-    case city(City)
-    case multiCity([City])
-    case state(String /* state name */, [City])
-    case formattedStat(Ratio, String)
-    case emptyState(Section)
-  }
-  
 //  private let pagingInfoSubject = PassthroughSubject<PagingInfo, Never>()
   
-  private var showCitiesUpTo: Int = 10 {
-    didSet {
-      // NB: This could be far more efficient...
-      // if we cache the COMPLETE cities list and just used .prefix(...) whenever we needed to
-      var snapshot = dataSource.snapshot()
-      refreshCityList(&snapshot)
-      
-      dataSource.apply(snapshot)
-    }
-  }
+  var viewModel: GameStatsViewModel
   
-  private var showStatesUpTo: Int = 10 {
-    didSet {
-      var snapshot = dataSource.snapshot()
-      refreshStateList(&snapshot)
-      
-      dataSource.apply(snapshot)
-    }
-  }
-  
-  private var showTerritoriesUpTo: Int = 10 {
-    didSet {
-      var snapshot = dataSource.snapshot()
-      refreshTerritoryList(&snapshot)
-      
-      dataSource.apply(snapshot)
-    }
-  }
-  
-  // TODO: MOVE THE BELOW CODE TO A SEPARATE RENDERER????
-  // OR at least the logic needs to be encapsulated elsewhere
-  
-  private var citySortMode: CitySortMode = .populationDescending {
-    didSet {
-      var snapshot = dataSource.snapshot()
-      refreshCityList(&snapshot)
-      
-      if oldValue.showsRarity != citySortMode.showsRarity {
-        snapshot.reconfigureItems(inSection: .cityList)
-      }
-      // TODO: Is there a better way to toggle reload? Or avoid?
-//      snapshot.reloadSections([.cityList])
-      
-      dataSource.apply(snapshot)
-    }
-  }
-  
-  private var stateSortMode: StateSortMode = .cityCount {
-    didSet {
-      var snapshot = dataSource.snapshot()
-      refreshStateList(&snapshot)
-      refreshTerritoryList(&snapshot)
-      
-      snapshot.reconfigureItems(inSection: .stateList)
-      snapshot.reconfigureItems(inSection: .territoryList)
-      
-      dataSource.apply(snapshot)
-    }
-  }
-  
-  var statsProvider: GameStatisticsProvider?
-  
-  private var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
+  typealias Section = GameStatsViewModel.Section
+  typealias Item = GameStatsViewModel.Item
+  typealias ElementKind = GameStatsViewModel.ElementKind
   
   private lazy var collectionView: UICollectionView = {
     let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider = { (sectionIndex, environment) -> NSCollectionLayoutSection? in
@@ -185,6 +87,15 @@ final class GameStatsViewController: UIViewController {
     return cv
   }()
   
+  init(statsProvider: GameStatisticsProvider) {
+    viewModel = .init(statsProvider: statsProvider)
+    super.init(nibName: nil, bundle: nil)
+  }
+  
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
@@ -219,7 +130,7 @@ final class GameStatsViewController: UIViewController {
     
     let cityCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, City> { cell, indexPath, itemIdentifier in
       var configuration = UIListContentConfiguration.cell()
-      if self.citySortMode == .rarityAscending {
+      if self.viewModel.citySortMode == .rarityAscending {
         configuration.attributedText = CityRarityRenderer().string(itemIdentifier)
       } else {
         configuration.attributedText = CityPopulationRenderer().string(itemIdentifier)
@@ -232,7 +143,7 @@ final class GameStatsViewController: UIViewController {
     
     let multiCityCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, [City]> { cell, indexPath, itemIdentifier in
       var configuration = UIListContentConfiguration.cell()
-      if self.citySortMode == .rarityAscending {
+      if self.viewModel.citySortMode == .rarityAscending {
         configuration.attributedText = MultiCityRarityRenderer().string(itemIdentifier)
       } else {
         configuration.attributedText = MultiCityPopulationRenderer().string(itemIdentifier)
@@ -248,7 +159,7 @@ final class GameStatsViewController: UIViewController {
       }
       var configuration = UIListContentConfiguration.cell()
       
-      switch self.stateSortMode {
+      switch self.viewModel.stateSortMode {
         case .population:
           configuration.attributedText = StateTotalPopulationRenderer().string((stateName, cities))
         case .cityCount:
@@ -303,7 +214,7 @@ final class GameStatsViewController: UIViewController {
           // TODO: And we could reduce most/least populated into 1 segment, same with popular/rarest, and then in the third tab
           // can sort alphabetically, alphabetically by country, recently, or...
           // MAYBE JUST HAVE 1 CATEGORY WITH DIFFERENT SORTT OPTIONS?? LIKE F*CK THE SEGMENT
-          supplementaryView.text = self.citySortMode.description
+          supplementaryView.text = self.viewModel.citySortMode.description
           supplementaryView.configure(sortCb: self.didTapSortCities)
         case .stateList, .territoryList:
           supplementaryView.configure(sortCb: self.didTapSortStates)
@@ -321,26 +232,26 @@ final class GameStatsViewController: UIViewController {
       
       switch section {
         case .cityList:
-            guard (self.statsProvider?.recentCitiesGuessed.count ?? 0) > 10 else {
+          guard (self.viewModel.statsProvider?.recentCitiesGuessed.count ?? 0) > 10 else {
             supplementaryView.isHidden = true
             return
           }
           
-          supplementaryView.configure(isShowingAll: self.showCitiesUpTo == Int.max) { isShowingAll in
-            self.showCitiesUpTo = isShowingAll ? Int.max : 10
+          supplementaryView.configure(isShowingAll: self.viewModel.showCitiesUpTo == Int.max) { isShowingAll in
+            self.viewModel.showCitiesUpTo = isShowingAll ? Int.max : 10
           }
         case .stateList:
           // NB: Is 20 because 1 cell for the ordinal, 1 cell for the actual content
 //          supplementaryView.isHidden = self.dataSource.snapshot().numberOfItems(inSection: .stateList) <= 20
-          supplementaryView.isHidden = self.statsProvider?.citiesByCountry.count ?? 0 <= 10
-          supplementaryView.configure(isShowingAll: self.showStatesUpTo == Int.max) { isShowingAll in
-            self.showStatesUpTo = isShowingAll ? Int.max : 10
+          supplementaryView.isHidden = self.viewModel.statsProvider?.citiesByCountry.count ?? 0 <= 10
+          supplementaryView.configure(isShowingAll: self.viewModel.showStatesUpTo == Int.max) { isShowingAll in
+            self.viewModel.showStatesUpTo = isShowingAll ? Int.max : 10
           }
         case .territoryList:
 //          supplementaryView.isHidden = self.dataSource.snapshot().numberOfItems(inSection: .territoryList) < 20
-          supplementaryView.isHidden = self.statsProvider?.citiesByTerritory.count ?? 0 <= 10
-          supplementaryView.configure(isShowingAll: self.showTerritoriesUpTo == Int.max) { isShowingAll in
-            self.showTerritoriesUpTo = isShowingAll ? Int.max : 10
+          supplementaryView.isHidden = self.viewModel.statsProvider?.citiesByTerritory.count ?? 0 <= 10
+          supplementaryView.configure(isShowingAll: self.viewModel.showTerritoriesUpTo == Int.max) { isShowingAll in
+            self.viewModel.showTerritoriesUpTo = isShowingAll ? Int.max : 10
           }
         case .otherStats:
           break
@@ -352,7 +263,7 @@ final class GameStatsViewController: UIViewController {
       supplementaryView.backgroundColor = .systemBackground
     }
     
-    dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
+    viewModel.dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
       switch itemIdentifier {
         case .ordinal(_, _, _):
           return collectionView.dequeueConfiguredReusableCell(using: ordinalCellRegistration, for: indexPath, item: itemIdentifier)
@@ -368,7 +279,7 @@ final class GameStatsViewController: UIViewController {
           return collectionView.dequeueConfiguredReusableCell(using: emptyStateCellRegistration, for: indexPath, item: section)
       }
     })
-    dataSource.supplementaryViewProvider = { collectionView, elementKind, indexPath in
+    viewModel.dataSource.supplementaryViewProvider = { collectionView, elementKind, indexPath in
       if elementKind == ElementKind.header {
         return collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
       } else if elementKind == ElementKind.buttonFooter {
@@ -380,7 +291,7 @@ final class GameStatsViewController: UIViewController {
       }
     }
     
-    collectionView.dataSource = dataSource
+    collectionView.dataSource = viewModel.dataSource
   }
   
   @objc private func closeIt() {
@@ -391,12 +302,12 @@ final class GameStatsViewController: UIViewController {
     var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
     snapshot.appendSections([.cityList, .stateList, .territoryList, .otherStats])
     
-    refreshCityList(&snapshot)
-    refreshStateList(&snapshot)
-    refreshTerritoryList(&snapshot)
-    refreshOtherStats(&snapshot)
+    viewModel.refreshCityList(&snapshot)
+    viewModel.refreshStateList(&snapshot)
+    viewModel.refreshTerritoryList(&snapshot)
+    viewModel.refreshOtherStats(&snapshot)
     
-    dataSource.apply(snapshot, animatingDifferences: true)
+    viewModel.dataSource.apply(snapshot, animatingDifferences: true) // TODO: TEST
   }
 }
 
@@ -405,7 +316,7 @@ extension GameStatsViewController: UICollectionViewDelegate {
   private func toggleHighlight(_ isOn: Bool, collectionView: UICollectionView, at indexPath: IndexPath) {
     let color: UIColor = isOn ? .systemFill : .clear
     guard let section = Section(rawValue: indexPath.section) else { return }
-    let items = dataSource.snapshot().itemIdentifiers(inSection: section)
+    let items = viewModel.dataSource.snapshot().itemIdentifiers(inSection: section)
     
     if case .emptyState(_) = items[indexPath.row] {
       return // nothing to do here
@@ -449,7 +360,7 @@ extension GameStatsViewController: UICollectionViewDelegate {
   // TODO: Disabled for now while we try to restructure the cells that display these cities
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     guard let section = Section(rawValue: indexPath.section) else { return }
-    let items = dataSource.snapshot().itemIdentifiers(inSection: section)
+    let items = viewModel.dataSource.snapshot().itemIdentifiers(inSection: section)
     let item = items[indexPath.row]
     
     switch section {
@@ -486,7 +397,7 @@ extension GameStatsViewController: UICollectionViewDelegate {
   
   private func showCityVC(_ city: City) {
     let cityVC = CityInfoViewController()
-    cityVC.statsProvider = statsProvider
+    cityVC.statsProvider = viewModel.statsProvider
     cityVC.city = city
 
     navigationController?.pushViewController(cityVC)
@@ -499,168 +410,13 @@ extension GameStatsViewController: UICollectionViewDelegate {
   }
 }
 
-// MARK: - Data source snapshot management
-extension GameStatsViewController {
-  /// Refresh city list
-  /// - Parameter snapshot: The snapshot to apply to. If no snapshot provided, grabs a snapshot from the current dataSource
-  /// - Returns: The snapshot with refreshed city list
-  func refreshCityList(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
-    snapshot.deleteItems(inSection: .cityList)
-    
-    guard let statsProvider = statsProvider else {
-      snapshot.appendItems([.ordinal(0, 0, 0), .emptyState(.cityList)], toSection: .cityList)
-      return
-    }
-    
-    var items = [Item]()
-    switch citySortMode {
-      case .populationDescending:
-        let intermediateList = statsProvider.citiesByPopulation.sorted(by: \.key, with: >).prefix(showCitiesUpTo)
-        items = process(intermediateList)
-      case .rarityAscending:
-        let intermediateList = statsProvider.citiesByRarity.sorted(by: \.key).prefix(showCitiesUpTo)
-        items = process(intermediateList)
-      case .aToZ:
-        let intermediateList = statsProvider.recentCitiesGuessed.sorted(by: \.fullTitle, with: { $0.localizedStandardCompare($1) == .orderedAscending }).prefix(showCitiesUpTo)
-        intermediateList.enumerated().forEach {
-          items.append(contentsOf: [.ordinal(0, $0+1, 0), .city($1)])
-        }
-      case .recent:
-        let intermediateList = statsProvider.recentCitiesGuessed.prefix(showCitiesUpTo)
-        intermediateList.enumerated().forEach {
-          items.append(contentsOf: [.ordinal(0, $0+1, 0), .city($1)])
-        }
-        // shit's already sorted
-        break
-      case .countryAToZ:
-        let intermediateList = statsProvider.recentCitiesGuessed.sorted {
-          if $0.country == $1.country {
-            return $0.fullTitle.localizedStandardCompare($1.fullTitle) == .orderedAscending
-          } else {
-            return $0.country.localizedStandardCompare($1.country) == .orderedAscending
-          }
-        }.prefix(showCitiesUpTo)
-        intermediateList.enumerated().forEach {
-          items.append(contentsOf: [.ordinal(0, $0+1, 0), .city($1)])
-        }
-    }
-
-    if items.isEmpty {
-      items.append(contentsOf: [.ordinal(0, 0, 0), .emptyState(.cityList)])
-    }
-    snapshot.appendItems(items, toSection: .cityList)
-  }
-  
-  private func process<I/*TODO: There must be some way to constrain this*/>(_ segment: Array<I>.SubSequence) -> [Item] {
-    var items: [Item] = .init()
-    segment.enumerated().forEach {
-      let ordinalNumber = $0 + 1
-      items.append(.ordinal(0, ordinalNumber, 0))
-      let cities: [City]
-      if let dictEl = $1 as? Dictionary<Int, [City]>.Element {
-        cities = dictEl.value
-      } else if let dictEl = $1 as? Dictionary<Double, [City]>.Element {
-        cities = dictEl.value
-      } else {
-        cities = []
-      }
-      
-      if cities.count > 3 {
-        items.append(.multiCity(cities))
-      } else if !cities.isEmpty {
-        items.removeLast()
-        cities.enumerated().forEach { cityIndex, city in
-          items.append(.ordinal(0, ordinalNumber, cityIndex))
-          items.append(.city(city))
-        }
-      } else {
-        print("WTF THIS SHOULD NEVER HAPPEN 2")
-      }
-    }
-    
-    return items
-  }
-   
-  private func comparePopulation(_ lhs: (String, [City]), _ rhs: (String, [City])) -> Bool {
-    if lhs.1.totalPopulation == rhs.1.totalPopulation {
-      return lhs.0.localizedStandardCompare(rhs.0) == .orderedAscending
-    } else {
-      return lhs.1.totalPopulation > rhs.1.totalPopulation
-    }
-  }
-  
-  private func compareCityCount(_ lhs: (String, [City]), _ rhs: (String, [City])) -> Bool {
-    if lhs.1.count == rhs.1.count {
-      return lhs.0.localizedStandardCompare(rhs.0) == .orderedAscending
-    } else {
-      return lhs.1.count > rhs.1.count
-    }
-  }
-  
-  func refreshStateList(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
-    snapshot.deleteItems(inSection: .stateList)
-    
-    guard let statsProvider = statsProvider,
-          !statsProvider.citiesByCountry.isEmpty else {
-      snapshot.appendItems([.ordinal(1, 0, 0), .emptyState(.stateList)], toSection: .stateList)
-      return
-    }
-    
-    let sortedStates: [(String, [City])]
-    if stateSortMode == .cityCount {
-      sortedStates = statsProvider.citiesByCountry.sorted(by: compareCityCount(_:_:))
-    } else {
-      sortedStates = statsProvider.citiesByCountry.sorted(by: comparePopulation(_:_:))
-    }
-      
-    sortedStates.prefix(showStatesUpTo).enumerated().forEach {
-      snapshot.appendItems([.ordinal(Section.stateList.rawValue, $0+1, 0), .state($1.0, $1.1)], toSection: .stateList)
-    }
-  }
-  
-  func refreshTerritoryList(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
-    snapshot.deleteItems(inSection: .territoryList)
-    
-    guard let statsProvider = statsProvider,
-          !statsProvider.citiesByTerritory.isEmpty else {
-      snapshot.appendItems([.ordinal(2, 0, 0), .emptyState(.territoryList)], toSection: .territoryList)
-      return
-    }
-    
-    let sortedTerritories: [(String, [City])]
-    if stateSortMode == .cityCount {
-      sortedTerritories = statsProvider.citiesByTerritory.sorted(by: compareCityCount(_:_:))
-    } else {
-      sortedTerritories = statsProvider.citiesByTerritory.sorted(by: comparePopulation(_:_:))
-    }
-      
-    sortedTerritories.prefix(showTerritoriesUpTo).enumerated().forEach {
-      snapshot.appendItems([.ordinal(Section.territoryList.rawValue, $0+1, 0), .state($1.0, $1.1)], toSection: .territoryList)
-    }
-  }
-  
-  func refreshOtherStats(_ snapshot: inout NSDiffableDataSourceSnapshot<Section, Item>) {
-    snapshot.deleteItems(inSection: .otherStats)
-    guard let statsProvider = statsProvider else { return }
-    
-    snapshot.appendItems(
-      statsProvider.totalGuessedByBracket.map {
-        Item.formattedStat($1, "cities over \($0.abbreviated)")
-      } + [
-        .formattedStat(statsProvider.totalStatesGuessed, "countries"),
-        .formattedStat(statsProvider.totalCapitalsGuessed, "capitals"),
-        .formattedStat(statsProvider.totalTerritoriesGuessed, "territories"),
-      ], toSection: .otherStats)
-  }
-}
-
 extension GameStatsViewController {
   func didTapSortCities() {
-    citySortMode = citySortMode.nextMode
+    viewModel.citySortMode = viewModel.citySortMode.nextMode
   }
   
   func didTapSortStates() {
-    stateSortMode = stateSortMode.nextMode
+    viewModel.stateSortMode = viewModel.stateSortMode.nextMode
   }
 }
 
