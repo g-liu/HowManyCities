@@ -75,8 +75,8 @@ final class StateInfoViewController: UIViewController {
     monoTextView.isScrollEnabled = false
     monoTextView.isEditable = false
     monoTextView.isSelectable = true
-    monoTextView.font = UIFont.systemFont(ofSize: UIFont.labelFontSize)
     monoTextView.textColor = .label
+    monoTextView.linkTextAttributes = [.foregroundColor: UIColor.label]
     
     scrollView.addSubview(monoTextView)
     monoTextView.pin(to: scrollView, margins: .init(horizontal: 0, vertical: 12))
@@ -101,16 +101,18 @@ final class StateInfoViewController: UIViewController {
     
     addCitiesToMap()
     
-    let attributedText = NSMutableAttributedString(attributedString: guessedCities.enumerated().map {
-      NSAttributedString(string: "\($1.nameWithStateAbbr)", attributes: [.link: URL(string: "takemeto://\($0)")!,
-                                                                         .font: UIFont.systemFont(ofSize: UIFont.labelFontSize),
-                                                                         .foregroundColor: UIColor.label])
+    let paragraphStyle = NSMutableParagraphStyle()
+    paragraphStyle.lineSpacing = 8
+    let attributedText = NSAttributedString(attributedString: guessedCities.enumerated().map {
+      let displayName = $1.nameWithStateAbbr.replacingOccurrences(of: " ", with: "\u{00a0}")
+      return .init(string: displayName, attributes: [.link: URL(string: "takemeto://\($0)")!])
     }.joined(separator: "    "))
     
-//    attributedText.addAttributes([.font: UIFont.systemFont(ofSize: UIFont.labelFontSize),
-//                                  .foregroundColor: UIColor.label], range: Range(0, attributedText.countt))
-    
     monoTextView.attributedText = attributedText
+    monoTextView.font = UIFont.systemFont(ofSize: UIFont.labelFontSize)
+    
+    let entireRange = NSRange(location: 0, length: monoTextView.textStorage.length)
+    monoTextView.textStorage.addAttributes([.paragraphStyle: paragraphStyle], range: entireRange)
   }
   
   private func addCitiesToMap() {
@@ -145,6 +147,10 @@ extension StateInfoViewController: UITextViewDelegate {
        let index = Int(URL.host ?? "💩") {
       mapView.setRegion(MKCoordinateRegion(center: guessedCities[index].coordinates, span: .init(latitudeDelta: 0.05, longitudeDelta: 0.05)), animated: true)
 //      mapView.showAnnotations([mapView.annotations[index]], animated: true)
+//      let entireRange = NSRange(location: 0, length: textView.textStorage.length)
+      
+      textView.font = UIFont.systemFont(ofSize: UIFont.labelFontSize)
+      textView.textStorage.addAttributes([.font: UIFont.boldSystemFont(ofSize: UIFont.labelFontSize*1.5)], range: characterRange)
     }
     return false
   }
