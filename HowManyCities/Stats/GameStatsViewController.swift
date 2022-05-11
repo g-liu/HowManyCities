@@ -370,16 +370,17 @@ extension GameStatsViewController: UICollectionViewDelegate {
         switch item {
           case .multiCity(let cities):
 //            let cityCountMessage = String(format: "%d %@ available", cities.count, cities.count > 1 ? "cities" : "city")
-            let alertController = UIAlertController(title: "Select a city", message: nil, preferredStyle: .alert)
-            let cityListVC = CityListViewController(cities: cities)
-            alertController.addChildViewController(cityListVC, toContainerView: alertController.view)
-            alertController.addAction(title: "Cancel", style: .cancel, isEnabled: true) { _ in
-              alertController.dismiss(animated: true)
-            }
-            alertController.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-            alertController.title = "Select a city"
-            
-            return alertController
+//            let alertController = UIAlertController(title: "Select a city", message: nil, preferredStyle: .alert)
+//            let cityListVC = CityListViewController(cities: cities)
+//            alertController.addChildViewController(cityListVC, toContainerView: alertController.view)
+//            alertController.addAction(title: "Cancel", style: .cancel, isEnabled: true) { _ in
+//              alertController.dismiss(animated: true)
+//            }
+//            alertController.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+//            alertController.title = "Select a city"
+//
+//            return alertController
+            return nil
           case .ordinal(_, _, _):
             if case let .city(city) = items[indexPath.row + 1] {
               return getCityVC(city)
