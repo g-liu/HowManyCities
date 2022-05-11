@@ -30,5 +30,29 @@ extension UIView {
       trailingAnchor.constraint(equalTo: layoutGuide.trailingAnchor, constant: -margins.right),
     ])
   }
+  
+  func pinSides(to otherView: UIView, margins: UIEdgeInsets = .zero) {
+    NSLayoutConstraint.activate([
+      leadingAnchor.constraint(equalTo: otherView.leadingAnchor, constant: margins.left),
+      trailingAnchor.constraint(equalTo: otherView.trailingAnchor, constant: -margins.right),
+    ])
+  }
+  
+  func pinSides(to layoutGuide: UILayoutGuide, margins: UIEdgeInsets = .zero) {
+    NSLayoutConstraint.activate([
+      leadingAnchor.constraint(equalTo: layoutGuide.leadingAnchor, constant: margins.left),
+      trailingAnchor.constraint(equalTo: layoutGuide.trailingAnchor, constant: -margins.right),
+    ])
+  }
+}
+
+extension UIView {
+  static func animate(animations: @escaping () -> Void, completion: ((Bool) -> Void)? = nil) {
+    self.animate(withDuration: CATransaction.animationDuration(), animations: animations, completion: completion)
+  }
+  
+  func removeAllGestureRecognizers() {
+    gestureRecognizers?.forEach { removeGestureRecognizer($0) }
+  }
 }
 

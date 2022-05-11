@@ -123,7 +123,6 @@ final class HMCRequestHandler {
     task.resume()
   }
   
-  // TODO: Not working right now because of CSRF
   func finishGame(cities: [City], startTime: Date, usedMultiCityInput: Bool, cb: @escaping (GameFinishResponse?) -> Void) {
     guard let url = URL(string: type(of: self).finishGameURL) else { cb(nil); return }
     guard let csrfToken = csrfToken else {
@@ -140,7 +139,7 @@ final class HMCRequestHandler {
     
     request.httpMethod = "POST"
     
-    let requestBody = GameFinishRequestBody(cities: cities.map { $0.asShortForm }, quiz: "world", startTime: Int(startTime.timeIntervalSince1970), usedMultiCityInput: usedMultiCityInput)
+    let requestBody = GameFinishRequestBody(cities: cities.map(by: \.asShortForm), quiz: "world", startTime: Int(startTime.timeIntervalSince1970), usedMultiCityInput: usedMultiCityInput)
     let encoder = JSONEncoder()
     do {
       request.httpBody = try encoder.encode(requestBody)

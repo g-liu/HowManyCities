@@ -1,46 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
+	<!-- NB: Differences beteween iafisher and swift's country list can be found at https://www.diffchecker.com/ecAMTtfj -->
 <dict>
 	<key>Antigua and Barbuda</key>
 	<string>Antigua &amp; Barbuda</string>
+	<key>Akrotiri and Dhekelia</key>
+	<string>United Kingdom</string>
+	<key>Bonaire</key>
+	<string>Caribbean Netherlands</string>
 	<key>Bosnia and Herzegovina</key>
 	<string>Bosnia &amp; Herzegovina</string>
+	<key>British Indian Ocean Territory</key>
+	<string>Diego Garcia</string>
 	<key>China</key>
-    <string>China mainland</string>
+	<string>China mainland</string>
+	<key>Cocos (Keeling) Island</key>
+	<string>Cocos (Keeling) Islands</string>
 	<key>Democratic Republic of the Congo</key>
-    <string>Congo - Kinshasa</string>
-	<key>Republic of the Congo</key>
-    <string>Congo - Brazzaville</string>
+	<string>Congo - Kinshasa</string>
+	<key>Easter Island</key>
+	<string>Chile</string>
 	<key>Federated States of Micronesia</key>
-    <string>Micronesia</string>
+	<string>Micronesia</string>
 	<key>Ivory Coast</key>
-    <string>Côte d’Ivoire</string>
+	<string>Côte d’Ivoire</string>
+	<key>Macau</key>
+	<string>Macao</string>
 	<key>Myanmar</key>
-    <string>Myanmar (Burma)</string>
+	<string>Myanmar (Burma)</string>
 	<key>Palestine</key>
-    <string>Palestinian Territories</string>
-    <key>São Tomé and Príncipe</key>
-    <string>São Tomé &amp; Príncipe</string>
-    <key>St. Kitts and Nevis</key>
-    <string>St. Kitts &amp; Nevis</string>
-    <key>St. Pierre and Miquelon</key>
-    <string>St. Pierre &amp; Miquelon</string>
+	<string>Palestinian Territories</string>
+	<key>Pitcairn Island</key>
+	<string>Pitcairn Islands</string>
+	<key>Republic of the Congo</key>
+	<string>Congo - Brazzaville</string>
+	<key>Saba</key>
+	<string>Caribbean Netherlands</string>
+	<key>Saint Barthélemy</key>
+	<string>St. Barthélemy</string>
+	<key>Saint Martin</key>
+	<string>St. Martin</string>
+	<key>São Tomé and Príncipe</key>
+	<string>São Tomé &amp; Príncipe</string>
+	<key>Sint Eustatius</key>
+	<string>Caribbean Netherlands</string>
+	<key>South Georgia and the South Sandwich Islands</key>
+	<string>So. Georgia &amp; So. Sandwich Isl.</string>
+	<key>St. Kitts and Nevis</key>
+	<string>St. Kitts &amp; Nevis</string>
+	<key>Saint Pierre and Miquelon</key>
+	<string>St. Pierre &amp; Miquelon</string>
 	<key>St. Vincent and the Grenadines</key>
-    <string>St. Vincent &amp; Grenadines</string>
+	<string>St. Vincent &amp; Grenadines</string>
+	<key>Svalbard</key>
+	<string>Svalbard &amp; Jan Mayen</string>
 	<key>The Gambia</key>
-    <string>Gambia</string>
-    <key>Trinidad and Tobago</key>
-    <string>Trinidad &amp; Tobago</string>
-    <key>Australian provinces and territories</key>
-    <string>Australia</string>
-    <key>Brazilian states</key>
-    <string>Brazil</string>
-    <key>Canadian provinces and territories</key>
-    <string>Canada</string>
-    <key>Mexican states</key>
-    <string>Mexico</string>
-    <key>U.S. states</key>
-    <string>United States</string>
+	<string>Gambia</string>
+	<key>Trinidad and Tobago</key>
+	<string>Trinidad &amp; Tobago</string>
+	<key>Turks and Caicos Islands</key>
+	<string>Turks &amp; Caicos Islands</string>
+	<key>Wallis and Futuna</key>
+	<string>Wallis &amp; Futuna</string>
+	<key>Australian provinces and territories</key>
+	<string>Australia</string>
+	<key>Brazilian states</key>
+	<string>Brazil</string>
+	<key>Canadian provinces and territories</key>
+	<string>Canada</string>
+	<key>Mexican states</key>
+	<string>Mexico</string>
+	<key>U.S. states</key>
+	<string>United States</string>
 </dict>
 </plist>

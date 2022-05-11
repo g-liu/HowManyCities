@@ -9,6 +9,7 @@ import UIKit
 import MapKit
 import SwifterSwift
 import MapCache
+import OrderedCollections
 
 final class MapGuessViewController: UIViewController {
   
@@ -76,9 +77,10 @@ final class MapGuessViewController: UIViewController {
     textField.delegate = self
     textField.layer.borderWidth = 1
     textField.layer.borderColor = UIColor.systemFill.cgColor
-    textField.font = .systemFont(ofSize: 36)
+    textField.font = .systemFont(ofSize: 36) // TODO: Dynamic font size
     textField.textAlignment = .center
     textField.clearButtonMode = .whileEditing
+    textField.attributedPlaceholder = .init(string: viewModel.textFieldPlaceholder ?? "", attributes: [.font: UIFont.systemFont(ofSize: 18)])
     
     textField.setContentHuggingPriority(.defaultLow, for: .horizontal)
     
@@ -138,7 +140,6 @@ final class MapGuessViewController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    // Do any additional setup after loading the view.
     
     NotificationCenter.default.addObserver(self, selector: #selector(saveState), name: UIApplication.willResignActiveNotification, object: nil)
     
@@ -149,6 +150,15 @@ final class MapGuessViewController: UIViewController {
     view.addSubview(finishButton)
     view.addSubview(guessStats)
     view.addSubview(guessStackView)
+    
+    // TODO: This is a temporary button to show the stats VC
+    // We should aim for a better UX
+    let moreStatsButton = UIButton().autolayoutEnabled
+    moreStatsButton.setTitle("More statistics", for: .normal)
+    moreStatsButton.setTitleColor(.systemBlue, for: .normal)
+    moreStatsButton.titleLabel?.font = .boldSystemFont(ofSize: UIFont.systemFontSize)
+    moreStatsButton.addTarget(self, action: #selector(didTapMoreStats), for: .touchUpInside)
+    view.addSubview(moreStatsButton)
     
     NSLayoutConstraint.activate([
       mapView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -169,6 +179,9 @@ final class MapGuessViewController: UIViewController {
       guessStackView.topAnchor.constraint(equalTo: guessStats.bottomAnchor, constant: 16),
       guessStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
       guessStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+      
+      moreStatsButton.topAnchor.constraint(equalTo: guessStackView.bottomAnchor, constant: 16),
+      moreStatsButton.centerXAnchor.constraint(equalTo: guessStackView.centerXAnchor),
     ])
     
     cityInputTextField.becomeFirstResponder()
@@ -179,6 +192,7 @@ final class MapGuessViewController: UIViewController {
   
   private func submitGuess(_ guess: String) {
     viewModel.submitGuess(guess)
+    cityInputTextField.attributedPlaceholder = nil
   }
   
   @objc private func didTapCountryDropdown(_ sender: UIButton) {
@@ -196,16 +210,17 @@ final class MapGuessViewController: UIViewController {
     //    addCustomTileOverlay()
   }
   
-  private func updateMap(_ cities: Set<City>) {
-    cities.forEach { city in
-      mapView.addOverlay(city.asShape, level: .aboveLabels)
-      
-      mapView.addAnnotation(CityAnnotation(city: city))
-    }
+  @discardableResult
+  private func updateMap(_ cities: OrderedSet<City>) -> [MKAnnotation] {
+    let annotations = cities.map(CityAnnotation.init)
+    mapView.addOverlays(cities.map(by: \.asShape), level: .aboveLabels)
+    mapView.addAnnotations(annotations)
     
     guessStats.updatePopulationGuessed(viewModel.populationGuessed)
     guessStats.updateNumCitiesGuessed(viewModel.numCitiesGuessed)
     guessStats.updatePercentageTotalPopulation(viewModel.percentageTotalPopulationGuessed)
+    
+    return annotations
   }
   
   private func addCustomTileOverlay() {
@@ -279,31 +294,47 @@ final class MapGuessViewController: UIViewController {
     
     present(confirmFinishController, animated: true)
   }
+  
+  @objc private func didTapMoreStats() {
+    let vc = GameStatsViewController(statsProvider: viewModel.gameStatsProvider)
+    present(UINavigationController(rootViewController: vc), animated: true)
+  }
 }
 
 // TODO: Move this into separate file or vc???
 extension MapGuessViewController {
   func showToast(_ message: String, toastType: ToastType) {
-    let populationToast = MapToast(message, toastType: toastType).autolayoutEnabled
-    populationToast.layer.opacity = 0
-    populationToast.transform = .init(translationX: 0, y: 24)
-    mapView.addSubview(populationToast)
-    mapView.bringSubviewToFront(populationToast)
+    let mapToast = MapToast(message, toastType: toastType).autolayoutEnabled
+    mapToast.layer.opacity = 0
+    mapToast.transform = .init(translationX: 0, y: 24)
+    mapView.addSubview(mapToast)
+    mapView.bringSubviewToFront(mapToast)
     NSLayoutConstraint.activate([
-      populationToast.centerXAnchor.constraint(equalTo: mapView.centerXAnchor),
-      populationToast.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -8),
-      populationToast.widthAnchor.constraint(lessThanOrEqualTo: mapView.widthAnchor, multiplier: 0.66),
+      mapToast.centerXAnchor.constraint(equalTo: mapView.centerXAnchor),
+      mapToast.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -8),
+      mapToast.widthAnchor.constraint(lessThanOrEqualTo: mapView.widthAnchor, multiplier: 0.66),
     ])
     
+    switch toastType {
+      case .population:
+        break
+      case .error:
+        Vibration.error.vibrate()
+      case .general:
+        break
+      case .warning:
+        Vibration.warning.vibrate()
+    }
+    
     UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut) {
-      populationToast.layer.opacity = 1
-      populationToast.transform = .init(translationX: 0, y: 0)
+      mapToast.layer.opacity = 1
+      mapToast.transform = .init(translationX: 0, y: 0)
     } completion: { _ in
       UIView.animate(withDuration: 0.2, delay: 1.8, options: .curveEaseOut) {
-        populationToast.layer.opacity = 0
-        populationToast.transform = .init(translationX: 0, y: -24)
+        mapToast.layer.opacity = 0
+        mapToast.transform = .init(translationX: 0, y: -24)
       } completion: { _ in
-        populationToast.removeFromSuperview()
+        mapToast.removeFromSuperview()
       }
     }
     
@@ -337,28 +368,7 @@ extension MapGuessViewController: MapGuessDelegate {
     
     switch mode {
       case .specific(let state):
-        let req = MKLocalSearch.Request()
-        req.naturalLanguageQuery = state.searchName
-        req.region = .full
-        
-        let search = MKLocalSearch(request: req)
-        search.start { response, error in
-          // placemark.title has to be same country (?)
-          if let boundingRect = response?.boundingRegion,
-             response?.mapItems.count == 1 {
-            self.mapView.setRegion(boundingRect, animated: true)
-          } else if let mapItem = response?.mapItems.first(where: {$0.placemark.title?.contains($0.placemark.name ?? "💩") ?? false}) {
-            if let boundingCircle = mapItem.placemark.region as? CLCircularRegion {
-              self.mapView.setRegion(.init(center: boundingCircle.center, latitudinalMeters: boundingCircle.radius * 1.2, longitudinalMeters: boundingCircle.radius * 1.2), animated: true)
-            } else if let location = mapItem.placemark.location {
-              self.mapView.setRegion(.init(center: location.coordinate, span: self.mapView.region.span), animated: true)
-            } else {
-              self.mapView.setRegion(.init(center: mapItem.placemark.coordinate, span: self.mapView.region.span), animated: true)
-            }
-          } else {
-            // Sorry bud can't help you.
-          }
-        }
+        self.mapView.searchAndLocate(state.searchName)
       default:
         self.mapView.setRegion(.init(center: self.mapView.centerCoordinate, span: .full), animated: true)
     }
@@ -369,23 +379,23 @@ extension MapGuessViewController: MapGuessDelegate {
       guard let self = self else { return }
       
       self.cityInputTextField.text = ""
-      self.updateMap(.init(cities))
+      let annotations = self.updateMap(.init(cities))
       
-      if let lastCity = cities.last {
-         self.mapView.setCenter(lastCity.coordinates, animated: true)
-       }
-      
-      if !cities.isEmpty {
+      if cities.count > 1 {
+        self.mapView.showAnnotations(annotations, animated: true)
+        // TODO: Proper pluralization
+        self.showToast("+\(cities.count) cities, \(cities.totalPopulation.abbreviated)", toastType: .population)
+      } else if let lastCity = cities.last {
+        self.mapView.setCenter(lastCity.coordinates, animated: true)
         self.showToast("+\(cities.totalPopulation.abbreviated)", toastType: .population)
       }
     }
   }
   
   func didReceiveError(_ error: CityGuessError) {
-    // TODO: handle error
     DispatchQueue.main.async {
       self.cityInputTextField.shake()
-      self.showToast(error.message, toastType: .error)
+      self.showToast(error.message, toastType: error.toastType)
     }
   }
   
@@ -432,12 +442,12 @@ extension MapGuessViewController: MKMapViewDelegate {
       let circleRenderer = MKZoomableCircleRenderer(circle: circle)
       circleRenderer.fillColor = .systemRed.withAlphaComponent(0.5)
       circleRenderer.strokeColor = .systemFill
-      circleRenderer.lineWidth = 2
+      circleRenderer.lineWidth = 0.5
       
       return circleRenderer
-    } else if let polygon = overlay as? MKPolygon {
+    } else if let polygon = overlay as? MKParameterizedPolygon {
       let polygonRenderer = MKZoomablePolygonRenderer(polygon: polygon)
-      polygonRenderer.fillColor = .systemYellow.withAlphaComponent(0.7)
+      polygonRenderer.fillColor = (polygon.data as? UIColor) ?? .systemYellow.withAlphaComponent(0.7)
       polygonRenderer.strokeColor = .systemFill
       polygonRenderer.lineWidth = 2
       

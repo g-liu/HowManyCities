@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct State: Codable {
+struct State: Codable, Hashable {
   var value: String
   var name: String
   var states: [State]?
@@ -21,6 +21,12 @@ struct State: Codable {
     case value = "group"
     case name = "label"
     case states
+  }
+  
+  init(name: String) {
+    self.value = name
+    self.name = name
+    self.states = nil
   }
   
   init(from decoder: Decoder) throws {
@@ -59,25 +65,36 @@ struct State: Codable {
     }
   }
   
+  var nameWithFlag: String {
+    if let flag = flag {
+      return "\(flag) \(name)"
+    } else {
+      return name
+    }
+  }
+  
   var searchName: String {
     if let childState = states?.first {
       return childState.name + ", \(normalizedCountryName)"
     }
     
+    // Special exception for Georgia the country
+    if normalizedCountryName.localizedCaseInsensitiveContains("Georgia") {
+      return "საქართველო"
+    }
+    
     return normalizedCountryName
   }
   
-  var locale: String {
-    return Global.COUNTRY_NAMES_TO_LOCALES[normalizedCountryName] ?? ""
+  var locale: String? {
+    return Global.COUNTRY_NAMES_TO_LOCALES[normalizedCountryName]
   }
   
-  var flag: String {
+  var flag: String? {
+    guard let locale = locale else { return nil }
     let base: UInt32 = 127397
-    var s = ""
-    for v in locale.unicodeScalars {
-      s.unicodeScalars.append(UnicodeScalar(base + v.value)!)
-    }
-    return String(s)
+    let scalars = locale.unicodeScalars.compactMap { UnicodeScalar(base + $0.value) }
+    return .init(scalars)
   }
   
   var normalizedCountryName: String {

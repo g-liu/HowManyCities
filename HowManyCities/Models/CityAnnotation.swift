@@ -13,9 +13,9 @@ final class CityAnnotation: NSObject, MKAnnotation {
   var title: String?
   var subtitle: String?
   
-  init(city: City) {
+  init(_ city: City) {
     self.coordinate = city.coordinates
     self.title = city.fullTitle
-    self.subtitle = "pop: \(city.population.commaSeparated ?? "\(city.population)")" // TODO: Localize
+    self.subtitle = "pop: \(city.population.commaSeparated)" // TODO: Localize
   }
 }

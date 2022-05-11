@@ -69,10 +69,10 @@ extension Int {
     left.asCGFloat / right
   }
   
-  var commaSeparated: String? {
+  var commaSeparated: String {
     let fmt = NumberFormatter()
     fmt.numberStyle = .decimal
-    return fmt.string(from: asNSNumber)
+    return fmt.string(from: asNSNumber) ?? String(self)
   }
   
   var abbreviated: String {
@@ -97,9 +97,12 @@ extension Int {
     } else if 1_000_000_000 <= absValue && absValue < 1_000_000_000_000 {
       numberValue = absValue / 1_000_000_000.0
       qualifier = "B"
-    } else {
+    } else if 1_000_000_000_000 <= absValue && absValue < 1_000_000_000_000_000 {
       numberValue = absValue / 1_000_000_000_000.0
       qualifier = "T"
+    } else {
+      numberValue = absValue / 1_000_000_000_000_000.0
+      qualifier = "Q"
     }
     
     guard let numberString = numberFormatter.string(from: numberValue.asNSNumber) else {

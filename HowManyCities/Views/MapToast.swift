@@ -12,12 +12,14 @@ enum ToastType {
   case population
   case error
   case general
+  case warning
   
   var color: UIColor {
     switch self {
       case .population: return .systemGreen
       case .error: return .systemRed
       case .general: return .systemGray3
+      case .warning: return .systemPurple
     }
   }
 }

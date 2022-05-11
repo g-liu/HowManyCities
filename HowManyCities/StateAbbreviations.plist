@@ -128,6 +128,8 @@
 	<string>JA</string>
 	<key>México</key>
 	<string>ME</string>
+	<key>Mexico City</key>
+	<string>DF</string>
 	<key>Michoacán</key>
 	<string>MI</string>
 	<key>Morelos</key>
@@ -178,6 +180,8 @@
 	<string>CT</string>
 	<key>Delaware</key>
 	<string>DE</string>
+	<key>District of Columbia</key>
+	<string>DC</string>
 	<key>Florida</key>
 	<string>FL</string>
 	<key>Georgia</key>

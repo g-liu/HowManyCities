@@ -8,6 +8,7 @@
 import Foundation
 import CoreLocation
 import MapKit
+import OrderedCollections
 
 protocol MapGuessDelegate: AnyObject {
   func didReceiveCities(_ cities: [City])
@@ -32,6 +33,10 @@ final class MapGuessViewModel: NSObject {
     }
   }
   
+  var textFieldPlaceholder: String? { model.gameConfiguration?.placeholder }
+  
+  var gameStatsProvider: GameStatisticsProvider { model }
+  
   var numCitiesGuessed: Int { model.numCitiesGuessed }
   var populationGuessed: Int { model.populationGuessed }
   var percentageTotalPopulationGuessed: Double { model.percentageTotalPopulationGuessed }
@@ -41,7 +46,7 @@ final class MapGuessViewModel: NSObject {
     let decoder = JSONDecoder()
     // TODO: Bifurcate game configuration and model data?????
     if let cities = cities?.cities {
-      model.guessedCities = Set(cities)
+      model.guessedCities = OrderedSet(cities)
       retrieveConfiguration() // TODO: BUG: Doesn't update percentage on main screen!!!!
     } else if let savedGameState = UserDefaults.standard.object(forKey: "gamestate") as? Data,
        let decodedModel = try? decoder.decode(MapGuessModel.self, from: savedGameState) {
@@ -81,7 +86,7 @@ final class MapGuessViewModel: NSObject {
           
           var newCities = [City]()
           cities.forEach { city in
-            let result = self?.model.guessedCities.insert(city)
+            let result = self?.model.guessedCities.append(city)
             if result?.inserted ?? false {
               newCities.append(city)
             }
@@ -101,7 +106,7 @@ final class MapGuessViewModel: NSObject {
     }
   }
   
-  var guessedCities: Set<City> {
+  var guessedCities: OrderedSet<City> {
     model.guessedCities
   }
   

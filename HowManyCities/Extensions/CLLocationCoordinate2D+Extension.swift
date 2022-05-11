@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreLocation
+import SwifterSwift
 
 extension CLLocationCoordinate2D {
   static let zero: Self = .init(latitude: 0, longitude: 0)
@@ -21,6 +22,16 @@ extension CLLocationCoordinate2D {
   
   static func /(lhs: CLLocationCoordinate2D, rhs: Double) -> CLLocationCoordinate2D {
     .init(latitude: lhs.latitude / rhs, longitude: lhs.longitude / rhs)
+  }
+}
+
+extension CLLocationCoordinate2D {
+  var asLocation: CLLocation {
+    .init(self)
+  }
+  
+  func bearing(to otherCoordinate: CLLocationCoordinate2D) -> Double {
+    asLocation.bearing(to: otherCoordinate.asLocation)
   }
 }
 
