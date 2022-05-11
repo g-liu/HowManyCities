@@ -130,11 +130,7 @@ final class GameStatsViewController: UIViewController {
     
     let cityCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, City> { cell, indexPath, itemIdentifier in
       var configuration = UIListContentConfiguration.cell()
-      if self.viewModel.citySortMode == .rarityAscending {
-        configuration.attributedText = CityRarityRenderer().string(itemIdentifier)
-      } else {
-        configuration.attributedText = CityPopulationRenderer().string(itemIdentifier)
-      }
+      configuration.attributedText = self.viewModel.string(for: itemIdentifier)
       configuration.directionalLayoutMargins.leading = 0
       configuration.directionalLayoutMargins.trailing = 0
       
@@ -143,11 +139,7 @@ final class GameStatsViewController: UIViewController {
     
     let multiCityCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, [City]> { cell, indexPath, itemIdentifier in
       var configuration = UIListContentConfiguration.cell()
-      if self.viewModel.citySortMode == .rarityAscending {
-        configuration.attributedText = MultiCityRarityRenderer().string(itemIdentifier)
-      } else {
-        configuration.attributedText = MultiCityPopulationRenderer().string(itemIdentifier)
-      }
+      configuration.attributedText = self.viewModel.string(for: itemIdentifier)
       configuration.directionalLayoutMargins.leading = 0
       configuration.directionalLayoutMargins.trailing = 0
       cell.contentConfiguration = configuration
@@ -263,7 +255,7 @@ final class GameStatsViewController: UIViewController {
       supplementaryView.backgroundColor = .systemBackground
     }
     
-    viewModel.dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
+    viewModel.dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView) { collectionView, indexPath, itemIdentifier in
       switch itemIdentifier {
         case .ordinal(_, _, _):
           return collectionView.dequeueConfiguredReusableCell(using: ordinalCellRegistration, for: indexPath, item: itemIdentifier)
@@ -278,7 +270,7 @@ final class GameStatsViewController: UIViewController {
         case .emptyState(let section):
           return collectionView.dequeueConfiguredReusableCell(using: emptyStateCellRegistration, for: indexPath, item: section)
       }
-    })
+    }
     viewModel.dataSource.supplementaryViewProvider = { collectionView, elementKind, indexPath in
       if elementKind == ElementKind.header {
         return collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)

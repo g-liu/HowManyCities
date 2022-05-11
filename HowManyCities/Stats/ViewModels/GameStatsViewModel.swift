@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-struct GameStatsViewModel {
+final class GameStatsViewModel {
   // TODO: ALL THESE sTRUCTTS ENUMS AND PROPERTIES NEED TO GET MOVED TO A VIEW MODEL OR SOMETHING
   // INSTEAD OF CLOGGING UP THE VC
   // AND IMPLEMENT CACHING FOR SOME OF THE CPU-HEAVY OPERATIONS
@@ -117,16 +117,25 @@ struct GameStatsViewModel {
   
   var statsProvider: GameStatisticsProvider?
   
-//  init() {
-//    setUpShit()
-//  }
-//
-//  private func setUpShit() {
-//
-//  }
-  
   init(statsProvider: GameStatisticsProvider) {
     self.statsProvider = statsProvider
+  }
+  
+  func string(for city: City) -> NSAttributedString {
+    // TODO: FUCK your simultaneous access we're not even FUCKING writing, we'll be back.
+    if citySortMode == .rarityAscending {
+      return CityRarityRenderer().string(city)
+    } else {
+      return CityPopulationRenderer().string(city)
+    }
+  }
+  
+  func string(for multiCity: [City]) -> NSAttributedString {
+    if citySortMode == .rarityAscending {
+      return MultiCityRarityRenderer().string(multiCity)
+    } else {
+      return MultiCityPopulationRenderer().string(multiCity)
+    }
   }
   
   /// Refresh city list
