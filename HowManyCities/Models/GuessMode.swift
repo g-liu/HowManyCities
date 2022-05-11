@@ -17,7 +17,7 @@ enum GuessMode {
   case any
   case every
   // Precondition: state.states is either nil, empty, or contains exactly 1 item
-  case specific(_ state: State) // TODO: As State can be hierarchical, must differentiate between top level and lower level states especially in the derived variables
+  case specific(_ state: State)
   
   var string: String {
     switch self {

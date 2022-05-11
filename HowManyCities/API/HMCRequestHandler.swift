@@ -123,7 +123,6 @@ final class HMCRequestHandler {
     task.resume()
   }
   
-  // TODO: Not working right now because of CSRF
   func finishGame(cities: [City], startTime: Date, usedMultiCityInput: Bool, cb: @escaping (GameFinishResponse?) -> Void) {
     guard let url = URL(string: type(of: self).finishGameURL) else { cb(nil); return }
     guard let csrfToken = csrfToken else {

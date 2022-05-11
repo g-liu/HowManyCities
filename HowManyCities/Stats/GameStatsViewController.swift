@@ -190,9 +190,6 @@ final class GameStatsViewController: UIViewController {
       
       switch section {
         case .cityList:
-          // TODO: And we could reduce most/least populated into 1 segment, same with popular/rarest, and then in the third tab
-          // can sort alphabetically, alphabetically by country, recently, or...
-          // MAYBE JUST HAVE 1 CATEGORY WITH DIFFERENT SORTT OPTIONS?? LIKE F*CK THE SEGMENT
           supplementaryView.subtitle = self.viewModel.citySortMode.description
           supplementaryView.configure(sortCb: self.didTapSortCities)
         case .stateList, .territoryList:

@@ -88,8 +88,6 @@ final class GameStatsViewModel {
       if oldValue.showsRarity != citySortMode.showsRarity {
         snapshot.reconfigureItems(inSection: .cityList)
       }
-      // TODO: Is there a better way to toggle reload? Or avoid?
-//      snapshot.reloadSections([.cityList])
       
       dataSource.apply(snapshot)
     }
