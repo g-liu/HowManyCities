@@ -166,7 +166,6 @@ final class CityInfoViewController: UIViewController {
       nearbyCityLabel.numberOfLines = 0
 
       let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(showNearestCity))
-//      tapGestureRecognizer.data = closestCity
       nearbyCityLabel.addGestureRecognizer(tapGestureRecognizer)
       nearbyCityLabel.isUserInteractionEnabled = true
       nearbyCityLabel.attributedText = nearestCityText
@@ -198,7 +197,6 @@ final class CityInfoViewController: UIViewController {
   @objc private func didTapNearbyCity(_ sender: Any) {
     guard let label = (sender as? UIGestureRecognizer)?.view as? UILabel else { return }
     let tag = label.tag
-//    guard let nearbyCity = viewModel.getCity(tag) else { return }
     guard let annotations = viewModel.nearbyCityAnnotations,
           annotations.isIndexValid(tag) else { return }
     
