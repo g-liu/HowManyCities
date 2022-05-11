@@ -11,7 +11,7 @@ import UIKit
 final class GameStatsViewController: UIViewController {
 //  private let pagingInfoSubject = PassthroughSubject<PagingInfo, Never>()
   
-  var viewModel: GameStatsViewModel
+  private let viewModel: GameStatsViewModel
   
   typealias Section = GameStatsViewModel.Section
   typealias Item = GameStatsViewModel.Item
@@ -158,15 +158,8 @@ final class GameStatsViewController: UIViewController {
     let ratioStatCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Item> { cell, indexPath, itemIdentifier in
       guard case let .formattedStat(ratio, description) = itemIdentifier else { return }
       var configuration = UIListContentConfiguration.cell()
-      
-      // TODO: Localize
-      let mas = NSMutableAttributedString(string: "\(ratio.numerator)", attributes: [.font: UIFont.boldSystemFont(ofSize: UIFont.labelFontSize)])
-      mas.append(.init(string: " of "))
-      mas.append(.init(string: "\(ratio.denominator)", attributes: [.font: UIFont.boldSystemFont(ofSize: UIFont.labelFontSize)]))
-      mas.append(.init(string: " \(description)"))
-      
-      configuration.attributedText = mas
-      
+      configuration.attributedText = self.viewModel.string(for: ratio, description)
+    
       cell.contentConfiguration = configuration
     }
     
@@ -293,7 +286,7 @@ final class GameStatsViewController: UIViewController {
     viewModel.refreshTerritoryList(&snapshot)
     viewModel.refreshOtherStats(&snapshot)
     
-    viewModel.dataSource.apply(snapshot, animatingDifferences: true) // TODO: TEST
+    viewModel.dataSource.apply(snapshot, animatingDifferences: true)
   }
 }
 
@@ -343,7 +336,6 @@ extension GameStatsViewController: UICollectionViewDelegate {
   }
   
   // TODO: Figure out why the iPod touch simulator isn't calling this consistently
-  // TODO: Disabled for now while we try to restructure the cells that display these cities
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     guard let section = Section(rawValue: indexPath.section) else { return }
     let items = viewModel.dataSource.snapshot().itemIdentifiers(inSection: section)

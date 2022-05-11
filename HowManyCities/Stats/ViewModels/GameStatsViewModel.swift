@@ -110,7 +110,7 @@ final class GameStatsViewModel {
   
   var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
   
-  var statsProvider: GameStatisticsProvider?
+  let statsProvider: GameStatisticsProvider?
   
   init(statsProvider: GameStatisticsProvider) {
     self.statsProvider = statsProvider
@@ -139,6 +139,17 @@ final class GameStatsViewModel {
       case .cityCount:
         return StateCityCountRenderer().string((stateName, cities))
     }
+  }
+  
+  func string(for ratio: Ratio, _ descriptionText: String) -> NSAttributedString {
+    // TODO: Maybe make this a renderer?
+    // TODO: Localize
+    let mas = NSMutableAttributedString(string: "\(ratio.numerator)", attributes: [.font: UIFont.boldSystemFont(ofSize: UIFont.labelFontSize)])
+    mas.append(.init(string: " of "))
+    mas.append(.init(string: "\(ratio.denominator)", attributes: [.font: UIFont.boldSystemFont(ofSize: UIFont.labelFontSize)]))
+    mas.append(.init(string: " \(descriptionText)"))
+    
+    return mas
   }
   
   /// Refresh city list
