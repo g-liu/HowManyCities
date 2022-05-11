@@ -33,6 +33,8 @@ final class MapGuessViewModel: NSObject {
     }
   }
   
+  var textFieldPlaceholder: String? { model.gameConfiguration?.placeholder }
+  
   var gameStatsProvider: GameStatisticsProvider { model }
   
   var numCitiesGuessed: Int { model.numCitiesGuessed }

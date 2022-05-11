@@ -77,9 +77,10 @@ final class MapGuessViewController: UIViewController {
     textField.delegate = self
     textField.layer.borderWidth = 1
     textField.layer.borderColor = UIColor.systemFill.cgColor
-    textField.font = .systemFont(ofSize: 36)
+    textField.font = .systemFont(ofSize: 36) // TODO: Dynamic font size
     textField.textAlignment = .center
     textField.clearButtonMode = .whileEditing
+    textField.attributedPlaceholder = .init(string: viewModel.textFieldPlaceholder ?? "", attributes: [.font: UIFont.systemFont(ofSize: 18)])
     
     textField.setContentHuggingPriority(.defaultLow, for: .horizontal)
     
@@ -191,6 +192,7 @@ final class MapGuessViewController: UIViewController {
   
   private func submitGuess(_ guess: String) {
     viewModel.submitGuess(guess)
+    cityInputTextField.attributedPlaceholder = nil
   }
   
   @objc private func didTapCountryDropdown(_ sender: UIButton) {
