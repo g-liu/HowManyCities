@@ -288,8 +288,27 @@ final class GameStatsViewController: UIViewController {
   }
 }
 
+// MARK: - UICollectionViewDelegate
 
 extension GameStatsViewController: UICollectionViewDelegate {
+  func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+    .init(identifier: nil) {
+      self.viewController(for: indexPath)
+    }
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+    if let vc = animator.previewViewController {
+      animator.addAnimations {
+        self.show(vc, sender: self)
+      }
+    }
+//    if let indexPath = configuration.identifier as? IndexPath,
+//       let vc = self.viewController(for: indexPath) {
+//      animator.addAnimations { self.show(vc, sender: self) }
+//    }
+  }
+  
   private func toggleHighlight(_ isOn: Bool, collectionView: UICollectionView, at indexPath: IndexPath) {
     let color: UIColor = isOn ? .systemFill : .clear
     guard let section = Section(rawValue: indexPath.section) else { return }
@@ -335,7 +354,13 @@ extension GameStatsViewController: UICollectionViewDelegate {
   
   // TODO: Figure out why the iPod touch simulator isn't calling this consistently
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-    guard let section = Section(rawValue: indexPath.section) else { return }
+    if let vc = viewController(for: indexPath) {
+      navigationController?.pushViewController(vc)
+    }
+  }
+  
+  private func viewController(for indexPath: IndexPath) -> UIViewController? {
+    guard let section = Section(rawValue: indexPath.section) else { return nil }
     let items = viewModel.dataSource.snapshot().itemIdentifiers(inSection: section)
     let item = items[indexPath.row]
     
@@ -344,45 +369,51 @@ extension GameStatsViewController: UICollectionViewDelegate {
         switch item {
           case .multiCity(_):
             // TODO: HANDLE THIS CASE??!?!
-            break
+            return nil
           case .ordinal(_, _, _):
             if case let .city(city) = items[indexPath.row + 1] {
-              showCityVC(city)
+              return getCityVC(city)
+            } else {
+              return nil
             }
           case .city(let city):
-            showCityVC(city)
+            return getCityVC(city)
           default:
-            break // We can't handle this yet
+            return nil
         }
 
       case .stateList, .territoryList:
         switch item {
           case .ordinal(_, _, _):
             if case let .state(stateName, cities) = items[indexPath.row + 1] {
-              showStateVC(.init(name: stateName), cities: cities)
+              return getStateVC(stateName, cities: cities)
+            } else {
+              return nil
             }
           case .state(let stateName, let cities):
-            showStateVC(.init(name: stateName), cities: cities)
-          default: break
+            return getStateVC(stateName, cities: cities)
+          default:
+            return nil
         }
 
       default:
-        break
+        return nil
     }
   }
   
-  private func showCityVC(_ city: City) {
+  private func getCityVC(_ city: City) -> UIViewController {
     let cityVC = CityInfoViewController()
     cityVC.statsProvider = viewModel.statsProvider
     cityVC.city = city
 
-    navigationController?.pushViewController(cityVC)
+    return cityVC
   }
   
-  private func showStateVC(_ state: State, cities: [City]) {
+  private func getStateVC(_ stateName: String, cities: [City]) -> UIViewController {
+    let state = State(name: stateName)
     let stateVC = StateInfoViewController(state: state, guessedCities: cities)
     
-    navigationController?.pushViewController(stateVC)
+    return stateVC
   }
 }
 
