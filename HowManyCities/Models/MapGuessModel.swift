@@ -22,7 +22,14 @@ protocol GameStatisticsProvider: AnyObject {
   
   var recentCitiesGuessed: [City] { get }
   
-  func guessedCities(near city: City) -> [City]
+  /// A list of cities, sorted by closest to the given city.
+  /// Only cities within the threshold distance are considered
+  /// - Parameters:
+  ///   - city: the reference city
+  ///   - threshold: the maximum distance until a city is no longer considered "close"
+  ///   - limit: the maximum number of cities returned
+  /// - Returns: the cities closest to given city, sorted in order of distance, up to the limit
+  func guessedCities(near city: City, threshold: Double, limit: Int) -> [City]
   func nearestCity(to city: City) -> City?
   
   var percentageTotalPopulationGuessed: Double { get }
@@ -97,11 +104,17 @@ extension MapGuessModel: GameStatisticsProvider {
     guessedCities.filter { $0.population > population }
   }
   
-  func guessedCities(near city: City) -> [City] {
-    guessedCities.sorted {
+  func guessedCities(near city: City, threshold: Double = 500_000, limit: Int = 10) -> [City] {
+    var i = 0
+    return guessedCities.sorted {
       $0.coordinates.asLocation.distance(from: city.coordinates.asLocation) <
         $1.coordinates.asLocation.distance(from: city.coordinates.asLocation)
-    }.dropFirst().asArray
+    }.dropFirst().prefix {
+      if i >= 10 { return false }
+      if $0.distance(to: city) > threshold { return false }
+      i += 1
+      return true
+    }
   }
   
   func nearestCity(to city: City) -> City? {

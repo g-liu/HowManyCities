@@ -410,9 +410,7 @@ extension GameStatsViewController: UICollectionViewDelegate {
   }
   
   private func getCityVC(_ city: City) -> UIViewController {
-    let cityVC = CityInfoViewController()
-    cityVC.statsProvider = viewModel.statsProvider
-    cityVC.city = city
+    let cityVC = CityInfoViewController(city: city, statsProvider: viewModel.statsProvider)
 
     return cityVC
   }

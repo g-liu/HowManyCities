@@ -80,8 +80,7 @@ final class CityListViewController: UITableViewController {
     let items = dataSource.snapshot().itemIdentifiers(inSection: indexPath.section)
     let item = items[indexPath.row]
     
-    let cityVC = CityInfoViewController()
-    cityVC.city = item
+    let cityVC = CityInfoViewController(city: item, statsProvider: nil /* TODO: what to pass here???? */)
     
     (presentingVC ?? self).navigationController?.present(cityVC, animated: true)
     
