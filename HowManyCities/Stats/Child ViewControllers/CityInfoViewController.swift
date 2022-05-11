@@ -219,6 +219,8 @@ final class CityInfoViewController: UIViewController {
     mapView.removeOverlays(mapView.overlays)
     
     mapView.addAnnotation(nearestCityAnnotation)
+    let line = MKPolyline(coordinates: [viewModel.city.coordinates, nearestCityAnnotation.coordinate])
+    mapView.addOverlay(line)
     
     mapView.showAnnotations(mapView.annotations, animated: true)
   }
