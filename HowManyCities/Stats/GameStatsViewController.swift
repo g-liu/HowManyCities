@@ -53,6 +53,8 @@ final class GameStatsViewController: UIViewController {
   
   private var showCitiesUpTo: Int = 10 {
     didSet {
+      // NB: This could be far more efficient...
+      // if we cache the COMPLETE cities list and just used .prefix(...) whenever we needed to
       var snapshot = dataSource.snapshot()
       refreshCityList(&snapshot)
       
@@ -80,50 +82,6 @@ final class GameStatsViewController: UIViewController {
   
   // TODO: MOVE THE BELOW CODE TO A SEPARATE RENDERER????
   // OR at least the logic needs to be encapsulated elsewhere
-  
-  enum CitySortMode: CaseIterable, CustomStringConvertible {
-    case recent
-    case aToZ
-    case countryAToZ
-    case populationDescending
-    case rarityAscending
-    
-    var description: String {
-      switch self {
-        case .recent:
-          return "Recent cities"
-        case .aToZ:
-          return "Cities A→Z"
-        case .countryAToZ:
-          return "Cities A→Z by country"
-        case .populationDescending:
-          return "Largest cities"
-        case .rarityAscending:
-          return "Rarest cities"
-      }
-    }
-    
-    // TODO: Could make ext?
-    var nextMode: Self {
-      let nextIndex = ((Self.allCases.firstIndex(of: self) ?? -1) + 1) % Self.allCases.count
-      return Self.allCases[nextIndex]
-    }
-    
-    var showsRarity: Bool {
-      // TODO: Make this an ENUM or part of the renderer or SOMETHING needs to be more stateful!
-      self == .rarityAscending
-    }
-  }
-  
-  enum StateSortMode: CaseIterable {
-    case cityCount
-    case population
-    
-    var nextMode: Self {
-      let nextIndex = ((Self.allCases.firstIndex(of: self) ?? -1) + 1) % Self.allCases.count
-      return Self.allCases[nextIndex]
-    }
-  }
   
   private var citySortMode: CitySortMode = .populationDescending {
     didSet {
@@ -232,6 +190,7 @@ final class GameStatsViewController: UIViewController {
     
     configureHierarchy()
     configureDataSource()
+    populateInitialData()
   }
   
   private func configureHierarchy() {
@@ -421,8 +380,6 @@ final class GameStatsViewController: UIViewController {
       }
     }
     
-    populateInitialData()
-    
     collectionView.dataSource = dataSource
   }
   
@@ -512,7 +469,6 @@ extension GameStatsViewController: UICollectionViewDelegate {
         }
 
       case .stateList, .territoryList:
-        
         switch item {
           case .ordinal(_, _, _):
             if case let .state(stateName, cities) = items[indexPath.row + 1] {
@@ -523,7 +479,6 @@ extension GameStatsViewController: UICollectionViewDelegate {
           default: break
         }
 
-        
       default:
         break
     }

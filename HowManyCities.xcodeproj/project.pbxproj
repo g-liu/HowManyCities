@@ -27,6 +27,8 @@
 		6C9703D62829CB09001F7591 /* GenericError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9703D52829CB09001F7591 /* GenericError.swift */; };
 		6C9703D82829CD2A001F7591 /* MultiCityPopulationRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9703D72829CD2A001F7591 /* MultiCityPopulationRenderer.swift */; };
 		6C9703DA2829CD34001F7591 /* MultiCityRarityRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9703D92829CD34001F7591 /* MultiCityRarityRenderer.swift */; };
+		6C9703DD282B3833001F7591 /* GameStatsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9703DC282B3833001F7591 /* GameStatsViewModel.swift */; };
+		6C9703E0282B3870001F7591 /* CitySortMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9703DF282B3870001F7591 /* CitySortMode.swift */; };
 		6C9C23EA281B449300376D6D /* CollectionViewHeaderReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9C23E9281B449300376D6D /* CollectionViewHeaderReusableView.swift */; };
 		6C9C23ED281B508900376D6D /* CityPopulationRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9C23EC281B508900376D6D /* CityPopulationRenderer.swift */; };
 		6C9C23EF281B509E00376D6D /* CityRarityRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9C23EE281B509E00376D6D /* CityRarityRenderer.swift */; };
@@ -128,6 +130,8 @@
 		6C9703D52829CB09001F7591 /* GenericError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericError.swift; sourceTree = "<group>"; };
 		6C9703D72829CD2A001F7591 /* MultiCityPopulationRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiCityPopulationRenderer.swift; sourceTree = "<group>"; };
 		6C9703D92829CD34001F7591 /* MultiCityRarityRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiCityRarityRenderer.swift; sourceTree = "<group>"; };
+		6C9703DC282B3833001F7591 /* GameStatsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStatsViewModel.swift; sourceTree = "<group>"; };
+		6C9703DF282B3870001F7591 /* CitySortMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CitySortMode.swift; sourceTree = "<group>"; };
 		6C9C23E9281B449300376D6D /* CollectionViewHeaderReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewHeaderReusableView.swift; sourceTree = "<group>"; };
 		6C9C23EC281B508900376D6D /* CityPopulationRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityPopulationRenderer.swift; sourceTree = "<group>"; };
 		6C9C23EE281B509E00376D6D /* CityRarityRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityRarityRenderer.swift; sourceTree = "<group>"; };
@@ -242,9 +246,27 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		6C9703DB282B381A001F7591 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				6C9703DC282B3833001F7591 /* GameStatsViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		6C9703DE282B3866001F7591 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				6C9703DF282B3870001F7591 /* CitySortMode.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		6C9C23E22819D48600376D6D /* Stats */ = {
 			isa = PBXGroup;
 			children = (
+				6C9703DE282B3866001F7591 /* Models */,
+				6C9703DB282B381A001F7591 /* ViewModels */,
 				6C9F606B282621170035B0FA /* Child ViewControllers */,
 				6C9C23E32819D49000376D6D /* Subviews */,
 				6C9C23F02821A9C700376D6D /* GameStatsViewController.swift */,
@@ -748,6 +770,7 @@
 				6C9F606D2826212C0035B0FA /* StateInfoViewController.swift in Sources */,
 				6C9C42B3281222B6006529E9 /* MKMapPoint+Extension.swift in Sources */,
 				6CAD802327F3AA640057A41E /* MapGuessViewModel.swift in Sources */,
+				6C9703DD282B3833001F7591 /* GameStatsViewModel.swift in Sources */,
 				6C9C23EF281B509E00376D6D /* CityRarityRenderer.swift in Sources */,
 				6C9C23ED281B508900376D6D /* CityPopulationRenderer.swift in Sources */,
 				6C7F4D9C2814F52000F90FDE /* State.swift in Sources */,
@@ -781,6 +804,7 @@
 				6C82DBD527F533D80084159F /* ArraySlice+Extension.swift in Sources */,
 				6CBBD5E028238B50002D9FC2 /* FooterTextCollectionReusableView.swift in Sources */,
 				6CAD801927F382F10057A41E /* UIView+Extension.swift in Sources */,
+				6C9703E0282B3870001F7591 /* CitySortMode.swift in Sources */,
 				6CBBD5D62821DA8F002D9FC2 /* CityInfoViewController.swift in Sources */,
 				6C9C42A9281219AE006529E9 /* MKZoomScale+Extension.swift in Sources */,
 				6CAD7FEA27F381DF0057A41E /* SceneDelegate.swift in Sources */,
