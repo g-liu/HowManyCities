@@ -26,9 +26,8 @@ final class MapGuessModelTests: XCTestCase {
     XCTAssert(model.citiesByCountry.isEmpty)
     XCTAssert(model.citiesByTerritory.isEmpty)
     XCTAssert(model.nationalCapitalsGuessed.isEmpty)
-    XCTAssert(model.largestCitiesGuessed.isEmpty)
-    XCTAssert(model.smallestCitiesGuessed.isEmpty)
-    XCTAssert(model.rarestCitiesGuessed.isEmpty)
+    XCTAssert(model.citiesByPopulation.isEmpty)
+    XCTAssert(model.citiesByRarity.isEmpty)
     XCTAssert(model.citiesExceeding(population: 0).isEmpty)
   }
   
