@@ -303,10 +303,6 @@ extension GameStatsViewController: UICollectionViewDelegate {
         self.show(vc, sender: self)
       }
     }
-//    if let indexPath = configuration.identifier as? IndexPath,
-//       let vc = self.viewController(for: indexPath) {
-//      animator.addAnimations { self.show(vc, sender: self) }
-//    }
   }
   
   private func toggleHighlight(_ isOn: Bool, collectionView: UICollectionView, at indexPath: IndexPath) {

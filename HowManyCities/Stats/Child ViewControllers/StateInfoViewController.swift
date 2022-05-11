@@ -40,14 +40,14 @@ final class StateInfoViewController: UIViewController {
     return map
   }()
   
-  private lazy var infoStack: UIStackView = {
-    let stackView = UIStackView().autolayoutEnabled
-    stackView.axis = .vertical
-    stackView.alignment = .leading
-    stackView.spacing = 8.0
-    
-    return stackView
-  }()
+//  private lazy var infoStack: UIStackView = {
+//    let stackView = UIStackView().autolayoutEnabled
+//    stackView.axis = .vertical
+//    stackView.alignment = .leading
+//    stackView.spacing = 8.0
+//
+//    return stackView
+//  }()
   
   init(state: State, guessedCities: [City]) {
     self.state = state
@@ -71,30 +71,31 @@ final class StateInfoViewController: UIViewController {
     let monoTextView = UITextView().autolayoutEnabled
     monoTextView.delegate = self
     
-    infoStack.addArrangedSubview(monoTextView)
+//    infoStack.addArrangedSubview(monoTextView)
     monoTextView.isScrollEnabled = false
     monoTextView.isEditable = false
     monoTextView.isSelectable = true
     monoTextView.font = UIFont.systemFont(ofSize: UIFont.labelFontSize)
     monoTextView.textColor = .label
     
-    scrollView.addSubview(mapView)
-    scrollView.addSubview(infoStack)
+    scrollView.addSubview(monoTextView)
+    monoTextView.pin(to: scrollView, margins: .init(horizontal: 0, vertical: 12))
+    monoTextView.widthAnchor.constraint(lessThanOrEqualTo: scrollView.widthAnchor).isActive = true
     
+    view.addSubview(mapView)
     view.addSubview(scrollView)
-    scrollView.pin(to: view.safeAreaLayoutGuide)
     
     NSLayoutConstraint.activate([
-      mapView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-      mapView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-      mapView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-      mapView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+      mapView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+      mapView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+      mapView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+      mapView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor),
       mapView.heightAnchor.constraint(equalToConstant: 250),
       
-      infoStack.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 8.0),
-      infoStack.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 12.0),
-      infoStack.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -12.0),
-      infoStack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+      scrollView.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 8.0),
+      scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+      scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+      scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
       scrollView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor)
     ])
     
