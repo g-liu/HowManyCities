@@ -16,7 +16,6 @@ struct CityInfoViewModel {
   
   let city: City
   
-  
   /// A list of the nearest cities, where "near" must be less than the value defined in `nearbyThreshold`
   private let nearbyCities: [City]?
 
@@ -108,5 +107,37 @@ struct CityInfoViewModel {
       return otherCity.nameWithStateAbbr
     }
     return otherCity.name
+  }
+   
+  // TODO: Move this to a proprety with didset inside the view model
+  func cityTitle(isShowingFullTitle: Bool) -> NSAttributedString {
+    let cityName: String
+    let upperDivisionText: String
+    
+    // City name disambiguation is sometimes presented in parentheses
+    // Ex. the city of Fugging (Upper Austria)
+    // We want to render as Fugging instead.
+    let upperDivisionSuffix = isShowingFullTitle ? city.upperDivisionTitle : city.upperDivisionTitleWithAbbr
+    let regex = try! NSRegularExpression(pattern: #"\s+\((.+)\)"#)
+    let matches = regex.matches(in: city.name, range: city.name.entireRange)
+    if let match = matches.first?.range(at: 1),
+       let substringRange = Range(match, in: city.name) {
+      let upperDivisionPrefix = String(city.name[substringRange])
+      upperDivisionText = [upperDivisionPrefix, upperDivisionSuffix].joined(separator: ", ")
+      cityName = city.name.replacingOccurrences(of: #"\s+\(.+\)"#, with: "", options: .regularExpression)
+    } else {
+      cityName = city.name
+      upperDivisionText = upperDivisionSuffix
+    }
+    
+    let mas = NSMutableAttributedString(string: "\(cityName) ")
+    if let capitalDesignation = city.capitalDesignation {
+      mas.append(.init(string: capitalDesignation, attributes: [.font: UIFont.systemFont(ofSize: UIFont.systemFontSize),
+                                                                .foregroundColor: UIColor.systemYellow]))
+    }
+    mas.append(.init(string: "\(upperDivisionText)\(city.countryFlag ?? "")", attributes: [.font: UIFont.systemFont(ofSize: UIFont.systemFontSize),
+                                                                                     .foregroundColor: UIColor.systemGray]))
+    
+    return mas
   }
 }
