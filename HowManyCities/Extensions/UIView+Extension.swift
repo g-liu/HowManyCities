@@ -50,5 +50,9 @@ extension UIView {
   static func animate(animations: @escaping () -> Void, completion: ((Bool) -> Void)? = nil) {
     self.animate(withDuration: CATransaction.animationDuration(), animations: animations, completion: completion)
   }
+  
+  func removeAllGestureRecognizers() {
+    gestureRecognizers?.forEach { removeGestureRecognizer($0) }
+  }
 }
 

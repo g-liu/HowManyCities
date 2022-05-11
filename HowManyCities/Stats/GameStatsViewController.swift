@@ -351,7 +351,12 @@ extension GameStatsViewController: UICollectionViewDelegate {
   // TODO: Figure out why the iPod touch simulator isn't calling this consistently
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     if let vc = viewController(for: indexPath) {
-      navigationController?.pushViewController(vc)
+      // TODO: This requires special presentation. Is there a better way?
+      if let vc = vc as? UIAlertController {
+        present(vc, animated: true)
+      } else {
+        navigationController?.pushViewController(vc)
+      }
     }
   }
   
@@ -363,9 +368,18 @@ extension GameStatsViewController: UICollectionViewDelegate {
     switch section {
       case .cityList:
         switch item {
-          case .multiCity(_):
-            // TODO: HANDLE THIS CASE??!?!
-            return nil
+          case .multiCity(let cities):
+//            let cityCountMessage = String(format: "%d %@ available", cities.count, cities.count > 1 ? "cities" : "city")
+            let alertController = UIAlertController(title: "Select a city", message: nil, preferredStyle: .alert)
+            let cityListVC = CityListViewController(cities: cities)
+            alertController.addChildViewController(cityListVC, toContainerView: alertController.view)
+            alertController.addAction(title: "Cancel", style: .cancel, isEnabled: true) { _ in
+              alertController.dismiss(animated: true)
+            }
+            alertController.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+            alertController.title = "Select a city"
+            
+            return alertController
           case .ordinal(_, _, _):
             if case let .city(city) = items[indexPath.row + 1] {
               return getCityVC(city)
