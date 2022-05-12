@@ -15,12 +15,37 @@ final class WarningBannerView: UIView {
     return label
   }()
   
+  private var state: CityLimitWarning {
+    didSet {
+      guard state != oldValue else { return }
+      switch state {
+        case .none:
+          isHidden = true
+          backgroundColor = .clear
+          label.text = nil
+        case .warning(let remaining):
+          isHidden = false
+          backgroundColor = .systemYellow
+          // TODO: Pluralization
+          label.text = "Approaching save limit — \(remaining) cities left"
+        case .unableToSave(let surplus):
+          isHidden = false
+          backgroundColor = .systemRed
+          label.text = "Unable to save, exceeded limit by \(surplus) cities"
+      }
+    }
+  }
+  
   override init(frame: CGRect) {
+    state = .none
     super.init(frame: frame)
     
     isHidden = true
     addSubview(label)
     label.pin(to: safeAreaLayoutGuide, margins: .init(top: 0, left: 16, bottom: 8, right: 16))
+    
+    isUserInteractionEnabled = true
+    addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showExplanation)))
   }
   
   required init?(coder: NSCoder) {
@@ -28,20 +53,14 @@ final class WarningBannerView: UIView {
   }
   
   func setState(_ state: CityLimitWarning) {
-    switch state {
-      case .none:
-        isHidden = true
-        backgroundColor = .clear
-        label.text = nil
-      case .warning(let remaining):
-        isHidden = false
-        backgroundColor = .systemYellow
-        label.text = "You're approaching the limit (\(remaining) cities left)"
-      case .unableToSave(let surplus):
-        isHidden = false
-        backgroundColor = .systemRed
-        label.text = "Unable to save now, you're over the limit by \(surplus) cities"
-        
-    }
+    self.state = state
+  }
+  
+  @objc private func showExplanation() {
+    let alert = UIAlertController(title: "Explanation",
+                                  message: "You cannot save a game with more than 7,500 cities. However, you can continue adding cities to your map; you just won't be able to save your results permanently and get a shareable link.", preferredStyle: .alert)
+    alert.addAction(.init(title: "Ok", style: .cancel))
+    
+    parentViewController?.show(alert, sender: self)
   }
 }

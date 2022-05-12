@@ -18,12 +18,6 @@ protocol MapGuessDelegate: AnyObject {
   func didChangeGuessMode(_ mode: GuessMode)
 }
 
-enum CityLimitWarning {
-  case none
-  case warning(_ remaining: Int)
-  case unableToSave(_ surplus: Int)
-}
-
 final class MapGuessViewModel: NSObject {
   var delegate: MapGuessDelegate?
   
@@ -49,10 +43,14 @@ final class MapGuessViewModel: NSObject {
   
   var cityLimitWarning: CityLimitWarning {
     // TODO: Thresholds depend on game mode
-    if numCitiesGuessed > 7500 {
-      return .unableToSave(numCitiesGuessed - 7500)
-    } else if numCitiesGuessed >= 7000 {
-      return .warning(7500 - numCitiesGuessed)
+    guard let maxCities = model.gameConfiguration?.maxCities else {
+      return .none
+    }
+    let warningThreshold = Int(0.93*Double(maxCities))
+    if numCitiesGuessed > maxCities {
+      return .unableToSave(numCitiesGuessed - maxCities)
+    } else if numCitiesGuessed >= warningThreshold {
+      return .warning(maxCities - numCitiesGuessed)
     } else {
       return .none
     }
