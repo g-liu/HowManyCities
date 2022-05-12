@@ -18,20 +18,22 @@ final class WarningBannerView: UIView {
   private var state: CityLimitWarning {
     didSet {
       guard state != oldValue else { return }
-      switch state {
-        case .none:
-          isHidden = true
-          backgroundColor = .clear
-          label.text = nil
-        case .warning(let remaining):
-          isHidden = false
-          backgroundColor = .systemYellow
-          // TODO: Pluralization
-          label.text = "Approaching save limit — \(remaining) cities left"
-        case .unableToSave(let surplus):
-          isHidden = false
-          backgroundColor = .systemRed
-          label.text = "Unable to save, exceeded limit by \(surplus) cities"
+      UIView.animate {
+        switch self.state {
+          case .none:
+            self.isHidden = true
+            self.backgroundColor = .clear
+            self.label.text = nil
+          case .warning(let remaining):
+            self.isHidden = false
+            self.backgroundColor = .systemYellow
+            // TODO: Pluralization
+            self.label.text = "Approaching save limit — \(remaining) cities left"
+          case .unableToSave(let surplus):
+            self.isHidden = false
+            self.backgroundColor = .systemRed
+            self.label.text = "Unable to save, exceeded limit by \(surplus) cities"
+        }
       }
     }
   }
