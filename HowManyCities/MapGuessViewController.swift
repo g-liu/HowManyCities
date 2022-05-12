@@ -62,6 +62,12 @@ final class MapGuessViewController: UIViewController {
     return button
   }()
   
+  private lazy var warningBanner: WarningBannerView = {
+    let view = WarningBannerView().autolayoutEnabled
+    
+    return view
+  }()
+  
   private lazy var guessStackView: UIStackView = {
     let stackView = UIStackView(arrangedSubviews: [cityInputTextField, countryDropdownButton]).autolayoutEnabled
     stackView.axis = .horizontal
@@ -145,6 +151,8 @@ final class MapGuessViewController: UIViewController {
     
     view.backgroundColor = .systemBackground
     
+    mapView.addSubview(warningBanner)
+    
     view.addSubview(mapView)
     view.addSubview(resetButton)
     view.addSubview(finishButton)
@@ -161,6 +169,10 @@ final class MapGuessViewController: UIViewController {
     view.addSubview(moreStatsButton)
     
     NSLayoutConstraint.activate([
+      warningBanner.topAnchor.constraint(equalTo: mapView.topAnchor),
+      warningBanner.leadingAnchor.constraint(equalTo: mapView.leadingAnchor),
+      warningBanner.trailingAnchor.constraint(equalTo: mapView.trailingAnchor),
+      
       mapView.topAnchor.constraint(equalTo: view.topAnchor),
       mapView.bottomAnchor.constraint(equalTo: view.centerYAnchor, constant: -64),
       mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -219,6 +231,8 @@ final class MapGuessViewController: UIViewController {
     guessStats.updatePopulationGuessed(viewModel.populationGuessed)
     guessStats.updateNumCitiesGuessed(viewModel.numCitiesGuessed)
     guessStats.updatePercentageTotalPopulation(viewModel.percentageTotalPopulationGuessed)
+    
+    warningBanner.setState(viewModel.cityLimitWarning)
     
     return annotations
   }

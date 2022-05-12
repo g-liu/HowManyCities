@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		6C0EB7A3282C4AFB00E95F6B /* UIDismissableAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C0EB7A2282C4AFB00E95F6B /* UIDismissableAlertController.swift */; };
 		6C0EB7A5282C6B3B00E95F6B /* CityinfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C0EB7A4282C6B3B00E95F6B /* CityinfoViewModel.swift */; };
+		6C0EB7A7282C84EB00E95F6B /* WarningBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C0EB7A6282C84EB00E95F6B /* WarningBannerView.swift */; };
 		6C7C8D9828161AA60091E09F /* NormalizedCountryNames.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6C7C8D9728161AA60091E09F /* NormalizedCountryNames.plist */; };
 		6C7C8D9B2817BFE60091E09F /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = 6C7C8D9A2817BFE60091E09F /* OrderedCollections */; };
 		6C7C8D9E2817C1330091E09F /* MapGuessModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7C8D9D2817C1330091E09F /* MapGuessModelTests.swift */; };
@@ -115,6 +116,7 @@
 		5E08EA20EB451FE21A3BAC71 /* Pods_HowManyCities.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HowManyCities.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C0EB7A2282C4AFB00E95F6B /* UIDismissableAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDismissableAlertController.swift; sourceTree = "<group>"; };
 		6C0EB7A4282C6B3B00E95F6B /* CityinfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityinfoViewModel.swift; sourceTree = "<group>"; };
+		6C0EB7A6282C84EB00E95F6B /* WarningBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarningBannerView.swift; sourceTree = "<group>"; };
 		6C7C8D9728161AA60091E09F /* NormalizedCountryNames.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = NormalizedCountryNames.plist; sourceTree = "<group>"; };
 		6C7C8D9D2817C1330091E09F /* MapGuessModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapGuessModelTests.swift; sourceTree = "<group>"; };
 		6C7F4D9B2814F52000F90FDE /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
@@ -477,6 +479,7 @@
 				6CAD802827F3C1140057A41E /* CityAnnotationView.swift */,
 				6CAD802E27F3D2C20057A41E /* MapGuessStatsBar.swift */,
 				6C9C42AB281219D0006529E9 /* MapToast.swift */,
+				6C0EB7A6282C84EB00E95F6B /* WarningBannerView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -805,6 +808,7 @@
 				6CC3C5802804FB6C00AE5C50 /* NSLayoutConstraint+Extension.swift in Sources */,
 				6CAD7FE827F381DF0057A41E /* AppDelegate.swift in Sources */,
 				6C9F60662825AAB90035B0FA /* StateTotalPopulationRenderer.swift in Sources */,
+				6C0EB7A7282C84EB00E95F6B /* WarningBannerView.swift in Sources */,
 				6C9C42B528122999006529E9 /* MKOverlayRenderer+Extension.swift in Sources */,
 				6CBBD5DA2821F7DB002D9FC2 /* CLLocation+Extension.swift in Sources */,
 				6C82DBE127F569F80084159F /* MKCoordinateRegion+Extension.swift in Sources */,
