@@ -125,6 +125,10 @@ final class MapGuessViewModel: NSObject {
     model.guessedCities
   }
   
+  func removeCity(_ city: City) -> City? {
+    model.removeCity(city)
+  }
+  
   func resetState() {
     model.resetState()
   }

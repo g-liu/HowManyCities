@@ -17,6 +17,8 @@ final class GameStatsViewController: UIViewController {
   typealias Item = GameStatsViewModel.Item
   typealias ElementKind = GameStatsViewModel.ElementKind
   
+  var cityEditDelegate: CityEditDelegate?
+  
   private lazy var collectionView: UICollectionView = {
     let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider = { (sectionIndex, environment) -> NSCollectionLayoutSection? in
       guard let section = Section(rawValue: sectionIndex) else { return nil }
@@ -144,7 +146,7 @@ final class GameStatsViewController: UIViewController {
 //
 //        snapshot.deleteItems([.city(itemIdentifier)]) // TODO: Will have to remove the city from viewmodel too
         
-        if let _ = self.viewModel.statsProvider?.removeCity(itemIdentifier) {
+        if let _ = self.cityEditDelegate?.removeCity(itemIdentifier) {
           var snapshot = self.viewModel.dataSource.snapshot()
           self.viewModel.refreshCityList(&snapshot) // TODO: More efficiently, couldn't we just remove the city item and its associated ordinal?
           // A: I guess but then we still have to update the sections that depend on the city

@@ -11,6 +11,10 @@ import SwifterSwift
 import MapCache
 import OrderedCollections
 
+protocol CityEditDelegate {
+  func removeCity(_ city: City) -> City?
+}
+
 final class MapGuessViewController: UIViewController {
   
   private var viewModel: MapGuessViewModel
@@ -228,6 +232,12 @@ final class MapGuessViewController: UIViewController {
     mapView.addOverlays(cities.map(by: \.asShape), level: .aboveLabels)
     mapView.addAnnotations(annotations)
     
+    updateGameState()
+    
+    return annotations
+  }
+  
+  private func updateGameState() {
     guessStats.updatePopulationGuessed(viewModel.populationGuessed)
     guessStats.updateNumCitiesGuessed(viewModel.numCitiesGuessed)
     guessStats.updatePercentageTotalPopulation(viewModel.percentageTotalPopulationGuessed)
@@ -239,8 +249,6 @@ final class MapGuessViewController: UIViewController {
     } else {
       finishButton.isEnabled = true
     }
-    
-    return annotations
   }
   
   private func addCustomTileOverlay() {
@@ -317,7 +325,29 @@ final class MapGuessViewController: UIViewController {
   
   @objc private func didTapMoreStats() {
     let vc = GameStatsViewController(statsProvider: viewModel.gameStatsProvider)
+    vc.cityEditDelegate = self
     present(UINavigationController(rootViewController: vc), animated: true)
+  }
+}
+
+extension MapGuessViewController: CityEditDelegate {
+  func removeCity(_ city: City) -> City? {
+    if let city = viewModel.removeCity(city) {
+    
+      if let annotation = mapView.annotations.first(where: { $0.coordinate == city.coordinates /* TODO: GOTTA BE A BETTER WAY... man */ }) {
+        mapView.removeAnnotation(annotation)
+      }
+      
+      if let overlay = mapView.overlays.first(where: { $0.coordinate == city.coordinates }) {
+        mapView.removeOverlay(overlay)
+      }
+      
+      updateGameState()
+      return city
+    } else {
+      // TODO: Error messaging
+      return nil
+    }
   }
 }
 
