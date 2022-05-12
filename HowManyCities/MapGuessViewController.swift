@@ -232,7 +232,13 @@ final class MapGuessViewController: UIViewController {
     guessStats.updateNumCitiesGuessed(viewModel.numCitiesGuessed)
     guessStats.updatePercentageTotalPopulation(viewModel.percentageTotalPopulationGuessed)
     
-    warningBanner.setState(viewModel.cityLimitWarning)
+    let warning = viewModel.cityLimitWarning
+    warningBanner.setState(warning)
+    if case .unableToSave(_) = warning {
+      finishButton.isEnabled = false
+    } else {
+      finishButton.isEnabled = true
+    }
     
     return annotations
   }
