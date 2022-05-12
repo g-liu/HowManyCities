@@ -229,7 +229,7 @@ final class MapGuessViewController: UIViewController {
   @discardableResult
   private func updateMap(_ cities: OrderedSet<City>) -> [MKAnnotation] {
     let annotations = cities.map(CityAnnotation.init)
-    mapView.addOverlays(cities.map(by: \.asShape), level: .aboveLabels)
+//    mapView.addOverlays(cities.map(by: \.asShape), level: .aboveLabels)
     mapView.addAnnotations(annotations)
     
     updateGameState()
@@ -488,32 +488,38 @@ extension MapGuessViewController: MKMapViewDelegate {
   }
   
   func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+    // TODO: DEPRECATE ALL THE THINGS EXCEPT TILE OVERLAY
     if let circle = overlay as? MKCircle {
       let circleRenderer = MKZoomableCircleRenderer(circle: circle)
       circleRenderer.fillColor = .systemRed.withAlphaComponent(0.5)
       circleRenderer.strokeColor = .systemFill
       circleRenderer.lineWidth = 0.5
-      
+
       return circleRenderer
     } else if let polygon = overlay as? MKParameterizedPolygon {
       let polygonRenderer = MKZoomablePolygonRenderer(polygon: polygon)
       polygonRenderer.fillColor = (polygon.data as? UIColor) ?? .systemYellow.withAlphaComponent(0.7)
       polygonRenderer.strokeColor = .systemFill
       polygonRenderer.lineWidth = 2
-      
+
       return polygonRenderer
     } else if let tileOverlay = overlay as? MKTileOverlay {
       //      return MKTileOverlayRenderer(tileOverlay: tileOverlay)
       return mapView.mapCacheRenderer(forOverlay: tileOverlay)
     }
-    
+
     return .init(overlay: overlay)
   }
   
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-    let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "MKAnnotationView", for: annotation)
-    annotationView.canShowCallout = true
+    // TODO: TEMP AS FUCK PLZ SUBCLASS
+    let annotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "something")
+    annotationView.markerTintColor = .systemRed
+    annotationView.displayPriority = .required
     return annotationView
+//    let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "MKAnnotationView", for: annotation)
+//    annotationView.canShowCallout = true
+//    return annotationView
   }
 }
 
