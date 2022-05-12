@@ -43,6 +43,9 @@ protocol GameStatisticsProvider: AnyObject {
   // key: population bracket
   // value: number of cities guessed vs. total cities in bracket
   var totalGuessedByBracket: [(Int, Ratio)] { get }
+  
+  // TODO: Damn bro this feels so illegal, maybe a different protocol?
+  func removeCity(_ city: City) -> City?
 }
 
 final class MapGuessModel: Codable {
@@ -144,6 +147,11 @@ extension MapGuessModel: GameStatisticsProvider {
     return gameConfig.brackets.enumerated().map {
       ($1, .init(numerator: citiesExceeding(population: $1).count, denominator: gameConfig.totalCitiesByBracket[$0]))
     }
+  }
+  
+  func removeCity(_ city: City) -> City? {
+    guessedCities.remove(city)
+    // TODO: Notify somehow that this city was removed????
   }
 }
 
