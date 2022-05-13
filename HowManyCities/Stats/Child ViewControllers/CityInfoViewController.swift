@@ -239,6 +239,15 @@ extension CityInfoViewController: MKMapViewDelegate {
     return annotationView
   }
   
+  // TODO: TEST THIS CHANGE
+  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+    view.selectedZPriority = .max
+  }
+  
+  func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+    view.selectedZPriority = .defaultUnselected
+  }
+  
   func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
     if let polyline = overlay as? MKPolyline {
       let polylineRenderer = MKPolylineRenderer(overlay: polyline)

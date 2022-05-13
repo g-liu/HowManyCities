@@ -32,7 +32,7 @@ final class MapGuessViewController: UIViewController {
     map.delegate = self
     
     map.register(MKAnnotationView.self, forAnnotationViewWithReuseIdentifier: "MKAnnotationView")
-    
+    map.register(MKMarkerAnnotationView.self, forAnnotationViewWithReuseIdentifier: "MKMarkerAnnotationView")
     return map
   }()
   
@@ -227,7 +227,7 @@ final class MapGuessViewController: UIViewController {
   }
   
   @discardableResult
-  private func updateMap(_ cities: OrderedSet<City>) -> [MKAnnotation] {
+  private func updateMap(_ cities: OrderedSet<City>) -> [CityAnnotation] {
     let annotations = cities.map(CityAnnotation.init)
 //    mapView.addOverlays(cities.map(by: \.asShape), level: .aboveLabels)
     mapView.addAnnotations(annotations)
@@ -338,9 +338,9 @@ extension MapGuessViewController: CityEditDelegate {
         mapView.removeAnnotation(annotation)
       }
       
-      if let overlay = mapView.overlays.first(where: { $0.coordinate == city.coordinates }) {
-        mapView.removeOverlay(overlay)
-      }
+//      if let overlay = mapView.overlays.first(where: { $0.coordinate == city.coordinates }) {
+//        mapView.removeOverlay(overlay)
+//      }
       
       updateGameState()
       return city
@@ -513,8 +513,24 @@ extension MapGuessViewController: MKMapViewDelegate {
   
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
     // TODO: TEMP AS FUCK PLZ SUBCLASS
-    let annotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "something")
-    annotationView.markerTintColor = .systemRed
+//    let annotationView = CityAnnotationView(annotation: annotation, reuseIdentifier: "something")
+//    let annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: "MKAnnotationView")
+    let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "MKAnnotationView", for: annotation)
+//    annotationView.image = UIImage(named: "squirrel")
+    if let annotation = annotation as? CityAnnotation {
+      annotationView.frame = annotation.preferredSize
+      annotationView.backgroundColor = .systemRed.withAlphaComponent(0.5)
+      annotationView.layer.borderWidth = 1.0
+      annotationView.layer.borderColor = UIColor.systemFill.cgColor
+      annotationView.layer.cornerRadius = annotation.preferredSize.height / 2.0
+      annotationView.layer.masksToBounds = true
+    }
+    
+    annotationView.contentMode = .scaleAspectFit
+    annotationView.tintColor = .systemGray
+//    let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "MKMarkerAnnotationView", for: annotation)
+//    annotationView.markerTintColor = .systemRed
+//    annotationView.displayPriority = .required
     annotationView.displayPriority = .required
     return annotationView
 //    let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "MKAnnotationView", for: annotation)
