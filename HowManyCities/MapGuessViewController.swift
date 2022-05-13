@@ -483,23 +483,31 @@ extension MapGuessViewController: MapGuessDelegate {
 
 // MARK: - MKMapViewDelegate
 extension MapGuessViewController: MKMapViewDelegate {
-  func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+  func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
+//    <#code#>
+//  }
+//  func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
     if viewModel.lastRegion.span != mapView.region.span {
-      let scalingFactor = pow(1.4, mapView.zoomLevelDouble-3)
-      mapView.annotations.forEach {
+      let scalingFactor = pow(1.4, mapView.zoomLevelDouble-2)
+      mapView.annotations(in: mapView.visibleMapRect).forEach {
         guard let annotation = $0 as? CityAnnotation,
           let annotationView = mapView.view(for: annotation) else {
           return
         }
         
-        DispatchQueue.main.async {
-          UIView.animate(withDuration: 0.08) {
-            annotationView.transform = .init(scaleX: scalingFactor, y: scalingFactor)
-          }
-        }
+        annotationView.transform = .init(scaleX: scalingFactor, y: scalingFactor)
+        annotationView.layer.borderWidth = 1.0 / scalingFactor
+//        DispatchQueue.main.async {
+//          UIView.animate(withDuration: 0.08) {
+//            annotationView.transform = .init(scaleX: scalingFactor, y: scalingFactor)
+//          }
+//        }
       }
     }
     
+  }
+  
+  func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
     viewModel.lastRegion = mapView.region
   }
   
@@ -527,6 +535,14 @@ extension MapGuessViewController: MKMapViewDelegate {
     return .init(overlay: overlay)
   }
   
+  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+    view.backgroundColor = view.backgroundColor?.withAlphaComponent(1.0)
+  }
+  
+  func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+    view.backgroundColor = view.backgroundColor?.withAlphaComponent(0.5)
+  }
+  
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
     // TODO: TEMP AS FUCK PLZ SUBCLASS
 //    let annotationView = CityAnnotationView(annotation: annotation, reuseIdentifier: "something")
@@ -536,10 +552,12 @@ extension MapGuessViewController: MKMapViewDelegate {
     if let annotation = annotation as? CityAnnotation {
       annotationView.frame = annotation.preferredSize
       annotationView.backgroundColor = .systemRed.withAlphaComponent(0.5)
-      annotationView.layer.borderWidth = 1.0
+      annotationView.layer.borderWidth = 2.0
       annotationView.layer.borderColor = UIColor.systemFill.cgColor
       annotationView.layer.cornerRadius = annotation.preferredSize.height / 2.0
-      annotationView.layer.masksToBounds = true
+//      annotationView.layer.masksToBounds = true
+      // TODO: But callout should not be resized with the annotation view.
+      annotationView.canShowCallout = true
     }
     
     annotationView.contentMode = .scaleAspectFit
