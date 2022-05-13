@@ -493,9 +493,7 @@ extension MapGuessViewController: MKMapViewDelegate {
           return
         }
         
-        DispatchQueue.main.async {
-          annotationView.applyTransform(scalingFactor)
-        }
+        annotationView.applyTransform(scalingFactor)
       }
     }
   }
@@ -529,11 +527,11 @@ extension MapGuessViewController: MKMapViewDelegate {
   }
   
   func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-    (view as? CityAnnotationView)?.toggle(selected: true)
+    view.backgroundColor = view.backgroundColor?.withAlphaComponent(1.0)
   }
   
   func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
-    (view as? CityAnnotationView)?.toggle(selected: false)
+    view.backgroundColor = view.backgroundColor?.withAlphaComponent(0.5)
   }
   
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -545,9 +543,6 @@ extension MapGuessViewController: MKMapViewDelegate {
       annotationView.setCornerRadius(annotation.preferredSize.height / 2.0)
       annotationView.setFrame(annotation.preferredSize)
       annotationView.canShowCallout = true
-      
-      let scalingFactor = pow(1.4, mapView.zoomLevelDouble-2)
-      annotationView.applyTransform(scalingFactor)
     }
     
     annotationView.displayPriority = .required
