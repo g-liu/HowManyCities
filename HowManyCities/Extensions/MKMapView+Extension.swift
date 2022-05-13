@@ -8,6 +8,13 @@
 import MapKit
 
 extension MKMapView {
+  var zoomLevelDouble: Double {
+    let maxZoom = 20
+    let zoomScale = self.visibleMapRect.size.width / Double(self.frame.size.width)
+    let zoomExponent = log2(zoomScale)
+    return maxZoom - zoomExponent
+  }
+  
   func closeAllAnnotations(animated: Bool = true) {
     selectedAnnotations.forEach { deselectAnnotation($0, animated: animated) }
   }

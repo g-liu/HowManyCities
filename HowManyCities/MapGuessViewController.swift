@@ -484,6 +484,22 @@ extension MapGuessViewController: MapGuessDelegate {
 // MARK: - MKMapViewDelegate
 extension MapGuessViewController: MKMapViewDelegate {
   func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+    if viewModel.lastRegion.span != mapView.region.span {
+      let scalingFactor = pow(1.4, mapView.zoomLevelDouble-3)
+      mapView.annotations.forEach {
+        guard let annotation = $0 as? CityAnnotation,
+          let annotationView = mapView.view(for: annotation) else {
+          return
+        }
+        
+        DispatchQueue.main.async {
+          UIView.animate(withDuration: 0.08) {
+            annotationView.transform = .init(scaleX: scalingFactor, y: scalingFactor)
+          }
+        }
+      }
+    }
+    
     viewModel.lastRegion = mapView.region
   }
   

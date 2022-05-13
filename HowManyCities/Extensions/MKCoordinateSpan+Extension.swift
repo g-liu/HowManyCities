@@ -26,3 +26,9 @@ extension MKCoordinateSpan: Codable {
     self.init(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
   }
 }
+
+extension MKCoordinateSpan: Equatable {
+  public static func == (lhs: MKCoordinateSpan, rhs: MKCoordinateSpan) -> Bool {
+    lhs.latitudeDelta == rhs.latitudeDelta && lhs.longitudeDelta == rhs.longitudeDelta
+  }
+}
