@@ -31,8 +31,9 @@ final class MapGuessViewController: UIViewController {
     
     map.delegate = self
     
-    map.register(MKAnnotationView.self, forAnnotationViewWithReuseIdentifier: "MKAnnotationView")
-    map.register(MKMarkerAnnotationView.self, forAnnotationViewWithReuseIdentifier: "MKMarkerAnnotationView")
+//    map.register(MKAnnotationView.self, forAnnotationViewWithReuseIdentifier: "MKAnnotationView")
+//    map.register(MKMarkerAnnotationView.self, forAnnotationViewWithReuseIdentifier: "MKMarkerAnnotationView")
+    map.register(CityAnnotationView.self, forAnnotationViewWithReuseIdentifier: "CityAnnotationView")
     return map
   }()
   
@@ -484,27 +485,17 @@ extension MapGuessViewController: MapGuessDelegate {
 // MARK: - MKMapViewDelegate
 extension MapGuessViewController: MKMapViewDelegate {
   func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
-//    <#code#>
-//  }
-//  func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
     if viewModel.lastRegion.span != mapView.region.span {
       let scalingFactor = pow(1.4, mapView.zoomLevelDouble-2)
       mapView.annotations(in: mapView.visibleMapRect).forEach {
         guard let annotation = $0 as? CityAnnotation,
-          let annotationView = mapView.view(for: annotation) else {
+          let annotationView = mapView.view(for: annotation) as? CityAnnotationView else {
           return
         }
         
-        annotationView.transform = .init(scaleX: scalingFactor, y: scalingFactor)
-        annotationView.layer.borderWidth = 1.0 / scalingFactor
-//        DispatchQueue.main.async {
-//          UIView.animate(withDuration: 0.08) {
-//            annotationView.transform = .init(scaleX: scalingFactor, y: scalingFactor)
-//          }
-//        }
+        annotationView.applyTransform(scalingFactor)
       }
     }
-    
   }
   
   func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
@@ -544,32 +535,17 @@ extension MapGuessViewController: MKMapViewDelegate {
   }
   
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-    // TODO: TEMP AS FUCK PLZ SUBCLASS
-//    let annotationView = CityAnnotationView(annotation: annotation, reuseIdentifier: "something")
-//    let annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: "MKAnnotationView")
-    let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "MKAnnotationView", for: annotation)
-//    annotationView.image = UIImage(named: "squirrel")
+    guard let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "CityAnnotationView", for: annotation) as? CityAnnotationView else { return nil }
+    
     if let annotation = annotation as? CityAnnotation {
       annotationView.frame = annotation.preferredSize
-      annotationView.backgroundColor = .systemRed.withAlphaComponent(0.5)
-      annotationView.layer.borderWidth = 2.0
-      annotationView.layer.borderColor = UIColor.systemFill.cgColor
       annotationView.layer.cornerRadius = annotation.preferredSize.height / 2.0
-//      annotationView.layer.masksToBounds = true
-      // TODO: But callout should not be resized with the annotation view.
+//      annotationView.setCornerRadius(annotation.preferredSize.width / 2)
       annotationView.canShowCallout = true
     }
     
-    annotationView.contentMode = .scaleAspectFit
-    annotationView.tintColor = .systemGray
-//    let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "MKMarkerAnnotationView", for: annotation)
-//    annotationView.markerTintColor = .systemRed
-//    annotationView.displayPriority = .required
     annotationView.displayPriority = .required
     return annotationView
-//    let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "MKAnnotationView", for: annotation)
-//    annotationView.canShowCallout = true
-//    return annotationView
   }
 }
 
