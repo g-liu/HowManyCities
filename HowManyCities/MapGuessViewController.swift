@@ -538,9 +538,10 @@ extension MapGuessViewController: MKMapViewDelegate {
     guard let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "CityAnnotationView", for: annotation) as? CityAnnotationView else { return nil }
     
     if let annotation = annotation as? CityAnnotation {
-      annotationView.frame = annotation.preferredSize
-      annotationView.layer.cornerRadius = annotation.preferredSize.height / 2.0
-//      annotationView.setCornerRadius(annotation.preferredSize.width / 2)
+//      annotationView.frame = annotation.preferredSize
+//      annotationView.layer.cornerRadius = annotation.preferredSize.height / 2.0
+      annotationView.setCornerRadius(annotation.preferredSize.height / 2.0)
+      annotationView.setFrame(annotation.preferredSize)
       annotationView.canShowCallout = true
     }
     
