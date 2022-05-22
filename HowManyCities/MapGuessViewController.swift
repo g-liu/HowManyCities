@@ -31,7 +31,7 @@ final class MapGuessViewController: UIViewController {
     
     map.delegate = self
     
-    map.register(MKAnnotationView.self, forAnnotationViewWithReuseIdentifier: "MKAnnotationView")
+    map.register(CityAnnotationView.self, forAnnotationViewWithReuseIdentifier: "CityAnnotationView")
     
     return map
   }()
@@ -510,9 +510,25 @@ extension MapGuessViewController: MKMapViewDelegate {
     return .init(overlay: overlay)
   }
   
+  func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
+    for annotation in mapView.annotations(in: mapView.visibleMapRect) {
+      if let annotation = annotation as? MKAnnotation,
+        let annotationView = mapView.view(for: annotation) as? CityAnnotationView {
+//        annotationView.transform = .init(scaleX: scaleFactor, y: scaleFactor) // WARNING!!!!! THIS WILL SCALE THE CALLOUT TOO
+        annotationView.setZoom(mapView.zoomLevel)
+      }
+    }
+  }
+  
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-    let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "MKAnnotationView", for: annotation)
-    annotationView.canShowCallout = true
+    let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "CityAnnotationView", for: annotation) as? CityAnnotationView
+    annotationView?.canShowCallout = true
+    if let annotation = annotation as? CityAnnotation {
+      annotationView?.frame = .init(x: 0, y: 0, width: annotation.annotationSize, height: annotation.annotationSize)
+    }
+    
+//    annotationView?.backgroundColor = .black.withAlphaComponent(0.5)
+    
     return annotationView
   }
 }
