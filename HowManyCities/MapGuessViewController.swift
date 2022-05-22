@@ -227,14 +227,14 @@ final class MapGuessViewController: UIViewController {
   }
   
   @discardableResult
-  private func updateMap(_ cities: OrderedSet<City>) -> [MKAnnotation] {
-    let annotations = cities.map(CityAnnotation.init)
+  private func updateMap(_ cities: OrderedSet<City>) -> [CLLocationCoordinate2D] /*[MKAnnotation]*/ {
+//    let annotations = cities.map(CityAnnotation.init)
     mapView.addOverlays(cities.map(by: \.asShape), level: .aboveLabels)
-    mapView.addAnnotations(annotations)
+//    mapView.addAnnotations(annotations)
     
     updateGameState()
     
-    return annotations
+    return cities.map(by: \.coordinates)
   }
   
   private func updateGameState() {
@@ -429,10 +429,11 @@ extension MapGuessViewController: MapGuessDelegate {
       guard let self = self else { return }
       
       self.cityInputTextField.text = ""
-      let annotations = self.updateMap(.init(cities))
+      let coordinates = self.updateMap(.init(cities))
       
       if cities.count > 1 {
-        self.mapView.showAnnotations(annotations, animated: true)
+//        self.mapView.showAnnotations(annotations, animated: true)
+        self.mapView.zoom(to: coordinates, meter: 1_000_000, edgePadding: .init(inset: 8), animated: true)
         // TODO: Proper pluralization
         self.showToast("+\(cities.count) cities, \(cities.totalPopulation.abbreviated)", toastType: .population)
       } else if let lastCity = cities.last {
