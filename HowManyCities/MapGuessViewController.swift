@@ -526,6 +526,7 @@ extension MapGuessViewController: MKMapViewDelegate {
     if let annotation = annotation as? CityAnnotation {
       annotationView?.frame = .init(x: 0, y: 0, width: annotation.annotationSize, height: annotation.annotationSize)
     }
+    annotationView?.setZoom(mapView.zoomLevel)
     
 //    annotationView?.backgroundColor = .black.withAlphaComponent(0.5)
     
