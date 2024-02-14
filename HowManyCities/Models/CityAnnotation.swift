@@ -13,9 +13,13 @@ final class CityAnnotation: NSObject, MKAnnotation {
   var title: String?
   var subtitle: String?
   
+  let annotationSize: CGFloat
+  
   init(_ city: City) {
     self.coordinate = city.coordinates
     self.title = city.fullTitle
     self.subtitle = "pop: \(city.population.commaSeparated)" // TODO: Localize
+    
+    self.annotationSize = log10(Double(city.population))
   }
 }

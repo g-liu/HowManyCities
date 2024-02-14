@@ -17,6 +17,8 @@ final class GameStatsViewController: UIViewController {
   typealias Item = GameStatsViewModel.Item
   typealias ElementKind = GameStatsViewModel.ElementKind
   
+  var cityEditDelegate: CityEditDelegate?
+  
   private lazy var collectionView: UICollectionView = {
     let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider = { (sectionIndex, environment) -> NSCollectionLayoutSection? in
       guard let section = Section(rawValue: sectionIndex) else { return nil }
@@ -128,13 +130,44 @@ final class GameStatsViewController: UIViewController {
       cell.contentView.layoutMargins = .zero
     }
     
-    let cityCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, City> { cell, indexPath, itemIdentifier in
-      var configuration = UIListContentConfiguration.cell()
+    let cityCellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, City> { cell, indexPath, itemIdentifier in
+      var configuration = UIListContentConfiguration.valueCell()
       configuration.attributedText = self.viewModel.string(for: itemIdentifier)
       configuration.directionalLayoutMargins.leading = 0
       configuration.directionalLayoutMargins.trailing = 0
+//      configuration.image = .remove
+      
+//      let removeImage = UIImageView(image: .remove)
+      
+      let removeButton = UIButton(primaryAction: .init(title: "", image: .remove) { action in
+//        var snapshot = self.viewModel.dataSource.snapshot()
+//        if let index = snapshot.indexOfItem(.city(itemIdentifier)) {
+//          let ordinalItem = snapshot.indexOfItem(.ordinal(0, (index - 1) / 2, 0))
+//
+//        snapshot.deleteItems([.city(itemIdentifier)]) // TODO: Will have to remove the city from viewmodel too
+        
+        if let _ = self.cityEditDelegate?.removeCity(itemIdentifier) {
+          var snapshot = self.viewModel.dataSource.snapshot()
+          self.viewModel.refreshCityList(&snapshot) // TODO: More efficiently, couldn't we just remove the city item and its associated ordinal?
+          // A: I guess but then we still have to update the sections that depend on the city
+          // TODO: FUCK ORDINALS JUST GET RID OF THEM AND RENDER EVERYTHING IN THE SAME CVC!!!!
+          self.viewModel.refreshStateList(&snapshot)
+          self.viewModel.refreshTerritoryList(&snapshot)
+          self.viewModel.refreshOtherStats(&snapshot)
+          
+          self.viewModel.dataSource.apply(snapshot)
+        }
+      })
+      let customAccessory = UICellAccessory.CustomViewConfiguration(customView: removeButton,
+                                                                    placement: .trailing(displayed: .always),
+                                                                    tintColor: .systemGray)
       
       cell.contentConfiguration = configuration
+//      cell.accessories = [.delete(displayed: .always, options: .init(isHidden: false, reservedLayoutWidth: .actual, tintColor: .systemGray, backgroundColor: nil), actionHandler: {
+//        // No fucking clue
+//        print("???")
+//      })]
+      cell.accessories = [.customView(configuration: customAccessory)]
     }
     
     let multiCityCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, [City]> { cell, indexPath, itemIdentifier in

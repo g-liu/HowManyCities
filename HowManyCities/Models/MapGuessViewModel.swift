@@ -41,6 +41,21 @@ final class MapGuessViewModel: NSObject {
   var populationGuessed: Int { model.populationGuessed }
   var percentageTotalPopulationGuessed: Double { model.percentageTotalPopulationGuessed }
   
+  var cityLimitWarning: CityLimitWarning {
+    // TODO: Thresholds depend on game mode
+    guard let maxCities = model.gameConfiguration?.maxCities else {
+      return .none
+    }
+    let warningThreshold = Int(0.93*Double(maxCities))
+    if numCitiesGuessed > maxCities {
+      return .unableToSave(numCitiesGuessed - maxCities)
+    } else if numCitiesGuessed >= warningThreshold {
+      return .warning(maxCities - numCitiesGuessed)
+    } else {
+      return .none
+    }
+  }
+  
   init(cities: Cities? = nil) {
     super.init()
     let decoder = JSONDecoder()
@@ -108,6 +123,10 @@ final class MapGuessViewModel: NSObject {
   
   var guessedCities: OrderedSet<City> {
     model.guessedCities
+  }
+  
+  func removeCity(_ city: City) -> City? {
+    model.removeCity(city)
   }
   
   func resetState() {

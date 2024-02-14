@@ -11,6 +11,10 @@ import SwifterSwift
 import MapCache
 import OrderedCollections
 
+protocol CityEditDelegate {
+  func removeCity(_ city: City) -> City?
+}
+
 final class MapGuessViewController: UIViewController {
   
   private var viewModel: MapGuessViewModel
@@ -27,7 +31,7 @@ final class MapGuessViewController: UIViewController {
     
     map.delegate = self
     
-    map.register(MKAnnotationView.self, forAnnotationViewWithReuseIdentifier: "MKAnnotationView")
+    map.register(CityAnnotationView.self, forAnnotationViewWithReuseIdentifier: "CityAnnotationView")
     
     return map
   }()
@@ -60,6 +64,12 @@ final class MapGuessViewController: UIViewController {
     button.addTarget(self, action: #selector(didTapFinish), for: .touchUpInside)
     
     return button
+  }()
+  
+  private lazy var warningBanner: WarningBannerView = {
+    let view = WarningBannerView().autolayoutEnabled
+    
+    return view
   }()
   
   private lazy var guessStackView: UIStackView = {
@@ -145,6 +155,8 @@ final class MapGuessViewController: UIViewController {
     
     view.backgroundColor = .systemBackground
     
+    mapView.addSubview(warningBanner)
+    
     view.addSubview(mapView)
     view.addSubview(resetButton)
     view.addSubview(finishButton)
@@ -161,6 +173,10 @@ final class MapGuessViewController: UIViewController {
     view.addSubview(moreStatsButton)
     
     NSLayoutConstraint.activate([
+      warningBanner.topAnchor.constraint(equalTo: mapView.topAnchor),
+      warningBanner.leadingAnchor.constraint(equalTo: mapView.leadingAnchor),
+      warningBanner.trailingAnchor.constraint(equalTo: mapView.trailingAnchor),
+      
       mapView.topAnchor.constraint(equalTo: view.topAnchor),
       mapView.bottomAnchor.constraint(equalTo: view.centerYAnchor, constant: -64),
       mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -216,11 +232,23 @@ final class MapGuessViewController: UIViewController {
     mapView.addOverlays(cities.map(by: \.asShape), level: .aboveLabels)
     mapView.addAnnotations(annotations)
     
+    updateGameState()
+    
+    return annotations
+  }
+  
+  private func updateGameState() {
     guessStats.updatePopulationGuessed(viewModel.populationGuessed)
     guessStats.updateNumCitiesGuessed(viewModel.numCitiesGuessed)
     guessStats.updatePercentageTotalPopulation(viewModel.percentageTotalPopulationGuessed)
     
-    return annotations
+    let warning = viewModel.cityLimitWarning
+    warningBanner.setState(warning)
+    if case .unableToSave(_) = warning {
+      finishButton.isEnabled = false
+    } else {
+      finishButton.isEnabled = true
+    }
   }
   
   private func addCustomTileOverlay() {
@@ -297,7 +325,29 @@ final class MapGuessViewController: UIViewController {
   
   @objc private func didTapMoreStats() {
     let vc = GameStatsViewController(statsProvider: viewModel.gameStatsProvider)
+    vc.cityEditDelegate = self
     present(UINavigationController(rootViewController: vc), animated: true)
+  }
+}
+
+extension MapGuessViewController: CityEditDelegate {
+  func removeCity(_ city: City) -> City? {
+    if let city = viewModel.removeCity(city) {
+    
+      if let annotation = mapView.annotations.first(where: { $0.coordinate == city.coordinates /* TODO: GOTTA BE A BETTER WAY... man */ }) {
+        mapView.removeAnnotation(annotation)
+      }
+      
+      if let overlay = mapView.overlays.first(where: { $0.coordinate == city.coordinates }) {
+        mapView.removeOverlay(overlay)
+      }
+      
+      updateGameState()
+      return city
+    } else {
+      // TODO: Error messaging
+      return nil
+    }
   }
 }
 
@@ -460,9 +510,26 @@ extension MapGuessViewController: MKMapViewDelegate {
     return .init(overlay: overlay)
   }
   
+  func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
+    for annotation in mapView.annotations(in: mapView.visibleMapRect) {
+      if let annotation = annotation as? MKAnnotation,
+        let annotationView = mapView.view(for: annotation) as? CityAnnotationView {
+//        annotationView.transform = .init(scaleX: scaleFactor, y: scaleFactor) // WARNING!!!!! THIS WILL SCALE THE CALLOUT TOO
+        annotationView.setZoom(mapView.zoomLevel)
+      }
+    }
+  }
+  
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-    let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "MKAnnotationView", for: annotation)
-    annotationView.canShowCallout = true
+    let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "CityAnnotationView", for: annotation) as? CityAnnotationView
+    annotationView?.canShowCallout = true
+    if let annotation = annotation as? CityAnnotation {
+      annotationView?.frame = .init(x: 0, y: 0, width: annotation.annotationSize, height: annotation.annotationSize)
+    }
+    annotationView?.setZoom(mapView.zoomLevel)
+    
+//    annotationView?.backgroundColor = .black.withAlphaComponent(0.5)
+    
     return annotationView
   }
 }

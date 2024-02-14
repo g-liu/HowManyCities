@@ -52,6 +52,10 @@ final class MapGuessModel: Codable {
   var usedMultiCityInput: Bool = false
   var lastRegion: MKCoordinateRegion = .init(center: .zero, span: .full)
   
+  func removeCity(_ city: City) -> City? {
+    guessedCities.remove(city)
+  }
+  
   func resetState() {
     guessedCities = .init()
   }
