@@ -1,3 +1,6 @@
+// TODO: IF NO LONGER NEEDED, REMOVE!!!
+// we'll retain it for the flags
+
 //
 //  State.swift
 //  HowManyCities
@@ -8,61 +11,24 @@
 import Foundation
 
 struct State: Codable, Hashable {
-  var value: String
   var name: String
-  var states: [State]?
   
-  enum BaseCodingKeys: String, CodingKey {
-    case value
+  enum CodingKeys: String, CodingKey {
     case name
   }
   
-  enum RecursiveCodingKeys: String, CodingKey {
-    case value = "group"
-    case name = "label"
-    case states
-  }
-  
   init(name: String) {
-    self.value = name
     self.name = name
-    self.states = nil
   }
   
-  init(from decoder: Decoder) throws {
-    do {
-      // Nested level of states
-      let values = try decoder.container(keyedBy: RecursiveCodingKeys.self)
-      self.value = try values.decode(String.self, forKey: .value)
-      self.name = try values.decode(String.self, forKey: .name)
-      self.states = try values.decode([State].self, forKey: .states)
-    } catch {
-      do {
-        // No nested levels
-        let values = try decoder.container(keyedBy: BaseCodingKeys.self)
-        self.value = try values.decode(String.self, forKey: .value)
-        self.name = try values.decode(String.self, forKey: .name)
-        self.states = nil
-      } catch {
-        fatalError("Well shit")
-      }
-    }
+  init(from decoder: Decoder) throws { // TODO: FIX as it is just a string scalar
+    let values = try decoder.container(keyedBy: CodingKeys.self)
+    self.name = try values.decode(String.self, forKey: .name)
   }
   
   func encode(to encoder: Encoder) throws {
-    // depends on if it's nested or not
-    if !(states?.isEmpty ?? true) {
-      // nested encoding OH BOYYYYY
-      var container = encoder.container(keyedBy: RecursiveCodingKeys.self)
-      try container.encode(value, forKey: .value)
-      try container.encode(name, forKey: .name)
-      try container.encode(states, forKey: .states)
-    } else {
-      // that's all
-      var container = encoder.container(keyedBy: BaseCodingKeys.self)
-      try container.encode(value, forKey: .value)
-      try container.encode(name, forKey: .name)
-    }
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    try container.encode(name, forKey: .name)
   }
   
   var nameWithFlag: String {
@@ -74,11 +40,7 @@ struct State: Codable, Hashable {
   }
   
   var searchName: String {
-    if let childState = states?.first {
-      return childState.name + ", \(normalizedCountryName)"
-    }
-    
-    // Special exception for Georgia the country
+    // Special exception for Georgia, the country
     if normalizedCountryName.localizedCaseInsensitiveContains("Georgia") {
       return "საქართველო"
     }
@@ -101,5 +63,3 @@ struct State: Codable, Hashable {
     Global.NORMALIZED_COUNTRY_NAMES[name] ?? name
   }
 }
-
-extension State: Equatable { }

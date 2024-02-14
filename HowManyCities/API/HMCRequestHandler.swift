@@ -13,9 +13,9 @@ final class HMCRequestHandler {
   
   private var csrfToken: String?
   
-  private static let baseURL = "https://iafisher.com/projects/cities/api/search/v2"
-  private static let configWorldURL = "https://iafisher.com/projects/cities/api/config/world"
-  private static let finishGameURL = "https://iafisher.com/projects/cities/api/finish"
+  private static let baseURL = "https://cityquiz.io/api/cities/search"
+  private static let configWorldURL = "https://cityquiz.io/api/config/get?quiz=world"
+  private static let finishGameURL = "https://cityquiz.io/api/sessions/save-anonymous"
   
   private init() {
     retrieveCSRFToken()
@@ -101,7 +101,7 @@ final class HMCRequestHandler {
     guard let url = components.url else { cb(nil); return }
     
     
-    var request = URLRequest(url: url, timeoutInterval: Double.infinity) // TODO: Revisit timeout val
+    var request = URLRequest(url: url, timeoutInterval: 5) // TODO: Revisit timeout val
     request.addValue("application/json", forHTTPHeaderField: "Accept")
     request.addValue("application/json", forHTTPHeaderField: "Content-Type")
 

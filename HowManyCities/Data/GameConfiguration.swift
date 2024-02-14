@@ -27,7 +27,8 @@ struct GameConfiguration: Codable {
   let shortDivisionNamePlural: String
   let specialCapital: Bool
   let specialCapitalName: String
-  let states: [State]
+  let states: [String]
+  let stateGroups: [StateGroup]
   let totalCapitals: Int
   let totalStates: Int
   let totalTerritories: Int
@@ -54,7 +55,7 @@ struct GameConfiguration: Codable {
     shortDivisionNamePlural: String = "",
     specialCapital: Bool = false,
     specialCapitalName: String = "",
-    states: [State] = [],
+    states: [String] = [],
     totalCapitals: Int = 0,
     totalStates: Int = 0,
     totalTerritories: Int = 0,
