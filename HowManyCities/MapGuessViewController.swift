@@ -408,7 +408,7 @@ extension MapGuessViewController: MapGuessDelegate {
       return
     }
     
-    let resultLink = "https://iafisher.com/projects/cities/world/share/\(response.pk)"
+    let resultLink = "https://cityquiz.io/quizzes/world/share/\(response.pk)"
     let alert = UIAlertController(title: "Congratulations! You named \(viewModel.numCitiesGuessed) world cities!", message: "Check out your results on the web at \(resultLink)", preferredStyle: .alert)
     alert.addAction(.init(title: "Open in web browser", style: .default, handler: { _ in
       DispatchQueue.main.async {

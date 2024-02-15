@@ -16,6 +16,7 @@ final class HMCRequestHandler {
   private static let baseURL = "https://cityquiz.io/api/cities/search"
   private static let configWorldURL = "https://cityquiz.io/api/config/get?quiz=world"
   private static let finishGameURL = "https://cityquiz.io/api/sessions/save-anonymous"
+  private static let gameURL = "https://cityquiz.io/quizzes/world"
   
   private init() {
     retrieveCSRFToken()
@@ -23,7 +24,8 @@ final class HMCRequestHandler {
   
   private func retrieveCSRFToken() {
     // get csrf token
-    guard let url = URL(string: "https://iafisher.com/projects/cities/world") else { return }
+    // TODO: WRONG URL
+    guard let url = URL(string: type(of: self).gameURL) else { return }
     
     var request = URLRequest(url: url, timeoutInterval: Double.infinity)
     request.httpMethod = "HEAD"
@@ -59,8 +61,12 @@ final class HMCRequestHandler {
       }
       
       let decoder = JSONDecoder()
-      let result = try? decoder.decode(GameConfiguration.self, from: data)
-      cb(result)
+      do {
+        let result = try decoder.decode(GameConfiguration.self, from: data)
+        cb(result)
+      } catch {
+          print("error: \(error)")
+      }
     }
 
     task.resume()

@@ -22,8 +22,8 @@ struct State: Codable, Hashable {
   }
   
   init(from decoder: Decoder) throws { // TODO: FIX as it is just a string scalar
-    let values = try decoder.container(keyedBy: CodingKeys.self)
-    self.name = try values.decode(String.self, forKey: .name)
+    let values = try decoder.singleValueContainer()
+    self.name = try values.decode(String.self)
   }
   
   func encode(to encoder: Encoder) throws {

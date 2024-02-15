@@ -91,14 +91,5 @@ struct GameConfiguration: Codable {
       self.totalPopulation = totalPopulation
       self.totalCitiesByBracket = totalCitiesByBracket
   }
-  
-  // TODO: Replace with `states` and `stateGroups`
-//  var topLevelStates: [State] {
-//    states.filter { $0.states?.isEmpty ?? true }
-//  }
-//  
-//  var lowerDivisionStates: [State] {
-//    states.filter { !($0.states?.isEmpty ?? true) }
-//  }
 }
 
