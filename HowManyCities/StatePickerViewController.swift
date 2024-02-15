@@ -47,9 +47,12 @@ final class StatePickerViewController: UIViewController {
       return stateGroup.states
     }
     
+    print("FILTERING ALL...")
     return stateGroup.states.filter {
       let countryNameNormalized = $0.name.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
-      return countryNameNormalized.contains(searchText)
+      let accept = countryNameNormalized.contains(searchText) // TODO: Revert and return
+      if accept { print(countryNameNormalized) }
+      return accept
     }
   }
   
@@ -224,8 +227,9 @@ extension StatePickerViewController: UITableViewDelegate, UITableViewDataSource 
       // states, provinces, and territories
       guard var parentState = statesDataSource?.lowerDivisionStates[indexPath.section-(1+26)] else { return cell }
       // TODO: Do we need presentedLowerDivisionStates? (probably)
-//      let childStates = presentedLowerDivisionStates(for: parentState)
-//      parentState.states = [childStates[indexPath.row]]
+      // TODO: Make this work when search results appear
+      let childStates = presentedLowerDivisionStates(for: parentState)
+      parentState.states = [childStates[indexPath.row]]
       let guessMode = GuessMode.specificCountryState(parentState, indexPath.row)
       cell.associatedMode = guessMode
       cell.indentationLevel = 1

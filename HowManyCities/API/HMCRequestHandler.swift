@@ -13,7 +13,7 @@ final class HMCRequestHandler {
   
   private var csrfToken: String?
   
-  private static let baseURL = "https://cityquiz.io/api/cities/search"
+  private static let searchURL = "https://cityquiz.io/api/cities/search"
   private static let configWorldURL = "https://cityquiz.io/api/config/get?quiz=world"
   private static let finishGameURL = "https://cityquiz.io/api/sessions/save-anonymous"
   private static let gameURL = "https://cityquiz.io/quizzes/world"
@@ -96,12 +96,13 @@ final class HMCRequestHandler {
       return // FATAL ERROR
     }
 
-    guard var components = URLComponents(string: type(of: self).baseURL) else { cb(nil); return }
+    guard var components = URLComponents(string: type(of: self).searchURL) else { cb(nil); return }
+    
+    let dropdownValue = state.isEmpty ? country : "\(state), \(country)"
     
     components.queryItems = .init()
-    components.queryItems?.append(.init(name: "city", value: city))
-    components.queryItems?.append(.init(name: "state", value: state))
-    components.queryItems?.append(.init(name: "country", value: country))
+    components.queryItems?.append(.init(name: "query", value: city))
+    components.queryItems?.append(.init(name: "dropdown", value: dropdownValue))
     components.queryItems?.append(.init(name: "quiz", value: "world")) // TODO: Different game modes
     
     guard let url = components.url else { cb(nil); return }
