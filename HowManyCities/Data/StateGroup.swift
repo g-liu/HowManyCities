@@ -47,14 +47,21 @@ struct StateGroup: Codable, Hashable {
     }
   }
 
-  // TODO: UNDUPE CODE
-  var searchName: String {
+  // TODO: UNDUPE CODE where necessary
+  func searchName(forState atIndex: Int) -> String {
+    let countrySearchName: String
+    let stateSearchName: String
+    
     // Special exception for Georgia the country
     if normalizedCountryName.localizedCaseInsensitiveContains("Georgia") {
-      return "საქართველო"
+      countrySearchName = "საქართველო"
+    } else {
+      countrySearchName = normalizedCountryName
     }
-
-    return normalizedCountryName
+    
+    stateSearchName = states[atIndex].searchName
+    
+    return "\(stateSearchName), \(countrySearchName)"
   }
 
   var locale: String? {
@@ -73,4 +80,4 @@ struct StateGroup: Codable, Hashable {
   }
 }
 
-extension State: Equatable { }
+extension StateGroup: Equatable { }

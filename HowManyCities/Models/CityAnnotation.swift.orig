@@ -1,0 +1,35 @@
+//
+//  CityAnnotation.swift
+//  HowManyCities
+//
+//  Created by Geoffrey Liu on 3/29/22.
+//
+
+import MapKit
+
+final class CityAnnotation: NSObject, MKAnnotation {
+  @objc dynamic var coordinate: CLLocationCoordinate2D
+  
+  var title: String?
+  var subtitle: String?
+  
+<<<<<<< HEAD
+=======
+  let annotationFrame: CGRect
+  let city: City // TODO: Lmao this is so bad
+  
+>>>>>>> 0a22a80 (WIP: API changed so let's try to replace the code)
+  init(_ city: City) {
+    self.coordinate = city.coordinates
+    self.title = city.fullTitle
+    self.subtitle = "pop: \(city.population.commaSeparated)" // TODO: Localize
+<<<<<<< HEAD
+=======
+    
+    let sideLength = log10(Double(city.population) * 5.0)
+    self.annotationFrame = .init(x: 0, y: 0, width: sideLength, height: sideLength)
+    
+    self.city = city
+>>>>>>> 0a22a80 (WIP: API changed so let's try to replace the code)
+  }
+}

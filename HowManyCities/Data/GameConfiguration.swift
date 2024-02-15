@@ -27,7 +27,7 @@ struct GameConfiguration: Codable {
   let shortDivisionNamePlural: String
   let specialCapital: Bool
   let specialCapitalName: String
-  let states: [String]
+  let states: [State]
   let stateGroups: [StateGroup]
   let totalCapitals: Int
   let totalStates: Int
@@ -55,7 +55,8 @@ struct GameConfiguration: Codable {
     shortDivisionNamePlural: String = "",
     specialCapital: Bool = false,
     specialCapitalName: String = "",
-    states: [String] = [],
+    states: [State] = [],
+    stateGroups: [StateGroup] = [],
     totalCapitals: Int = 0,
     totalStates: Int = 0,
     totalTerritories: Int = 0,
@@ -82,6 +83,7 @@ struct GameConfiguration: Codable {
       self.specialCapital = specialCapital
       self.specialCapitalName = specialCapitalName
       self.states = states
+      self.stateGroups = stateGroups
       self.totalCapitals = totalCapitals
       self.totalStates = totalStates
       self.totalTerritories = totalTerritories
@@ -90,12 +92,13 @@ struct GameConfiguration: Codable {
       self.totalCitiesByBracket = totalCitiesByBracket
   }
   
-  var topLevelStates: [State] {
-    states.filter { $0.states?.isEmpty ?? true }
-  }
-  
-  var lowerDivisionStates: [State] {
-    states.filter { !($0.states?.isEmpty ?? true) }
-  }
+  // TODO: Replace with `states` and `stateGroups`
+//  var topLevelStates: [State] {
+//    states.filter { $0.states?.isEmpty ?? true }
+//  }
+//  
+//  var lowerDivisionStates: [State] {
+//    states.filter { !($0.states?.isEmpty ?? true) }
+//  }
 }
 

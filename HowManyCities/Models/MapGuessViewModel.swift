@@ -130,10 +130,10 @@ extension MapGuessViewModel: GuessModeDelegate {
 
 extension MapGuessViewModel: StatesDataSource {
   var topLevelStates: [State] {
-    model.gameConfiguration?.topLevelStates ?? []
+    model.gameConfiguration?.states ?? []
   }
   
-  var lowerDivisionStates: [State] {
-    model.gameConfiguration?.lowerDivisionStates ?? []
+  var lowerDivisionStates: [StateGroup] {
+    model.gameConfiguration?.stateGroups ?? []
   }
 }

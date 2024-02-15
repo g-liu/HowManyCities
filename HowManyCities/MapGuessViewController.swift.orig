@@ -367,10 +367,8 @@ extension MapGuessViewController: MapGuessDelegate {
     countryDropdownButton.setAttributedTitle(ms, for: .normal)
     
     switch mode {
-      case .specificState(let state):
+      case .specific(let state):
         self.mapView.searchAndLocate(state.searchName)
-      case .specificCountryState(let stateGroup, let index):
-        self.mapView.searchAndLocate(stateGroup.searchName(forState: index))
       default:
         self.mapView.setRegion(.init(center: self.mapView.centerCoordinate, span: .full), animated: true)
     }
@@ -463,8 +461,27 @@ extension MapGuessViewController: MKMapViewDelegate {
   }
   
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+<<<<<<< HEAD
     let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "MKAnnotationView", for: annotation)
     annotationView.canShowCallout = true
+=======
+    let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "CityAnnotationView", for: annotation) as? CityAnnotationView
+    annotationView?.canShowCallout = true
+    if let annotation = annotation as? CityAnnotation {
+//      let mapRect = mapView.overlays.first?.boundingMapRect
+      let mapRect = annotation.city.asShape.boundingMapRect
+      let coordRegion = MKCoordinateRegion(mapRect)
+      let actualFrame = mapView.convert(coordRegion, toRectTo: mapView)
+      
+      
+      annotationView?.frame = actualFrame // annotation.annotationFrame
+    }
+    // TODO: Nope - need to set an "initial" zoom level as a point of reference.
+//    annotationView?.setZoom(mapView.zoomLevel)
+    
+    annotationView?.backgroundColor = .systemFill.withAlphaComponent(0.5)
+    
+>>>>>>> 0a22a80 (WIP: API changed so let's try to replace the code)
     return annotationView
   }
 }

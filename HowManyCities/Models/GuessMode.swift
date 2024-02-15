@@ -17,7 +17,8 @@ enum GuessMode {
   case any
   case every
   // Precondition: state.states is either nil, empty, or contains exactly 1 item
-  case specific(_ state: State)
+  case specificState(_ state: State)
+  case specificCountryState(_ state: StateGroup, _ index: Int)
   
   var string: String {
     switch self {
@@ -25,14 +26,18 @@ enum GuessMode {
         return ""
       case .every:
         return "all"
-      case .specific(let location):
-        // recursive case
-        if let childState = location.states?.first {
-          return GuessMode.specific(childState).string + ", " + location.normalizedCountryName
+      case .specificState(let location):
+        return location.name
+      case .specificCountryState(let group, let index):
+        guard !group.states.isEmpty else {
+          fatalError("Groups cannot be empty")
         }
         
-        // base case
-        return location.name
+        guard 0 <= index && index < group.states.count else {
+          fatalError("Group index out of range")
+        }
+        
+        return "\(group.states[index]), \(group.normalizedCountryName)"
     }
   }
   
@@ -42,24 +47,21 @@ enum GuessMode {
         return "Any country"
       case .every:
         return "Every country"
-      case .specific(let location):
-        // recursive case
-        if let childState = location.states?.first {
-          // Unfortunately, can't use recursion here
-          // There are locations in the world with same names as countries
-          // e.g. Georgia (U.S. state) vs Georgia (country)
-          // And we don't want to be mistakenly assigning country flags to non-countries with the same name
-//          return GuessMode.specific(childState).menuName
-          
-          return childState.name
-        }
-        
-        // base case
+      case .specificState(let location):
         if let flag = location.flag {
           return "\(flag) \(location.name)"
         } else {
           return location.name
         }
+      case .specificCountryState(let group, let index):
+        let childState = group.states[index]
+        // Unfortunately, can't use recursion here
+        // There are locations in the world with same names as countries
+        // e.g. Georgia (U.S. state) vs Georgia (country)
+        // And we don't want to be mistakenly assigning country flags to non-countries with the same name
+//          return GuessMode.specific(childState).menuName
+        
+        return childState.name
     }
   }
   
@@ -75,21 +77,17 @@ enum GuessMode {
         ms.append(countryCodeString)
         return .init(attributedString: ms)
         
-      case .specific(let location):
-        // recursive case
-        if let childState = location.states?.first {
-          let string = NSMutableAttributedString(attributedString: shortName(for: location))
-          string.append(.init(string: "/", attributes: shortNameAttributes))
-          // Can't use recursion here for the same reason as `menuName` :(
-//          string.append(GuessMode.specific(childState).dropdownName)
-          
-          string.append(.init(string: Global.STATE_ABBREVIATIONS[childState.name] ?? "", attributes: shortNameAttributes))
-          
-          return string
-        }
-        
-        // base case
+      case .specificState(let location):
         return shortName(for: location)
+        
+      case .specificCountryState(let group, let index):
+        let childState = group.states[index]
+        let groupAsState = State(name: group.group)
+        let string = NSMutableAttributedString(attributedString: shortName(for: groupAsState))
+        string.append(.init(string: "/", attributes: shortNameAttributes))
+        string.append(.init(string: Global.STATE_ABBREVIATIONS[childState.name] ?? "", attributes: shortNameAttributes))
+        
+        return string
     }
   }
   
