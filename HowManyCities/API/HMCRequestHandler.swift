@@ -24,15 +24,15 @@ final class HMCRequestHandler {
   
   private func retrieveCSRFToken() {
     // get csrf token
-    // TODO: WRONG URL
     guard let url = URL(string: type(of: self).gameURL) else { return }
     
     var request = URLRequest(url: url, timeoutInterval: Double.infinity)
-    request.httpMethod = "HEAD"
+    request.httpMethod = "GET" // Sadly HEAD is not longer allowed
     
     let task = URLSession.shared.dataTask(with: request) { data, response, error in
       guard let httpResponse = (response as? HTTPURLResponse) else { return }
       
+      // NOW API is failing here
       guard let cookieField = httpResponse.allHeaderFields["Set-Cookie"] as? String else { return }
       
       guard let csrfTokenCookie = cookieField.split(separator: ";").first(where: { $0.starts(with: "csrftoken") }) else { return }
@@ -143,6 +143,7 @@ final class HMCRequestHandler {
     request.addValue("application/json", forHTTPHeaderField: "Content-Type")
     request.addValue("application/json", forHTTPHeaderField: "Accept")
     request.addValue(csrfToken, forHTTPHeaderField: "X-CSRFToken")
+    request.addValue(type(of: self).gameURL, forHTTPHeaderField: "Referer")
     
     request.httpMethod = "POST"
     

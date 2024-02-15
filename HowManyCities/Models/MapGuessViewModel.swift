@@ -49,6 +49,7 @@ final class MapGuessViewModel: NSObject {
       model.guessedCities = OrderedSet(cities)
       retrieveConfiguration() // TODO: BUG: Doesn't update percentage on main screen!!!!
     } else if let savedGameState = UserDefaults.standard.object(forKey: "gamestate") as? Data,
+              // TODO: NOT WORKING AS OF LATEST API UPDATE
        let decodedModel = try? decoder.decode(MapGuessModel.self, from: savedGameState) {
       model = decodedModel
     } else {
