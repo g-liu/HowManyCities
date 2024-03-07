@@ -24,6 +24,8 @@ final class MapGuessViewModel: NSObject {
   
   private(set) var guessMode: GuessMode = .any
   
+  private(set) var lastGuess: String? = nil
+  
   private var model: MapGuessModel = .init()
   
   var lastRegion: MKCoordinateRegion {
@@ -74,6 +76,8 @@ final class MapGuessViewModel: NSObject {
   }
   
   func submitGuess(_ guess: String) {
+    self.lastGuess = guess
+    
     let formattedGuess: String
     if case .any = guessMode {
       formattedGuess = guess

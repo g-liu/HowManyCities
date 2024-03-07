@@ -212,6 +212,7 @@ final class MapGuessViewController: UIViewController {
   private func submitGuess(_ guess: String) {
     viewModel.submitGuess(guess)
     cityInputTextField.attributedPlaceholder = nil
+    cityInputTextField.clear()
   }
   
   @objc private func didTapCountryDropdown(_ sender: UIButton) {
@@ -406,9 +407,9 @@ extension MapGuessViewController: MapGuessDelegate {
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
       
-      self.waitingIndicator.stopAnimating()
+      self.waitingIndicator.stopAnimating() // TODO: ViewModel keeps track of a queue of requests, this waiting indicator depends SOLELY on that queue :)
+      // TODO: Or if we move to showing a list of cities being submitted...
       
-      self.cityInputTextField.text = ""
       let annotations = self.updateMap(.init(cities))
       
       if cities.count > 1 {
@@ -427,6 +428,19 @@ extension MapGuessViewController: MapGuessDelegate {
       self?.waitingIndicator.stopAnimating()
       self?.cityInputTextField.shake()
       self?.showToast(error.message, toastType: error.toastType)
+      
+      
+      // TODO: AGAIN, STATE ENUM WOULD BE HELPFUL HERE
+      switch error {
+        case .alreadyGuessed, .noneFound(_):
+          break
+        case .serverError:
+          if self?.cityInputTextField.isEmpty ?? false {
+            self?.cityInputTextField.text = self?.viewModel.lastGuess
+          }
+        case .emptyGuess:
+          break
+      }
     }
   }
   
