@@ -105,6 +105,8 @@ final class MapGuessViewModel: NSObject {
         self?.delegate?.didReceiveError(.serverError)
       }
     }
+    
+    // TODO: Action to be had while waiting for guess
   }
   
   var guessedCities: OrderedSet<City> {
