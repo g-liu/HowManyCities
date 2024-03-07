@@ -14,6 +14,7 @@ protocol MapGuessDelegate: AnyObject {
   func didReceiveCities(_ cities: [City])
   func didReceiveError(_ error: CityGuessError)
   func didSaveResult(_ response: GameFinishResponse?)
+  func didEncounterSlowNetwork()
   
   func didChangeGuessMode(_ mode: GuessMode)
 }
@@ -107,6 +108,9 @@ final class MapGuessViewModel: NSObject {
     }
     
     // TODO: Action to be had while waiting for guess
+    Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { [weak self] timer in
+      self?.delegate?.didEncounterSlowNetwork()
+    }
   }
   
   var guessedCities: OrderedSet<City> {

@@ -90,6 +90,13 @@ final class MapGuessViewController: UIViewController {
     return textField
   }()
   
+  private lazy var waitingIndicator: UIActivityIndicatorView = {
+    let progressView = UIActivityIndicatorView(style: .large)
+    progressView.hidesWhenStopped = true
+    progressView.translatesAutoresizingMaskIntoConstraints = false
+    return progressView
+  }()
+  
   private lazy var countryDropdownButton: UIButton = {
     var cfg = UIButton.Configuration.bordered()
     cfg.baseForegroundColor = .label
@@ -150,6 +157,16 @@ final class MapGuessViewController: UIViewController {
     view.addSubview(finishButton)
     view.addSubview(guessStats)
     view.addSubview(guessStackView)
+    
+    cityInputTextField.addSubview(waitingIndicator)
+    cityInputTextField.bringSubviewToFront(waitingIndicator)
+    
+    NSLayoutConstraint.activate([
+      waitingIndicator.rightAnchor.constraint(equalTo: cityInputTextField.rightAnchor, constant: -8),
+      waitingIndicator.topAnchor.constraint(equalTo: cityInputTextField.topAnchor, constant: 4),
+      waitingIndicator.bottomAnchor.constraint(equalTo: cityInputTextField.bottomAnchor, constant: -4),
+      waitingIndicator.leftAnchor.constraint(greaterThanOrEqualTo: cityInputTextField.leftAnchor)
+    ])
     
     // TODO: This is a temporary button to show the stats VC
     // We should aim for a better UX
@@ -376,9 +393,20 @@ extension MapGuessViewController: MapGuessDelegate {
     }
   }
   
+  func didEncounterSlowNetwork() {
+    // TODO: Wrap these actions into a state enum
+    DispatchQueue.main.async { [weak self] in
+      self?.waitingIndicator.startAnimating()
+      self?.cityInputTextField.clearButtonMode = .never
+    }
+  }
+  
   func didReceiveCities(_ cities: [City]) {
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
+      
+      self.waitingIndicator.stopAnimating()
+      self.cityInputTextField.clearButtonMode = .whileEditing
       
       self.cityInputTextField.text = ""
       let annotations = self.updateMap(.init(cities))
@@ -395,9 +423,11 @@ extension MapGuessViewController: MapGuessDelegate {
   }
   
   func didReceiveError(_ error: CityGuessError) {
-    DispatchQueue.main.async {
-      self.cityInputTextField.shake()
-      self.showToast(error.message, toastType: error.toastType)
+    DispatchQueue.main.async { [weak self] in
+      self?.waitingIndicator.stopAnimating()
+      self?.cityInputTextField.clearButtonMode = .whileEditing
+      self?.cityInputTextField.shake()
+      self?.showToast(error.message, toastType: error.toastType)
     }
   }
   

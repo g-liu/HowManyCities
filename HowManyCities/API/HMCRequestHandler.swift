@@ -22,7 +22,7 @@ final class HMCRequestHandler {
     retrieveCSRFToken()
   }
   
-  private func retrieveCSRFToken(_ retries: Int = 3) {
+  private func retrieveCSRFToken(_ retries: Int = 3, cb: (() -> Void)? = nil) {
     guard retries > 0 else {
       print("Sorry, cannot retry")
       return
@@ -165,9 +165,9 @@ final class HMCRequestHandler {
     }
     guard let url = URL(string: type(of: self).finishGameURL) else { cb(nil); return }
     guard let csrfToken = csrfToken else {
-      // TODO: Let the user know...
-      // TODO: Better yet just do a CSRF request
-      cb(nil)
+      retrieveCSRFToken(1) { [weak self] in
+        self?.finishGame(cities: cities, startTime: startTime, usedMultiCityInput: usedMultiCityInput, cb: cb)
+      }
       return
     }
 
