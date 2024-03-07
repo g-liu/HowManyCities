@@ -9,3 +9,4 @@ import Foundation
 
 // WHY THE FUCK isn't there just a generic Error type already in Swift???
 struct GenericError: Error { }
+struct MaxRetriesExceededError: Error { }

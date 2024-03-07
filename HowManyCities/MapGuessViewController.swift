@@ -78,8 +78,10 @@ final class MapGuessViewController: UIViewController {
     textField.layer.borderWidth = 1
     textField.layer.borderColor = UIColor.systemFill.cgColor
     textField.font = .systemFont(ofSize: 36) // TODO: Dynamic font size
+    textField.adjustsFontSizeToFitWidth = true
+    textField.adjustsFontForContentSizeCategory = true
     textField.textAlignment = .center
-    textField.clearButtonMode = .whileEditing
+    textField.clearButtonMode = .never
     textField.attributedPlaceholder = .init(string: viewModel.textFieldPlaceholder ?? "", attributes: [.font: UIFont.systemFont(ofSize: 18)])
     
     textField.setContentHuggingPriority(.defaultLow, for: .horizontal)
@@ -397,7 +399,6 @@ extension MapGuessViewController: MapGuessDelegate {
     // TODO: Wrap these actions into a state enum
     DispatchQueue.main.async { [weak self] in
       self?.waitingIndicator.startAnimating()
-      self?.cityInputTextField.clearButtonMode = .never
     }
   }
   
@@ -406,7 +407,6 @@ extension MapGuessViewController: MapGuessDelegate {
       guard let self = self else { return }
       
       self.waitingIndicator.stopAnimating()
-      self.cityInputTextField.clearButtonMode = .whileEditing
       
       self.cityInputTextField.text = ""
       let annotations = self.updateMap(.init(cities))
@@ -425,7 +425,6 @@ extension MapGuessViewController: MapGuessDelegate {
   func didReceiveError(_ error: CityGuessError) {
     DispatchQueue.main.async { [weak self] in
       self?.waitingIndicator.stopAnimating()
-      self?.cityInputTextField.clearButtonMode = .whileEditing
       self?.cityInputTextField.shake()
       self?.showToast(error.message, toastType: error.toastType)
     }

@@ -22,9 +22,10 @@ final class HMCRequestHandler {
     retrieveCSRFToken()
   }
   
-  private func retrieveCSRFToken(_ retries: Int = 3, cb: (() -> Void)? = nil) {
+  private func retrieveCSRFToken(_ retries: Int = 3, cb: ((Error?) -> Void)? = nil) {
     guard retries > 0 else {
       print("Sorry, cannot retry")
+      cb?(MaxRetriesExceededError())
       return
     }
     
@@ -63,6 +64,7 @@ final class HMCRequestHandler {
   func retrieveConfiguration(_ retries: Int = 3, cb: @escaping (GameConfiguration?) -> Void) {
     guard retries > 0 else {
       print("Too many retries.")
+      cb(nil)
       return
     }
     
@@ -100,7 +102,14 @@ final class HMCRequestHandler {
     task.resume()
   }
   
-  func submitGuess(_ guess: String, cb: @escaping (Cities?) -> Void) {
+  // TODO: Callback should support a Result type with Cities or Error.
+  func submitGuess(_ retries: Int = 3, guess: String, cb: @escaping (Cities?) -> Void) {
+    guard retries > 0 else {
+      print("Too many retries.")
+      cb(nil)
+      return
+    }
+    
     let locationFragments = guess.split(maxSplits: 3, omittingEmptySubsequences: true) { $0 == "," }
     guard locationFragments.count >= 1 else { cb(nil); return }
     
@@ -142,7 +151,14 @@ final class HMCRequestHandler {
 
     request.httpMethod = "GET"
 
-    let task = URLSession.hmcShared.dataTask(with: request) { data, response, error in
+    let task = URLSession.hmcShared.dataTask(with: request) { [weak self] data, response, error in
+      if let error = error {
+        if (error as NSError).code == NSURLErrorTimedOut {
+          // let's retry
+          self?.submitGuess(retries-1, guess: guess, cb: cb)
+          return
+        }
+      }
       guard let data = data else { cb(nil); return }
 
       let decoder = JSONDecoder()
@@ -161,12 +177,18 @@ final class HMCRequestHandler {
   func finishGame(_ retries: Int = 3, cities: [City], startTime: Date, usedMultiCityInput: Bool, cb: @escaping (GameFinishResponse?) -> Void) {
     guard retries > 0 else {
       print("Too many retries.")
+      cb(nil)
       return
     }
     guard let url = URL(string: type(of: self).finishGameURL) else { cb(nil); return }
     guard let csrfToken = csrfToken else {
-      retrieveCSRFToken(1) { [weak self] in
-        self?.finishGame(cities: cities, startTime: startTime, usedMultiCityInput: usedMultiCityInput, cb: cb)
+      retrieveCSRFToken() { [weak self] error in
+        if let _ = error {
+          print("Couldn't get your CSRF")
+          cb(nil)
+        } else {
+          self?.finishGame(cities: cities, startTime: startTime, usedMultiCityInput: usedMultiCityInput, cb: cb)
+        }
       }
       return
     }
