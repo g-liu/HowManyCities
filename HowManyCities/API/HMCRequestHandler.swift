@@ -145,7 +145,7 @@ final class HMCRequestHandler {
     guard let url = components.url else { cb(nil); return }
     
     
-    var request = URLRequest(url: url, timeoutInterval: 5) // TODO: Revisit timeout val
+    var request = URLRequest(url: url, timeoutInterval: 60)
     request.addValue("application/json", forHTTPHeaderField: "Accept")
     request.addValue("application/json", forHTTPHeaderField: "Content-Type")
 
@@ -194,7 +194,7 @@ final class HMCRequestHandler {
     }
 
     
-    var request = URLRequest(url: url, timeoutInterval: 5)
+    var request = URLRequest(url: url, timeoutInterval: 60)
     request.addValue("application/json", forHTTPHeaderField: "Content-Type")
     request.addValue("application/json", forHTTPHeaderField: "Accept")
     request.addValue(csrfToken, forHTTPHeaderField: "X-CSRFToken")
