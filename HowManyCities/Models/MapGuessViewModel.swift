@@ -49,6 +49,7 @@ final class MapGuessViewModel: NSObject {
       model.guessedCities = OrderedSet(cities)
       retrieveConfiguration() // TODO: BUG: Doesn't update percentage on main screen!!!!
     } else if let savedGameState = UserDefaults.standard.object(forKey: "gamestate") as? Data,
+              // TODO: NOT WORKING AS OF LATEST API UPDATE
        let decodedModel = try? decoder.decode(MapGuessModel.self, from: savedGameState) {
       model = decodedModel
     } else {
@@ -104,6 +105,8 @@ final class MapGuessViewModel: NSObject {
         self?.delegate?.didReceiveError(.serverError)
       }
     }
+    
+    // TODO: Action to be had while waiting for guess
   }
   
   var guessedCities: OrderedSet<City> {
@@ -130,10 +133,10 @@ extension MapGuessViewModel: GuessModeDelegate {
 
 extension MapGuessViewModel: StatesDataSource {
   var topLevelStates: [State] {
-    model.gameConfiguration?.topLevelStates ?? []
+    model.gameConfiguration?.states ?? []
   }
   
-  var lowerDivisionStates: [State] {
-    model.gameConfiguration?.lowerDivisionStates ?? []
+  var lowerDivisionStates: [StateGroup] {
+    model.gameConfiguration?.stateGroups ?? []
   }
 }

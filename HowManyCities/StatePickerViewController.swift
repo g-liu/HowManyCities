@@ -9,7 +9,7 @@ import UIKit
 
 protocol StatesDataSource: AnyObject {
   var topLevelStates: [State] { get }
-  var lowerDivisionStates: [State] { get }
+  var lowerDivisionStates: [StateGroup] { get }
 }
 
 protocol GuessModeDelegate: AnyObject {
@@ -41,16 +41,19 @@ final class StatePickerViewController: UIViewController {
     presentedTopLevelStates.filter { $0.name.starts(with: String(letter)) }
   }
   
-  private func presentedLowerDivisionStates(for state: State) -> [State] {
+  private func presentedLowerDivisionStates(for stateGroup: StateGroup) -> [State] {
     guard let searchText = normalizedSearchText,
           !searchText.isEmpty else {
-      return state.states ?? []
+      return stateGroup.states
     }
     
-    return state.states?.filter {
+    print("FILTERING ALL...")
+    return stateGroup.states.filter {
       let countryNameNormalized = $0.name.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
-      return countryNameNormalized.contains(searchText)
-    } ?? []
+      let accept = countryNameNormalized.contains(searchText) // TODO: Revert and return
+      if accept { print(countryNameNormalized) }
+      return accept
+    }
   }
   
   private var selectedMode: GuessMode
@@ -165,7 +168,7 @@ extension StatePickerViewController: UITableViewDelegate, UITableViewDataSource 
   func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
     if section >= 26 + 1,
        (tableView.dataSource?.tableView(tableView, numberOfRowsInSection: section) ?? 0) > 0 {
-      return statesDataSource?.lowerDivisionStates[section - (26+1)].name
+      return statesDataSource?.lowerDivisionStates[section - (26+1)].group
     } else {
       return nil
     }
@@ -214,7 +217,7 @@ extension StatePickerViewController: UITableViewDelegate, UITableViewDataSource 
       let statesWithLetter = topLevelStatesStartingWith(letter)
       
       let state = statesWithLetter[indexPath.row]
-      let guessMode = GuessMode.specific(state)
+      let guessMode = GuessMode.specificState(state)
       cell.associatedMode = guessMode
       
       cell.highlightSearch(normalizedSearchText)
@@ -223,9 +226,11 @@ extension StatePickerViewController: UITableViewDelegate, UITableViewDataSource 
     else if indexPath.section >= 1+26 {
       // states, provinces, and territories
       guard var parentState = statesDataSource?.lowerDivisionStates[indexPath.section-(1+26)] else { return cell }
+      // TODO: Do we need presentedLowerDivisionStates? (probably)
+      // TODO: Make this work when search results appear
       let childStates = presentedLowerDivisionStates(for: parentState)
       parentState.states = [childStates[indexPath.row]]
-      let guessMode = GuessMode.specific(parentState)
+      let guessMode = GuessMode.specificCountryState(parentState, indexPath.row)
       cell.associatedMode = guessMode
       cell.indentationLevel = 1
       
